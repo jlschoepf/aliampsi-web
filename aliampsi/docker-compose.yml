@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: aliampsi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aliampsi
+      POSTGRES_PASSWORD: aliampsi
+      POSTGRES_DB: aliampsi
+    ports:
+      - '5432:5432'
+    volumes:
+      - aliampsi-pgdata:/var/lib/postgresql/data
+
+volumes:
+  aliampsi-pgdata:
