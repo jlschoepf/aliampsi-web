@@ -4,8 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { logoutAction } from '@/app/admin/actions';
-
-const APP_VERSION = 'v2026.08.13-2';
+import { APP_VERSION } from '@/lib/version';
 
 const LINKS = [
   { href: '/admin', label: 'Panel', exact: true },

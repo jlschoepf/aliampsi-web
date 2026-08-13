@@ -1,5 +1,6 @@
 import { requireAdmin } from '@/lib/auth';
 import { AdminNav } from '@/components/AdminNav';
+import { UpdateBanner } from '@/components/UpdateBanner';
 
 export const metadata = { title: 'Administración' };
 
@@ -20,6 +21,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <div className="min-w-0">
         <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8">{children}</div>
       </div>
+
+      <UpdateBanner />
     </div>
   );
 }
