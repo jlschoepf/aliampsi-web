@@ -12,6 +12,7 @@ const LINKS = [
   { href: '/admin/publicaciones', label: 'Publicaciones' },
   { href: '/admin/congresos', label: 'Congresos' },
   { href: '/admin/asociaciones', label: 'Asociaciones' },
+  { href: '/admin/usuarios', label: 'Usuarios' },
 ];
 
 export function AdminNav({ email }: { email: string }) {
