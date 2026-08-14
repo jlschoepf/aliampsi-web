@@ -6,6 +6,7 @@ import {
   CongresoCard,
   AsociacionCard,
 } from '@/components/content';
+import { YOUTUBE_ID } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -94,6 +95,28 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* VIDEO ¿QUÉ ES? */}
+      {YOUTUBE_ID && (
+        <section className="wrap py-16 lg:py-20">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="eyebrow justify-center"><span className="text-coral">·</span> En video</p>
+            <h2 className="mt-3 text-3xl font-bold sm:text-4xl">¿Qué es AL·IAM·PSI?</h2>
+            <p className="mt-3 text-ink-muted">
+              El presidente comparte en qué consiste el trabajo de la Alianza.
+            </p>
+          </div>
+          <div className="mx-auto mt-8 aspect-video max-w-3xl overflow-hidden rounded-xl2 border border-line shadow-sm">
+            <iframe
+              className="h-full w-full"
+              src={`https://www.youtube.com/embed/${YOUTUBE_ID}`}
+              title="¿Qué es AL·IAM·PSI?"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </section>
+      )}
 
       {/* PRÓXIMAS ACTIVIDADES */}
       {congresos.length > 0 && (

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 
 const NAV = [
   { href: '/quienes-somos', label: 'Quiénes somos' },
+  { href: '/comision-directiva', label: 'Autoridades' },
   { href: '/asociaciones', label: 'Asociaciones' },
   { href: '/noticias', label: 'Noticias' },
   { href: '/congresos', label: 'Congresos' },

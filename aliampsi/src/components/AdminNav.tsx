@@ -12,6 +12,7 @@ const LINKS = [
   { href: '/admin/publicaciones', label: 'Publicaciones' },
   { href: '/admin/congresos', label: 'Congresos' },
   { href: '/admin/asociaciones', label: 'Asociaciones' },
+  { href: '/admin/autoridades', label: 'Comisión Directiva' },
   { href: '/admin/usuarios', label: 'Usuarios' },
 ];
 
@@ -21,8 +22,10 @@ export function AdminNav({ email }: { email: string }) {
   return (
     <div className="flex h-full flex-col">
       <div className="px-5 py-5">
-        <Link href="/admin" className="font-display text-lg font-extrabold text-paper">
-          AL<span className="text-coral">·</span>IAM<span className="text-coral">·</span>PSI
+        <Link href="/admin" className="flex items-center gap-2 font-display text-lg font-extrabold text-paper">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/emblem.png" alt="" className="h-7 w-7" />
+          <span>AL<span className="text-coral">·</span>IAM<span className="text-coral">·</span>PSI</span>
         </Link>
         <p className="mt-1 text-xs text-paper/50">Administración</p>
       </div>
