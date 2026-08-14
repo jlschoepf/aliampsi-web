@@ -95,6 +95,57 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* MENSAJE DEL PRESIDENTE */}
+      <section className="border-y border-line bg-sand/40 py-16 lg:py-20">
+        <div className="wrap max-w-3xl">
+          <p className="eyebrow"><span className="text-coral">·</span> Mensaje del Presidente</p>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Estimados colegas</h2>
+
+          <div className="mt-6 space-y-5 text-ink-muted">
+            <p>
+              Asumir la presidencia de AL·IAM·PSI para el periodo 2026-2027 conlleva la
+              responsabilidad de honrar y continuar un recorrido institucional que, aunque joven,
+              ha consolidado un propósito claro. Vengo de SUPIA con una convicción firme: nuestra
+              identidad no es meramente la suma de sociedades, sino una construcción colectiva que
+              trasciende el aporte individual de sus partes.
+            </p>
+            <p>
+              Sabemos que ejercer la Psiquiatría de Niños y Adolescentes en nuestra región es un
+              desafío diario. Trabajamos en escenarios complejos, donde las brechas estructurales de
+              salud contrastan con el enorme talento y la resiliencia de nuestros profesionales. Por
+              eso, nuestra gestión no puede ser solo administrativa; debe ser capaz de articular
+              nuevas oportunidades ante esta realidad.
+            </p>
+            <p>
+              Asimismo, nos encontramos ante un hecho histórico: el tránsito hacia la era de la
+              inteligencia automatizada y la hiperconectividad. Esto genera desafíos de gran
+              magnitud, con avances a velocidades nunca antes vistas que están cambiando la manera de
+              relacionarnos y comprender el mundo. La irrupción de la Inteligencia Artificial
+              Generativa no es solo un cambio técnico, sino un nuevo paradigma que redefine aspectos
+              de nuestra práctica clínica y ética. Lejos de ser espectadores, en AL·IAM·PSI
+              entendemos esto como una oportunidad estratégica para democratizar el acceso al
+              conocimiento, permitiendo que nuestra Alianza trascienda fronteras físicas con mayor
+              agilidad y alcance.
+            </p>
+            <p>
+              En este período, nuestros ejes de gestión se centrarán en el fortalecimiento de lo
+              construido y en la integración de nuevas herramientas y oportunidades para seguir
+              avanzando. Buscaremos potenciar la sinergia entre las sociedades participantes,
+              entendiendo que AL·IAM·PSI es el instrumento clave para articular nuestros recursos
+              locales en una estrategia regional sólida. Trabajaremos para transformar nuestras
+              heterogeneidades en ventajas, con el objetivo de promover una salud mental más
+              equitativa, humana y accesible para la infancia y la adolescencia de toda Iberoamérica.
+            </p>
+            <p>Cuento con ustedes para este camino. Un afectuoso saludo.</p>
+          </div>
+
+          <div className="mt-8 border-t border-line pt-5">
+            <p className="font-display text-lg font-bold text-ink">Dr. Johann Schoepf</p>
+            <p className="text-sm text-ink-muted">Psiquiatra Pediátrico · Presidente de AL·IAM·PSI 2026-2027</p>
+          </div>
+        </div>
+      </section>
+
       {/* PRÓXIMAS ACTIVIDADES */}
       {congresos.length > 0 && (
         <section className="wrap py-20">
