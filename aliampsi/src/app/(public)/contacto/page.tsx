@@ -19,6 +19,12 @@ export default function ContactoPage() {
             </a>
           </div>
           <div>
+            <p className="text-sm font-semibold uppercase tracking-wider text-teal-600">WhatsApp</p>
+            <a href="https://wa.me/5491150437954" target="_blank" rel="noreferrer" className="font-display text-xl font-bold text-ink hover:text-coral">
+              +54 9 11 5043-7954
+            </a>
+          </div>
+          <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-teal-600">Redes</p>
             <div className="mt-1 flex flex-wrap gap-3 text-sm">
               <a href="https://www.instagram.com/aliampsi" target="_blank" rel="noreferrer" className="hover:text-coral">Instagram</a>

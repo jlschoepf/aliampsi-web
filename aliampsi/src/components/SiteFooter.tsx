@@ -6,6 +6,7 @@ const SOCIAL = [
   { href: 'https://facebook.com/aliampsi', label: 'Facebook' },
   { href: 'https://www.youtube.com/channel/UCjGLu6VjxUikSSVq2lUmreQ', label: 'YouTube' },
   { href: 'https://linkedin.com/company/aliampsi', label: 'LinkedIn' },
+  { href: 'https://wa.me/5491150437954', label: 'WhatsApp' },
 ];
 
 export function SiteFooter() {
