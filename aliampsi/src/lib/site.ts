@@ -1,6 +1,5 @@
 // Configuración general del sitio.
-//
-// LOGO_SRC: por ahora apunta al logo del sitio actual (temporal).
-// Cuando tengamos el archivo alojado en el proyecto, cambiar por '/logo.png'.
-export const LOGO_SRC =
-  'https://aliampsi.com/wp-content/uploads/2022/06/Isologotipo-Aliampsi-112-768x253.png';
+// Logo completo (fondos claros) y emblema (para fondos oscuros y favicon),
+// alojados dentro del proyecto en /public.
+export const LOGO_SRC = '/logo.png';
+export const EMBLEM_SRC = '/emblem.png';
