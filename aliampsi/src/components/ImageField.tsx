@@ -30,6 +30,8 @@ const ASPECTS: { label: string; value: number }[] = [
 function createImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
+    // Para imágenes remotas (ya subidas), habilitar CORS para poder reprocesarlas.
+    if (/^https?:\/\//i.test(url)) img.crossOrigin = 'anonymous';
     img.addEventListener('load', () => resolve(img));
     img.addEventListener('error', (e) => reject(e));
     img.src = url;
@@ -136,8 +138,21 @@ export function ImageField({
       setImageSrc(null);
     } catch {
       setStatus('error');
-      setError('No se pudo subir la imagen. Configurá el almacenamiento (Vercel Blob) o pegá una URL.');
+      setError('No se pudo procesar la imagen. Si estabas reeditando una imagen ya subida, volvé a subir el archivo.');
     }
+  }
+
+  function editCurrent() {
+    if (!value) return;
+    // SVG/GIF no pasan por el recortador (se perdería el formato).
+    if (/\.svg($|\?)/i.test(value) || /\.gif($|\?)/i.test(value)) {
+      setError('Este formato (SVG/GIF) no se recorta. Subí un archivo nuevo si querés cambiarlo.');
+      return;
+    }
+    setError('');
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setImageSrc(value);
   }
 
   function cancelCrop() {
@@ -153,13 +168,22 @@ export function ImageField({
         <div className="mb-3 flex items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={value} alt="" className="h-16 w-16 rounded-lg border border-line object-cover" />
-          <button
-            type="button"
-            onClick={() => setValue('')}
-            className="text-sm font-medium text-coral hover:text-coral-dark"
-          >
-            Quitar imagen
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={editCurrent}
+              className="text-sm font-medium text-teal-600 hover:text-coral"
+            >
+              Editar encuadre
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue('')}
+              className="text-sm font-medium text-coral hover:text-coral-dark"
+            >
+              Quitar imagen
+            </button>
+          </div>
         </div>
       ) : null}
 
