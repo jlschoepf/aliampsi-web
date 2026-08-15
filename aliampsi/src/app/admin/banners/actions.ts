@@ -22,6 +22,8 @@ function data(formData: FormData) {
     ctaUrl: String(formData.get('ctaUrl') || ''),
     cta2Label: String(formData.get('cta2Label') || ''),
     cta2Url: String(formData.get('cta2Url') || ''),
+    overlay: String(formData.get('overlay') || 'dark'),
+    textColor: String(formData.get('textColor') || 'light'),
     order: Number.isNaN(order) ? 0 : order,
     published: formData.get('published') === 'on',
   };
