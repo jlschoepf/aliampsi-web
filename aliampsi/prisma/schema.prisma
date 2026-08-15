@@ -112,3 +112,17 @@ model Indicador {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Settings {
+  id           String   @id @default("singleton")
+  contactEmail String   @default("info@aliampsi.com")
+  whatsapp     String   @default("")
+  instagram    String   @default("")
+  facebook     String   @default("")
+  youtube      String   @default("")
+  linkedin     String   @default("")
+  contactTitle String   @default("Sumate a la Alianza")
+  contactText  String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

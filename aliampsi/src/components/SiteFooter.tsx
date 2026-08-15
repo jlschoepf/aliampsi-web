@@ -1,15 +1,16 @@
 import Link from 'next/link';
 import { Wordmark } from './Wordmark';
+import { getSettings, waLink } from '@/lib/settings';
 
-const SOCIAL = [
-  { href: 'https://www.instagram.com/aliampsi', label: 'Instagram' },
-  { href: 'https://facebook.com/aliampsi', label: 'Facebook' },
-  { href: 'https://www.youtube.com/channel/UCjGLu6VjxUikSSVq2lUmreQ', label: 'YouTube' },
-  { href: 'https://linkedin.com/company/aliampsi', label: 'LinkedIn' },
-  { href: 'https://wa.me/5491150437954', label: 'WhatsApp' },
-];
-
-export function SiteFooter() {
+export async function SiteFooter() {
+  const s = await getSettings();
+  const SOCIAL = [
+    { href: s.instagram, label: 'Instagram' },
+    { href: s.facebook, label: 'Facebook' },
+    { href: s.youtube, label: 'YouTube' },
+    { href: s.linkedin, label: 'LinkedIn' },
+    { href: waLink(s.whatsapp), label: 'WhatsApp' },
+  ].filter((x) => x.href);
   return (
     <footer className="mt-24 border-t border-line bg-ink text-paper">
       <div className="wrap grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
@@ -19,8 +20,8 @@ export function SiteFooter() {
             Alianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines. Potenciando
             el conocimiento para el cuidado de la salud mental de niños y adolescentes.
           </p>
-          <a href="mailto:info@aliampsi.com" className="mt-4 inline-block font-display text-lg text-paper hover:text-coral">
-            info@aliampsi.com
+          <a href={`mailto:${s.contactEmail}`} className="mt-4 inline-block font-display text-lg text-paper hover:text-coral">
+            {s.contactEmail}
           </a>
         </div>
 

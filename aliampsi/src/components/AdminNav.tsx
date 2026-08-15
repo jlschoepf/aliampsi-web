@@ -16,6 +16,7 @@ const LINKS = [
   { href: '/admin/asociaciones', label: 'Asociaciones' },
   { href: '/admin/autoridades', label: 'Comisión Directiva' },
   { href: '/admin/usuarios', label: 'Usuarios' },
+  { href: '/admin/ajustes', label: 'Ajustes' },
 ];
 
 export function AdminNav({ email }: { email: string }) {
