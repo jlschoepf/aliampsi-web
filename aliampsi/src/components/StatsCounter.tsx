@@ -32,10 +32,24 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
 
   return (
     <div className="text-center">
-      <div className="font-display text-4xl font-extrabold text-paper sm:text-5xl">
-        {numeric ? `${numeric.prefix}${n}` : stat.value}
+      <div className="font-display text-4xl font-extrabold tabular-nums text-paper sm:text-5xl">
+        {numeric ? (
+          <span className="relative inline-block">
+            {/* Reserva el ancho del valor final para que el texto no se mueva al contar */}
+            <span className="invisible" aria-hidden="true">
+              {numeric.prefix}
+              {numeric.target}
+            </span>
+            <span className="absolute inset-0 flex items-center justify-center">
+              {numeric.prefix}
+              {n}
+            </span>
+          </span>
+        ) : (
+          stat.value
+        )}
       </div>
-      <div className="mt-1 text-sm font-medium text-paper/70">{stat.label}</div>
+      <div className="mt-2 text-sm font-medium text-paper/70">{stat.label}</div>
     </div>
   );
 }
@@ -63,7 +77,10 @@ export function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div ref={ref} className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 sm:justify-around">
+    <div
+      ref={ref}
+      className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-16 gap-y-10"
+    >
       {stats.map((s) => (
         <StatItem key={s.id} stat={s} run={run} />
       ))}
