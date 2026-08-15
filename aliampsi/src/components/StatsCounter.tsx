@@ -58,18 +58,18 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
   }, [stat.value, run]);
 
   return (
-    <div className="text-center">
-      <div className="relative mx-auto mb-3.5 flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-coral to-coral-dark shadow-md shadow-coral/25 ring-1 ring-white/10">
+    <div className="group text-center">
+      <div className="relative mx-auto mb-3.5 flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-coral to-coral-dark shadow-md shadow-coral/25 ring-1 ring-white/10 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-coral/40">
         {/* Emblema de AL·IAM·PSI como marca de agua (sutil) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/emblem.png"
           alt=""
-          className="pointer-events-none absolute inset-0 h-full w-full scale-95 object-contain opacity-[0.12] brightness-0 invert"
+          className="pointer-events-none absolute inset-0 h-full w-full scale-95 object-contain opacity-[0.12] brightness-0 invert transition-all duration-300 group-hover:scale-100 group-hover:opacity-[0.22]"
         />
-        <Icon className="relative h-[18px] w-[18px] text-paper" strokeWidth={2} />
+        <Icon className="relative h-[18px] w-[18px] text-paper transition-transform duration-300 group-hover:scale-110" strokeWidth={2} />
       </div>
-      <div className="font-display text-[2rem] font-extrabold tabular-nums leading-none tracking-tight text-paper sm:text-[2.5rem]">
+      <div className="font-display text-[2rem] font-extrabold tabular-nums leading-none tracking-tight text-paper transition-colors duration-300 group-hover:text-coral sm:text-[2.5rem]">
         {numeric ? (
           <span className="relative inline-block">
             <span className="invisible" aria-hidden="true">{numeric.prefix}{fmt(numeric.target)}</span>
@@ -79,7 +79,7 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
           stat.value
         )}
       </div>
-      <div className="mt-2 text-[13px] font-medium tracking-wide text-paper/60">{stat.label}</div>
+      <div className="mt-2 text-[13px] font-medium tracking-wide text-paper/60 transition-colors duration-300 group-hover:text-paper/80">{stat.label}</div>
     </div>
   );
 }
