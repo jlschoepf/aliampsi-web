@@ -14,6 +14,10 @@ const Cropper = dynamic(() => import('react-easy-crop'), { ssr: false }) as unkn
   onCropChange: (c: Point) => void;
   onZoomChange: (z: number) => void;
   onCropComplete: (area: Area, areaPixels: Area) => void;
+  minZoom?: number;
+  maxZoom?: number;
+  restrictPosition?: boolean;
+  objectFit?: string;
 }>;
 
 const ASPECTS: { label: string; value: number }[] = [
@@ -193,7 +197,7 @@ export function ImageField({
           <div className="w-full max-w-lg rounded-xl2 bg-white p-4 shadow-xl sm:p-5">
             <h3 className="font-display text-lg font-bold text-ink">Encuadrar imagen</h3>
             <p className="mt-1 text-xs text-ink-muted">
-              Arrastrá para mover, usá el zoom y elegí la proporción.
+              Arrastrá para mover y usá el zoom. Podés alejar para que entre todo el logo (lo que quede alrededor sale en blanco).
             </p>
 
             <div
@@ -211,6 +215,10 @@ export function ImageField({
                 crop={crop}
                 zoom={zoom}
                 aspect={aspect}
+                minZoom={0.3}
+                maxZoom={3}
+                restrictPosition={false}
+                objectFit="contain"
                 onCropChange={setCrop}
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
@@ -236,7 +244,7 @@ export function ImageField({
               <label className="mb-1 block text-xs font-medium text-ink-muted">Zoom</label>
               <input
                 type="range"
-                min={1}
+                min={0.3}
                 max={3}
                 step={0.01}
                 value={zoom}
