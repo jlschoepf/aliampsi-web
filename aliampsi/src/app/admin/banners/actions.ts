@@ -20,6 +20,8 @@ function data(formData: FormData) {
     image: String(formData.get('image') || '') || null,
     ctaLabel: String(formData.get('ctaLabel') || ''),
     ctaUrl: String(formData.get('ctaUrl') || ''),
+    cta2Label: String(formData.get('cta2Label') || ''),
+    cta2Url: String(formData.get('cta2Url') || ''),
     order: Number.isNaN(order) ? 0 : order,
     published: formData.get('published') === 'on',
   };

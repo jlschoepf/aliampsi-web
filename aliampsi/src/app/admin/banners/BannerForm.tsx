@@ -19,8 +19,12 @@ export function BannerForm({
       <TextArea label="Texto (opcional)" name="text" rows={3} defaultValue={banner?.text} placeholder="Descripción o mensaje del banner" />
       <ImageField label="Imagen de fondo" name="image" defaultValue={banner?.image} hint="Recomendado: horizontal (16:9). Si no ponés imagen, se usa un fondo con la identidad de la Alianza." />
       <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Texto del botón (opcional)" name="ctaLabel" defaultValue={banner?.ctaLabel} placeholder="Ej: Conocé más" />
-        <Field label="Enlace del botón (opcional)" name="ctaUrl" defaultValue={banner?.ctaUrl} placeholder="Ej: /quienes-somos" />
+        <Field label="Botón 1 — texto (opcional)" name="ctaLabel" defaultValue={banner?.ctaLabel} placeholder="Ej: Conocé la Alianza" />
+        <Field label="Botón 1 — enlace" name="ctaUrl" defaultValue={banner?.ctaUrl} placeholder="Ej: /quienes-somos" />
+      </div>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Botón 2 — texto (opcional)" name="cta2Label" defaultValue={banner?.cta2Label} placeholder="Ej: Asociar mi institución" />
+        <Field label="Botón 2 — enlace" name="cta2Url" defaultValue={banner?.cta2Url} placeholder="Ej: /contacto" />
       </div>
       <Field label="Orden" name="order" type="number" defaultValue={banner?.order ?? 0} hint="Número menor aparece primero." />
       <Checkbox label="Publicar (visible en la portada)" name="published" defaultChecked={banner?.published ?? true} />

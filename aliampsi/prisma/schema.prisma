@@ -93,6 +93,8 @@ model Banner {
   image     String?
   ctaLabel  String   @default("")
   ctaUrl    String   @default("")
+  cta2Label String   @default("")
+  cta2Url   String   @default("")
   order     Int      @default(0)
   published Boolean  @default(true)
   createdAt DateTime @default(now())
