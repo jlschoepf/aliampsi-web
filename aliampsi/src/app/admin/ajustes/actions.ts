@@ -5,19 +5,17 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 
+const FIELDS = [
+  'contactEmail', 'whatsapp', 'instagram', 'facebook', 'youtube', 'linkedin',
+  'contactTitle', 'contactText', 'footerText',
+  'qsTitle', 'qsIntro', 'qsMision', 'qsCompromiso',
+  'qsPilar1Title', 'qsPilar1Text', 'qsPilar2Title', 'qsPilar2Text', 'qsPilar3Title', 'qsPilar3Text',
+];
+
 export async function updateSettings(formData: FormData) {
   await requireAdmin();
-  const data = {
-    contactEmail: String(formData.get('contactEmail') || '').trim(),
-    whatsapp: String(formData.get('whatsapp') || '').trim(),
-    instagram: String(formData.get('instagram') || '').trim(),
-    facebook: String(formData.get('facebook') || '').trim(),
-    youtube: String(formData.get('youtube') || '').trim(),
-    linkedin: String(formData.get('linkedin') || '').trim(),
-    contactTitle: String(formData.get('contactTitle') || '').trim(),
-    contactText: String(formData.get('contactText') || '').trim(),
-    footerText: String(formData.get('footerText') || '').trim(),
-  };
+  const data: Record<string, string> = {};
+  for (const f of FIELDS) data[f] = String(formData.get(f) || '').trim();
   await prisma.settings.upsert({
     where: { id: 'singleton' },
     update: data,
@@ -25,5 +23,6 @@ export async function updateSettings(formData: FormData) {
   });
   revalidatePath('/');
   revalidatePath('/contacto');
+  revalidatePath('/quienes-somos');
   redirect('/admin/ajustes?ok=1');
 }

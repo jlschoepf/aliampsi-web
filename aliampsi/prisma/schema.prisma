@@ -124,6 +124,26 @@ model Settings {
   contactTitle String   @default("Sumate a la Alianza")
   contactText  String   @default("")
   footerText   String   @default("")
+  qsTitle      String   @default("")
+  qsIntro      String   @default("")
+  qsMision     String   @default("")
+  qsCompromiso String   @default("")
+  qsPilar1Title String  @default("")
+  qsPilar1Text  String  @default("")
+  qsPilar2Title String  @default("")
+  qsPilar2Text  String  @default("")
+  qsPilar3Title String  @default("")
+  qsPilar3Text  String  @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Hito {
+  id        String   @id @default(cuid())
+  fecha     String
+  texto     String   @default("")
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

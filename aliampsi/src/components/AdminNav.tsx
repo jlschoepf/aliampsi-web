@@ -15,6 +15,7 @@ const LINKS = [
   { href: '/admin/congresos', label: 'Congresos' },
   { href: '/admin/asociaciones', label: 'Asociaciones' },
   { href: '/admin/autoridades', label: 'Comisión Directiva' },
+  { href: '/admin/historia', label: 'Historia' },
   { href: '/admin/usuarios', label: 'Usuarios' },
   { href: '/admin/ajustes', label: 'Ajustes' },
 ];

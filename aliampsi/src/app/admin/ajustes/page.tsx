@@ -51,6 +51,35 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
         </div>
         <TextArea label="Texto del pie" name="footerText" rows={3} defaultValue={s.footerText} />
 
+        <div className="border-t border-line pt-6">
+          <h2 className="font-display text-lg font-bold text-ink">Quiénes somos</h2>
+          <p className="text-sm text-ink-muted">Los textos de la página «Quiénes somos». (La línea de tiempo se edita en «Historia».)</p>
+        </div>
+        <Field label="Título" name="qsTitle" defaultValue={s.qsTitle} />
+        <TextArea label="Introducción" name="qsIntro" rows={3} defaultValue={s.qsIntro} />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <TextArea label="Nuestra misión" name="qsMision" rows={4} defaultValue={s.qsMision} />
+          <TextArea label="Nuestro compromiso" name="qsCompromiso" rows={4} defaultValue={s.qsCompromiso} />
+        </div>
+
+        <div className="rounded-lg border border-line bg-sand/30 p-4">
+          <p className="mb-4 text-sm font-semibold text-ink">Pilares (las 3 tarjetas)</p>
+          <div className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field label="Pilar 1 — título" name="qsPilar1Title" defaultValue={s.qsPilar1Title} />
+              <div className="sm:col-span-2"><Field label="Pilar 1 — texto" name="qsPilar1Text" defaultValue={s.qsPilar1Text} /></div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field label="Pilar 2 — título" name="qsPilar2Title" defaultValue={s.qsPilar2Title} />
+              <div className="sm:col-span-2"><Field label="Pilar 2 — texto" name="qsPilar2Text" defaultValue={s.qsPilar2Text} /></div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <Field label="Pilar 3 — título" name="qsPilar3Title" defaultValue={s.qsPilar3Title} />
+              <div className="sm:col-span-2"><Field label="Pilar 3 — texto" name="qsPilar3Text" defaultValue={s.qsPilar3Text} /></div>
+            </div>
+          </div>
+        </div>
+
         <div className="pt-2">
           <SubmitButton>Guardar ajustes</SubmitButton>
         </div>
