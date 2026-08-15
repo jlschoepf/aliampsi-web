@@ -6,6 +6,7 @@ import {
   CongresoCard,
   AsociacionCard,
 } from '@/components/content';
+import { HeroCarousel } from '@/components/HeroCarousel';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,6 +25,11 @@ export default async function HomePage() {
     ]),
   ]);
 
+  const banners = await prisma.banner.findMany({
+    where: { published: true },
+    orderBy: { order: 'asc' },
+  });
+
   const [asocCount, congCount] = counts;
   const stats = [
     { value: asocCount, label: 'Asociaciones integrantes' },
@@ -34,6 +40,9 @@ export default async function HomePage() {
   return (
     <>
       {/* HERO */}
+      {banners.length > 0 ? (
+        <HeroCarousel banners={banners} />
+      ) : (
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-coral/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-teal-600/10 blur-3xl" />
@@ -71,6 +80,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* QUÉ ES */}
       <section className="border-y border-line bg-sand/40">

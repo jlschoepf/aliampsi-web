@@ -84,3 +84,17 @@ model Autoridad {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Banner {
+  id        String   @id @default(cuid())
+  eyebrow   String   @default("")
+  title     String
+  text      String   @default("")
+  image     String?
+  ctaLabel  String   @default("")
+  ctaUrl    String   @default("")
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

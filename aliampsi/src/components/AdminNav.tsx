@@ -8,6 +8,7 @@ import { APP_VERSION } from '@/lib/version';
 
 const LINKS = [
   { href: '/admin', label: 'Panel', exact: true },
+  { href: '/admin/banners', label: 'Banners' },
   { href: '/admin/noticias', label: 'Noticias' },
   { href: '/admin/publicaciones', label: 'Publicaciones' },
   { href: '/admin/congresos', label: 'Congresos' },
