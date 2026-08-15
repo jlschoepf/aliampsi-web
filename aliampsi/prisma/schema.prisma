@@ -107,6 +107,7 @@ model Indicador {
   id        String   @id @default(cuid())
   value     String
   label     String
+  icon      String   @default("")
   order     Int      @default(0)
   published Boolean  @default(true)
   createdAt DateTime @default(now())

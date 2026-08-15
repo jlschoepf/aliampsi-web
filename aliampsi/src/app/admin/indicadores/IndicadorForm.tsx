@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { Indicador } from '@prisma/client';
-import { Field, Checkbox, SubmitButton } from '@/components/admin-ui';
+import { Field, Select, Checkbox, SubmitButton } from '@/components/admin-ui';
 
 export function IndicadorForm({
   action,
@@ -22,6 +22,24 @@ export function IndicadorForm({
         hint="Si es un número (o empieza con +), se anima con un conteo. Si es texto, se muestra tal cual."
       />
       <Field label="Etiqueta" name="label" required defaultValue={indicador?.label} placeholder="Ej: Asociaciones integrantes" />
+      <Select
+        label="Ícono"
+        name="icon"
+        defaultValue={indicador?.icon ?? ''}
+        options={[
+          { value: '', label: 'Automático (según la etiqueta)' },
+          { value: 'users', label: 'Personas' },
+          { value: 'calendar', label: 'Calendario' },
+          { value: 'building', label: 'Institución' },
+          { value: 'globe', label: 'Globo / región' },
+          { value: 'award', label: 'Premio' },
+          { value: 'book', label: 'Publicación' },
+          { value: 'graduation', label: 'Formación' },
+          { value: 'heart', label: 'Corazón' },
+          { value: 'star', label: 'Estrella' },
+          { value: 'sparkles', label: 'Destello' },
+        ]}
+      />
       <Field label="Orden" name="order" type="number" defaultValue={indicador?.order ?? 0} hint="Número menor aparece primero." />
       <Checkbox label="Publicar (visible en la portada)" name="published" defaultChecked={indicador?.published ?? true} />
 

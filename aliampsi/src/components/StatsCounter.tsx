@@ -1,25 +1,52 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import {
+  Users, CalendarDays, Building2, Globe, Award, BookOpen,
+  GraduationCap, Heart, Star, Sparkles, type LucideIcon,
+} from 'lucide-react';
 
-type Stat = { id: string; value: string; label: string };
+type Stat = { id: string; value: string; label: string; icon: string };
 
-function parseNumeric(value: string): { prefix: string; target: number } | null {
-  const m = value.trim().match(/^(\+)?(\d+)$/);
-  if (!m) return null;
-  return { prefix: m[1] || '', target: parseInt(m[2], 10) };
+const ICONS: Record<string, LucideIcon> = {
+  users: Users, calendar: CalendarDays, building: Building2, globe: Globe,
+  award: Award, book: BookOpen, graduation: GraduationCap, heart: Heart,
+  star: Star, sparkles: Sparkles,
+};
+
+function guessIcon(label: string): string {
+  const l = label.toLowerCase();
+  if (/socia|institu/.test(l)) return 'building';
+  if (/congres|jornada|evento|activid/.test(l)) return 'calendar';
+  if (/miembro|socio|profesional|persona/.test(l)) return 'users';
+  if (/alcance|regi|pa[ií]s|iberoam|mundo/.test(l)) return 'globe';
+  if (/premio|galard/.test(l)) return 'award';
+  if (/public|revista|libro|art[ií]culo/.test(l)) return 'book';
+  if (/form|beca|pasant[ií]|capacit/.test(l)) return 'graduation';
+  return 'sparkles';
 }
 
-function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
+function parseNumeric(value: string): { prefix: string; target: number } | null {
+  const m = value.trim().match(/^(\+)?([\d.,]+)$/);
+  if (!m) return null;
+  const digits = m[2].replace(/[.,]/g, '');
+  if (!/^\d+$/.test(digits)) return null;
+  return { prefix: m[1] || '', target: parseInt(digits, 10) };
+}
+
+const fmt = (n: number) => n.toLocaleString('es-AR');
+
+function StatCard({ stat, run }: { stat: Stat; run: boolean }) {
   const numeric = parseNumeric(stat.value);
   const [n, setN] = useState(0);
+  const Icon = ICONS[stat.icon] || ICONS[guessIcon(stat.label)] || Sparkles;
 
   useEffect(() => {
     const parsed = parseNumeric(stat.value);
     if (!parsed || !run) return;
     let raf = 0;
     const start = performance.now();
-    const dur = 1200;
+    const dur = 1400;
     const tick = (t: number) => {
       const p = Math.min(1, (t - start) / dur);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -31,25 +58,21 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
   }, [stat.value, run]);
 
   return (
-    <div className="text-center">
-      <div className="font-display text-4xl font-extrabold tabular-nums text-paper sm:text-5xl">
+    <div className="group w-full rounded-2xl border border-line/70 bg-white/70 p-8 text-center shadow-[0_2px_24px_-8px_rgba(15,59,60,0.15)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_-12px_rgba(236,106,82,0.35)] sm:w-[250px]">
+      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-coral to-coral-dark text-paper shadow-lg shadow-coral/30 transition duration-300 group-hover:scale-105">
+        <Icon className="h-6 w-6" strokeWidth={2.2} />
+      </div>
+      <div className="font-display text-4xl font-extrabold tabular-nums leading-none text-ink sm:text-5xl">
         {numeric ? (
           <span className="relative inline-block">
-            {/* Reserva el ancho del valor final para que el texto no se mueva al contar */}
-            <span className="invisible" aria-hidden="true">
-              {numeric.prefix}
-              {numeric.target}
-            </span>
-            <span className="absolute inset-0 flex items-center justify-center">
-              {numeric.prefix}
-              {n}
-            </span>
+            <span className="invisible" aria-hidden="true">{numeric.prefix}{fmt(numeric.target)}</span>
+            <span className="absolute inset-0 flex items-center justify-center">{numeric.prefix}{fmt(n)}</span>
           </span>
         ) : (
           stat.value
         )}
       </div>
-      <div className="mt-2 text-sm font-medium text-paper/70">{stat.label}</div>
+      <div className="mt-3 text-sm font-medium text-ink-muted">{stat.label}</div>
     </div>
   );
 }
@@ -77,12 +100,9 @@ export function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-16 gap-y-10"
-    >
+    <div ref={ref} className="flex flex-wrap justify-center gap-6">
       {stats.map((s) => (
-        <StatItem key={s.id} stat={s} run={run} />
+        <StatCard key={s.id} stat={s} run={run} />
       ))}
     </div>
   );

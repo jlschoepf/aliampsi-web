@@ -39,11 +39,11 @@ export default async function HomePage() {
   const [asocCount, congCount] = counts;
   const stats =
     indicadores.length > 0
-      ? indicadores.map((it) => ({ id: it.id, value: it.value, label: it.label }))
+      ? indicadores.map((it) => ({ id: it.id, value: it.value, label: it.label, icon: it.icon }))
       : [
-          { id: 'asoc', value: String(asocCount), label: 'Asociaciones integrantes' },
-          { id: 'cong', value: String(congCount), label: 'Congresos realizados' },
-          { id: 'alc', value: 'Iberoamérica', label: 'Alcance regional' },
+          { id: 'asoc', value: String(asocCount), label: 'Asociaciones integrantes', icon: 'building' },
+          { id: 'cong', value: String(congCount), label: 'Congresos realizados', icon: 'calendar' },
+          { id: 'alc', value: 'Iberoamérica', label: 'Alcance regional', icon: 'globe' },
         ];
 
   return (
@@ -77,10 +77,8 @@ export default async function HomePage() {
 
       {/* INDICADORES */}
       {stats.length > 0 && (
-        <section className="border-y border-line bg-ink py-12 lg:py-14">
-          <div className="wrap">
-            <StatsCounter stats={stats} />
-          </div>
+        <section className="wrap py-16 lg:py-20">
+          <StatsCounter stats={stats} />
         </section>
       )}
 

@@ -16,6 +16,7 @@ function data(formData: FormData) {
   return {
     value: String(formData.get('value') || '').trim(),
     label: String(formData.get('label') || '').trim(),
+    icon: String(formData.get('icon') || '').trim(),
     order: Number.isNaN(order) ? 0 : order,
     published: formData.get('published') === 'on',
   };
