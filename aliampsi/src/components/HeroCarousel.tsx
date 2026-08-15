@@ -30,14 +30,13 @@ export function HeroCarousel({ banners }: { banners: BannerSlide[] }) {
 
   if (n === 0) return null;
 
-  // Controles: claros u oscuros según el color de texto del slide actual.
   const current = banners[i];
   const controlsLight = current?.image ? current.textColor !== 'dark' : false;
 
   const overlayClass = (o: string) => {
+    if (o === 'light') return 'absolute inset-0 bg-gradient-to-r from-paper/95 via-paper/85 to-paper/50';
     if (o === 'none') return '';
-    if (o === 'light') return 'absolute inset-0 bg-gradient-to-r from-paper/90 via-paper/70 to-paper/30';
-    return 'absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/60 to-ink/25';
+    return 'absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/75 to-ink/40';
   };
 
   return (
@@ -45,8 +44,25 @@ export function HeroCarousel({ banners }: { banners: BannerSlide[] }) {
       <div className="relative min-h-[460px] overflow-hidden lg:min-h-[540px]">
         {banners.map((b, idx) => {
           const hasImage = !!b.image;
-          // Sin imagen: siempre tema claro (texto oscuro). Con imagen: según textColor.
           const light = hasImage ? b.textColor !== 'dark' : false;
+          // Sombra para despegar el texto de la foto (solo cuando hay imagen).
+          const titleShadow = hasImage
+            ? light
+              ? '[text-shadow:0_2px_10px_rgba(15,59,60,0.55)]'
+              : '[text-shadow:0_1px_8px_rgba(250,247,242,0.85)]'
+            : '';
+          const textShadow = hasImage
+            ? light
+              ? '[text-shadow:0_1px_6px_rgba(15,59,60,0.5)]'
+              : '[text-shadow:0_1px_5px_rgba(250,247,242,0.8)]'
+            : '';
+          // Botón secundario legible sobre foto.
+          const secondaryClass = !hasImage
+            ? 'btn-ghost'
+            : light
+              ? 'inline-flex items-center rounded-full border border-paper/40 bg-ink/35 px-5 py-2.5 text-sm font-semibold text-paper backdrop-blur transition hover:bg-ink/55'
+              : 'inline-flex items-center rounded-full bg-paper/90 px-5 py-2.5 text-sm font-semibold text-ink shadow-sm backdrop-blur transition hover:bg-paper';
+
           return (
             <div
               key={b.id}
@@ -72,22 +88,22 @@ export function HeroCarousel({ banners }: { banners: BannerSlide[] }) {
                 <div className="wrap">
                   <div className="max-w-2xl">
                     {b.eyebrow && (
-                      <p className={light ? 'eyebrow text-paper/80' : 'eyebrow'}>
+                      <p className={light ? 'eyebrow text-paper/90' : 'eyebrow'}>
                         <span className="text-coral">·</span> {b.eyebrow}
                       </p>
                     )}
                     <h1
                       className={`mt-4 text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl ${
                         light ? 'text-paper' : 'text-ink'
-                      }`}
+                      } ${titleShadow}`}
                     >
                       {b.title}
                     </h1>
                     {b.text && (
                       <p
                         className={`mt-5 max-w-xl text-lg leading-relaxed ${
-                          light ? 'text-paper/90' : 'text-ink-muted'
-                        }`}
+                          light ? 'text-paper' : 'text-ink'
+                        } ${textShadow}`}
                       >
                         {b.text}
                       </p>
@@ -95,19 +111,12 @@ export function HeroCarousel({ banners }: { banners: BannerSlide[] }) {
                     {((b.ctaLabel && b.ctaUrl) || (b.cta2Label && b.cta2Url)) && (
                       <div className="mt-8 flex flex-wrap gap-3">
                         {b.ctaLabel && b.ctaUrl && (
-                          <Link href={b.ctaUrl} className="btn-coral">
+                          <Link href={b.ctaUrl} className="btn-coral shadow-sm">
                             {b.ctaLabel}
                           </Link>
                         )}
                         {b.cta2Label && b.cta2Url && (
-                          <Link
-                            href={b.cta2Url}
-                            className={
-                              light
-                                ? 'inline-flex items-center rounded-full border border-paper/50 px-5 py-2.5 text-sm font-semibold text-paper transition hover:bg-paper/10'
-                                : 'btn-ghost'
-                            }
-                          >
+                          <Link href={b.cta2Url} className={secondaryClass}>
                             {b.cta2Label}
                           </Link>
                         )}
