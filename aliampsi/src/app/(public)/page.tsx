@@ -8,6 +8,7 @@ import {
 } from '@/components/content';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { StatsCounter } from '@/components/StatsCounter';
+import { CartaPresidente } from '@/components/CartaPresidente';
 
 export const dynamic = 'force-dynamic';
 
@@ -114,21 +115,9 @@ export default async function HomePage() {
           <h2 className="mt-3 text-3xl font-bold sm:text-4xl">Palabras del Dr. Johann Schoepf</h2>
           <p className="mt-2 text-ink-muted">Presidente de AL·IAM·PSI · 2026-2027</p>
 
-          <a
-            href="/carta-presidente.png"
-            target="_blank"
-            rel="noreferrer"
-            className="group mt-8 block overflow-hidden rounded-xl2 border border-line bg-white shadow-sm transition hover:shadow-md"
-            aria-label="Ver la carta del presidente en tamaño completo"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/carta-presidente.png"
-              alt="Carta del Presidente de AL·IAM·PSI, Dr. Johann Schoepf"
-              className="h-auto w-full"
-            />
-          </a>
-          <p className="mt-3 text-center text-xs text-ink-muted">Tocá la carta para verla en tamaño completo.</p>
+          <div className="mt-8">
+            <CartaPresidente src="/carta-presidente.png" />
+          </div>
         </div>
       </section>
 
