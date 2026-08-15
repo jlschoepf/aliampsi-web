@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
-import { deleteBanner } from './actions';
+import { OrderArrows } from '@/components/OrderArrows';
+import { deleteBanner, moveBanner } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +24,10 @@ export default async function AdminBanners() {
         </div>
       ) : (
         <div className="card divide-y divide-line">
-          {items.map((b) => (
+          {items.map((b, idx) => (
             <div key={b.id} className="flex items-center justify-between gap-4 p-4">
-              <div className="flex min-w-0 items-center gap-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <OrderArrows action={moveBanner} id={b.id} isFirst={idx === 0} isLast={idx === items.length - 1} />
                 {b.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={b.image} alt="" className="h-12 w-20 shrink-0 rounded-md border border-line object-cover" />

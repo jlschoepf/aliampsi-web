@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
-import { deleteAsociacion } from './actions';
+import { OrderArrows } from '@/components/OrderArrows';
+import { deleteAsociacion, moveAsociacion } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,9 +22,10 @@ export default async function AdminAsociaciones() {
         <div className="card p-10 text-center text-ink-muted">Todavía no hay asociaciones cargadas.</div>
       ) : (
         <div className="card divide-y divide-line">
-          {items.map((a) => (
+          {items.map((a, idx) => (
             <div key={a.id} className="flex items-center justify-between gap-4 p-4">
               <div className="flex min-w-0 items-center gap-3">
+                <OrderArrows action={moveAsociacion} id={a.id} isFirst={idx === 0} isLast={idx === items.length - 1} />
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-ink text-xs font-bold text-paper">
                   {a.acronym ? a.acronym.slice(0, 4) : a.name.slice(0, 2).toUpperCase()}
                 </span>

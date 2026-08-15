@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
-import { deleteAutoridad } from './actions';
+import { OrderArrows } from '@/components/OrderArrows';
+import { deleteAutoridad, moveAutoridad } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,11 +22,14 @@ export default async function AdminAutoridades() {
         <div className="card p-10 text-center text-ink-muted">Todavía no hay autoridades cargadas.</div>
       ) : (
         <div className="card divide-y divide-line">
-          {items.map((a) => (
+          {items.map((a, idx) => (
             <div key={a.id} className="flex items-center justify-between gap-4 p-4">
-              <div className="min-w-0">
-                <p className="truncate font-medium text-ink">{a.name}</p>
-                <p className="mt-0.5 text-xs text-ink-muted">{[a.role, a.country].filter(Boolean).join(' · ')}</p>
+              <div className="flex min-w-0 items-center gap-3">
+                <OrderArrows action={moveAutoridad} id={a.id} isFirst={idx === 0} isLast={idx === items.length - 1} />
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-ink">{a.name}</p>
+                  <p className="mt-0.5 text-xs text-ink-muted">{[a.role, a.country].filter(Boolean).join(' · ')}</p>
+                </div>
               </div>
               <div className="flex shrink-0 items-center gap-4">
                 <Badge published={a.published} />
