@@ -4,13 +4,14 @@ import { prisma } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const [noticias, publicaciones, congresos, asociaciones, autoridades, banners] = await Promise.all([
+  const [noticias, publicaciones, congresos, asociaciones, autoridades, banners, indicadores] = await Promise.all([
     prisma.noticia.count(),
     prisma.publicacion.count(),
     prisma.congreso.count(),
     prisma.asociacion.count(),
     prisma.autoridad.count(),
     prisma.banner.count(),
+    prisma.indicador.count(),
   ]);
 
   const cards = [
@@ -20,6 +21,7 @@ export default async function AdminDashboard() {
     { label: 'Asociaciones', count: asociaciones, href: '/admin/asociaciones' },
     { label: 'Comisión Directiva', count: autoridades, href: '/admin/autoridades' },
     { label: 'Banners', count: banners, href: '/admin/banners' },
+    { label: 'Indicadores', count: indicadores, href: '/admin/indicadores' },
   ];
 
   return (
@@ -56,6 +58,7 @@ export default async function AdminDashboard() {
           <Link href="/admin/asociaciones/new" className="btn-ghost">+ Nueva asociación</Link>
           <Link href="/admin/autoridades/new" className="btn-ghost">+ Nueva autoridad</Link>
           <Link href="/admin/banners/new" className="btn-ghost">+ Nuevo banner</Link>
+          <Link href="/admin/indicadores/new" className="btn-ghost">+ Nuevo indicador</Link>
         </div>
       </div>
     </>

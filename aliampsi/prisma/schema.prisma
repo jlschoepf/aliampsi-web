@@ -98,3 +98,13 @@ model Banner {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Indicador {
+  id        String   @id @default(cuid())
+  value     String
+  label     String
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

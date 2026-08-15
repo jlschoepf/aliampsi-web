@@ -7,6 +7,7 @@ import {
   AsociacionCard,
 } from '@/components/content';
 import { HeroCarousel } from '@/components/HeroCarousel';
+import { StatsCounter } from '@/components/StatsCounter';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,12 +31,20 @@ export default async function HomePage() {
     orderBy: { order: 'asc' },
   });
 
+  const indicadores = await prisma.indicador.findMany({
+    where: { published: true },
+    orderBy: { order: 'asc' },
+  });
+
   const [asocCount, congCount] = counts;
-  const stats = [
-    { value: asocCount, label: 'Asociaciones integrantes' },
-    { value: congCount, label: 'Congresos realizados' },
-    { value: 'Iberoamérica', label: 'Alcance regional' },
-  ];
+  const stats =
+    indicadores.length > 0
+      ? indicadores.map((it) => ({ id: it.id, value: it.value, label: it.label }))
+      : [
+          { id: 'asoc', value: String(asocCount), label: 'Asociaciones integrantes' },
+          { id: 'cong', value: String(congCount), label: 'Congresos realizados' },
+          { id: 'alc', value: 'Iberoamérica', label: 'Alcance regional' },
+        ];
 
   return (
     <>
@@ -43,43 +52,36 @@ export default async function HomePage() {
       {banners.length > 0 ? (
         <HeroCarousel banners={banners} />
       ) : (
-      <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-coral/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-teal-600/10 blur-3xl" />
-        <div className="wrap relative grid gap-12 py-20 lg:grid-cols-[1.1fr_0.9fr] lg:py-28">
-          <div>
-            <p className="eyebrow">
-              <span className="text-coral">·</span> Alianza Iberoamericana
-            </p>
-            <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">
-              Una alianza para la{' '}
-              <span className="text-coral">salud mental</span> de niños y adolescentes.
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
-              Somos el punto de convergencia de las principales asociaciones de psiquiatría
-              infantojuvenil de Iberoamérica, dedicadas a potenciar el conocimiento y mejorar la
-              atención de nuestros pacientes.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/quienes-somos" className="btn-primary">
-                Conocé la Alianza
-              </Link>
-              <Link href="/contacto" className="btn-ghost">
-                Asociar mi institución
-              </Link>
+        <section className="relative overflow-hidden">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-coral/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -left-24 h-96 w-96 rounded-full bg-teal-600/10 blur-3xl" />
+          <div className="wrap relative py-20 lg:py-28">
+            <div className="max-w-3xl">
+              <p className="eyebrow"><span className="text-coral">·</span> Alianza Iberoamericana</p>
+              <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">
+                Una alianza para la <span className="text-coral">salud mental</span> de niños y adolescentes.
+              </h1>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
+                Somos el punto de convergencia de las principales asociaciones de psiquiatría
+                infantojuvenil de Iberoamérica, dedicadas a potenciar el conocimiento y mejorar la
+                atención de nuestros pacientes.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/quienes-somos" className="btn-primary">Conocé la Alianza</Link>
+                <Link href="/contacto" className="btn-ghost">Asociar mi institución</Link>
+              </div>
             </div>
           </div>
+        </section>
+      )}
 
-          <div className="flex flex-col justify-center gap-4">
-            {stats.map((s) => (
-              <div key={s.label} className="card flex items-baseline justify-between px-6 py-5">
-                <span className="font-display text-4xl font-extrabold text-ink">{s.value}</span>
-                <span className="text-right text-sm font-medium text-ink-muted">{s.label}</span>
-              </div>
-            ))}
+      {/* INDICADORES */}
+      {stats.length > 0 && (
+        <section className="border-y border-line bg-ink py-12 lg:py-14">
+          <div className="wrap">
+            <StatsCounter stats={stats} />
           </div>
-        </div>
-      </section>
+        </section>
       )}
 
       {/* QUÉ ES */}
