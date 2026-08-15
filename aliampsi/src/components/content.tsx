@@ -96,26 +96,28 @@ export function PublicacionCard({ p }: { p: Publicacion }) {
 export function AsociacionCard({ a }: { a: Asociacion }) {
   const body = (
     <>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex h-28 items-center justify-center rounded-xl border border-line bg-white p-5">
         {a.logoImage ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={a.logoImage}
             alt={`Logo de ${a.name}`}
-            className="h-12 w-12 shrink-0 rounded-xl border border-line bg-white object-contain p-1"
+            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-ink font-display text-sm font-bold text-paper">
-            {a.acronym ? a.acronym.slice(0, 4) : a.name.slice(0, 2).toUpperCase()}
+          <div className="font-display text-2xl font-bold text-ink/70">
+            {a.acronym ? a.acronym.slice(0, 6) : a.name.slice(0, 3).toUpperCase()}
           </div>
         )}
+      </div>
+      <div className="mt-4 flex items-start justify-between gap-3">
+        <h3 className="text-base font-semibold leading-snug">{a.name}</h3>
         {a.country && (
-          <span className="rounded-full bg-sand px-2.5 py-1 text-xs font-medium text-ink-muted">
+          <span className="shrink-0 rounded-full bg-sand px-2.5 py-1 text-xs font-medium text-ink-muted">
             {a.country}
           </span>
         )}
       </div>
-      <h3 className="mt-4 text-base font-semibold leading-snug">{a.name}</h3>
       {a.description && <p className="mt-2 text-sm text-ink-muted">{a.description}</p>}
       {a.website && (
         <span className="mt-4 inline-block text-sm font-semibold text-teal-600 group-hover:text-coral">

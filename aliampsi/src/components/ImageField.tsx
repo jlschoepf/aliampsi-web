@@ -39,6 +39,10 @@ async function getCroppedBlob(imageSrc: string, area: Area): Promise<Blob> {
   if (!ctx) throw new Error('No se pudo procesar la imagen.');
   canvas.width = Math.round(area.width);
   canvas.height = Math.round(area.height);
+  // Fondo blanco: evita el negro en imágenes con transparencia (logos) y
+  // asegura que el recorte siempre quede sobre blanco.
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(
     image,
     area.x, area.y, area.width, area.height,
@@ -192,7 +196,16 @@ export function ImageField({
               Arrastrá para mover, usá el zoom y elegí la proporción.
             </p>
 
-            <div className="relative mt-4 h-72 w-full overflow-hidden rounded-lg bg-ink sm:h-80">
+            <div
+              className="relative mt-4 h-72 w-full overflow-hidden rounded-lg sm:h-80"
+              style={{
+                backgroundColor: '#faf7f2',
+                backgroundImage:
+                  'linear-gradient(45deg,#e2dacc 25%,transparent 25%),linear-gradient(-45deg,#e2dacc 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#e2dacc 75%),linear-gradient(-45deg,transparent 75%,#e2dacc 75%)',
+                backgroundSize: '22px 22px',
+                backgroundPosition: '0 0,0 11px,11px -11px,-11px 0',
+              }}
+            >
               <Cropper
                 image={imageSrc}
                 crop={crop}
