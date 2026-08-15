@@ -36,7 +36,7 @@ function parseNumeric(value: string): { prefix: string; target: number } | null 
 
 const fmt = (n: number) => n.toLocaleString('es-AR');
 
-function StatCard({ stat, run }: { stat: Stat; run: boolean }) {
+function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
   const numeric = parseNumeric(stat.value);
   const [n, setN] = useState(0);
   const Icon = ICONS[stat.icon] || ICONS[guessIcon(stat.label)] || Sparkles;
@@ -58,11 +58,18 @@ function StatCard({ stat, run }: { stat: Stat; run: boolean }) {
   }, [stat.value, run]);
 
   return (
-    <div className="group w-full rounded-2xl border border-line/70 bg-white/70 p-8 text-center shadow-[0_2px_24px_-8px_rgba(15,59,60,0.15)] backdrop-blur transition duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_-12px_rgba(236,106,82,0.35)] sm:w-[250px]">
-      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-coral to-coral-dark text-paper shadow-lg shadow-coral/30 transition duration-300 group-hover:scale-105">
-        <Icon className="h-6 w-6" strokeWidth={2.2} />
+    <div className="text-center">
+      <div className="relative mx-auto mb-3 flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-coral to-coral-dark shadow-lg shadow-coral/30">
+        {/* Emblema de AL·IAM·PSI como marca de agua */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/emblem.png"
+          alt=""
+          className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-contain opacity-30 brightness-0 invert"
+        />
+        <Icon className="relative h-5 w-5 text-paper" strokeWidth={2.2} />
       </div>
-      <div className="font-display text-4xl font-extrabold tabular-nums leading-none text-ink sm:text-5xl">
+      <div className="font-display text-3xl font-extrabold tabular-nums leading-none text-paper sm:text-4xl">
         {numeric ? (
           <span className="relative inline-block">
             <span className="invisible" aria-hidden="true">{numeric.prefix}{fmt(numeric.target)}</span>
@@ -72,7 +79,7 @@ function StatCard({ stat, run }: { stat: Stat; run: boolean }) {
           stat.value
         )}
       </div>
-      <div className="mt-3 text-sm font-medium text-ink-muted">{stat.label}</div>
+      <div className="mt-2 text-sm font-medium text-paper/70">{stat.label}</div>
     </div>
   );
 }
@@ -100,9 +107,9 @@ export function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div ref={ref} className="flex flex-wrap justify-center gap-6">
+    <div ref={ref} className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-14 gap-y-8">
       {stats.map((s) => (
-        <StatCard key={s.id} stat={s} run={run} />
+        <StatItem key={s.id} stat={s} run={run} />
       ))}
     </div>
   );

@@ -77,8 +77,10 @@ export default async function HomePage() {
 
       {/* INDICADORES */}
       {stats.length > 0 && (
-        <section className="wrap py-16 lg:py-20">
-          <StatsCounter stats={stats} />
+        <section className="border-y border-paper/10 bg-ink py-11 lg:py-12">
+          <div className="wrap">
+            <StatsCounter stats={stats} />
+          </div>
         </section>
       )}
 
