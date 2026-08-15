@@ -11,6 +11,8 @@ export const DEFAULT_SETTINGS = {
   contactTitle: 'Sumate a la Alianza',
   contactText:
     'Si representás una asociación de psiquiatría infantojuvenil y querés formar parte de AL·IAM·PSI, escribinos. También podés contactarnos por cualquier consulta.',
+  footerText:
+    'Alianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines. Potenciando el conocimiento para el cuidado de la salud mental de niños y adolescentes.',
 };
 
 export type SiteSettings = typeof DEFAULT_SETTINGS;
@@ -29,6 +31,7 @@ export async function getSettings(): Promise<SiteSettings> {
       linkedin: s.linkedin,
       contactTitle: s.contactTitle || DEFAULT_SETTINGS.contactTitle,
       contactText: s.contactText || DEFAULT_SETTINGS.contactText,
+      footerText: s.footerText || DEFAULT_SETTINGS.footerText,
     };
   } catch {
     return DEFAULT_SETTINGS;

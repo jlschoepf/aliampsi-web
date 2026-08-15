@@ -123,6 +123,7 @@ model Settings {
   linkedin     String   @default("")
   contactTitle String   @default("Sumate a la Alianza")
   contactText  String   @default("")
+  footerText   String   @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

@@ -16,6 +16,7 @@ export async function updateSettings(formData: FormData) {
     linkedin: String(formData.get('linkedin') || '').trim(),
     contactTitle: String(formData.get('contactTitle') || '').trim(),
     contactText: String(formData.get('contactText') || '').trim(),
+    footerText: String(formData.get('footerText') || '').trim(),
   };
   await prisma.settings.upsert({
     where: { id: 'singleton' },

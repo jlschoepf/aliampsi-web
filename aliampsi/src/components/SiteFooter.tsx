@@ -16,10 +16,7 @@ export async function SiteFooter() {
       <div className="wrap grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <Wordmark light />
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper/70">
-            Alianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines. Potenciando
-            el conocimiento para el cuidado de la salud mental de niños y adolescentes.
-          </p>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper/70">{s.footerText}</p>
           <a href={`mailto:${s.contactEmail}`} className="mt-4 inline-block font-display text-lg text-paper hover:text-coral">
             {s.contactEmail}
           </a>

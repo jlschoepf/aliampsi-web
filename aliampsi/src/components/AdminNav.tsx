@@ -63,7 +63,16 @@ export function AdminNav({ email }: { email: string }) {
             </button>
           </form>
         </div>
-        <p className="mt-3 text-[10px] text-paper/30">{APP_VERSION}</p>
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-[10px] text-paper/30">{APP_VERSION}</span>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="text-[11px] font-medium text-paper/60 transition hover:text-paper"
+          >
+            ⟳ Actualizar
+          </button>
+        </div>
       </div>
     </div>
   );

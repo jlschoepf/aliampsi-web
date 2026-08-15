@@ -21,6 +21,8 @@ const prisma = new PrismaClient();
         contactTitle: 'Sumate a la Alianza',
         contactText:
           'Si representás una asociación de psiquiatría infantojuvenil y querés formar parte de AL·IAM·PSI, escribinos. También podés contactarnos por cualquier consulta.',
+        footerText:
+          'Alianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines. Potenciando el conocimiento para el cuidado de la salud mental de niños y adolescentes.',
       },
     });
     console.log('[seed-settings] Configuración inicial creada.');

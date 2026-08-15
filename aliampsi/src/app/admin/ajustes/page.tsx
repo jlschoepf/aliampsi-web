@@ -45,6 +45,12 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
           <Field label="LinkedIn" name="linkedin" type="url" defaultValue={s.linkedin} placeholder="https://linkedin.com/…" />
         </div>
 
+        <div className="border-t border-line pt-6">
+          <h2 className="font-display text-lg font-bold text-ink">Pie del sitio</h2>
+          <p className="text-sm text-ink-muted">El texto que aparece bajo el logo, en el pie de todas las páginas.</p>
+        </div>
+        <TextArea label="Texto del pie" name="footerText" rows={3} defaultValue={s.footerText} />
+
         <div className="pt-2">
           <SubmitButton>Guardar ajustes</SubmitButton>
         </div>
