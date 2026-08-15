@@ -59,17 +59,17 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
 
   return (
     <div className="text-center">
-      <div className="relative mx-auto mb-3 flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-coral to-coral-dark shadow-lg shadow-coral/30">
-        {/* Emblema de AL·IAM·PSI como marca de agua */}
+      <div className="relative mx-auto mb-3.5 flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-coral to-coral-dark shadow-md shadow-coral/25 ring-1 ring-white/10">
+        {/* Emblema de AL·IAM·PSI como marca de agua (sutil) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/emblem.png"
           alt=""
-          className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-contain opacity-30 brightness-0 invert"
+          className="pointer-events-none absolute inset-0 h-full w-full scale-95 object-contain opacity-[0.12] brightness-0 invert"
         />
-        <Icon className="relative h-5 w-5 text-paper" strokeWidth={2.2} />
+        <Icon className="relative h-[18px] w-[18px] text-paper" strokeWidth={2} />
       </div>
-      <div className="font-display text-3xl font-extrabold tabular-nums leading-none text-paper sm:text-4xl">
+      <div className="font-display text-[2rem] font-extrabold tabular-nums leading-none tracking-tight text-paper sm:text-[2.5rem]">
         {numeric ? (
           <span className="relative inline-block">
             <span className="invisible" aria-hidden="true">{numeric.prefix}{fmt(numeric.target)}</span>
@@ -79,7 +79,7 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
           stat.value
         )}
       </div>
-      <div className="mt-2 text-sm font-medium text-paper/70">{stat.label}</div>
+      <div className="mt-2 text-[13px] font-medium tracking-wide text-paper/60">{stat.label}</div>
     </div>
   );
 }
@@ -107,7 +107,7 @@ export function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div ref={ref} className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-14 gap-y-8">
+    <div ref={ref} className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-16 gap-y-10">
       {stats.map((s) => (
         <StatItem key={s.id} stat={s} run={run} />
       ))}
