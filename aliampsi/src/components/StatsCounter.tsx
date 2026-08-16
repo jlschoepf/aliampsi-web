@@ -59,7 +59,7 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
 
   return (
     <div className="group text-center">
-      <div className="relative mx-auto mb-3.5 flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-coral to-coral-dark shadow-md shadow-coral/25 ring-1 ring-white/10 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-coral/40">
+      <div className="relative mx-auto mb-2.5 flex h-9 w-9 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-coral to-coral-dark shadow-md shadow-coral/25 ring-1 ring-white/10 transition-all duration-300 ease-out group-hover:-translate-y-1 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-coral/40 sm:mb-3.5 sm:h-11 sm:w-11 sm:rounded-xl">
         {/* Emblema de AL·IAM·PSI como marca de agua (sutil) */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -67,9 +67,9 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
           alt=""
           className="pointer-events-none absolute inset-0 h-full w-full scale-95 object-contain opacity-[0.12] brightness-0 invert transition-all duration-300 group-hover:scale-100 group-hover:opacity-[0.22]"
         />
-        <Icon className="relative h-[18px] w-[18px] text-paper transition-transform duration-300 group-hover:scale-110" strokeWidth={2} />
+        <Icon className="relative h-[15px] w-[15px] text-paper transition-transform duration-300 group-hover:scale-110 sm:h-[18px] sm:w-[18px]" strokeWidth={2} />
       </div>
-      <div className="font-display text-[2rem] font-extrabold tabular-nums leading-none tracking-tight text-paper transition-colors duration-300 group-hover:text-coral sm:text-[2.5rem]">
+      <div className="font-display text-2xl font-extrabold tabular-nums leading-none tracking-tight text-paper transition-colors duration-300 group-hover:text-coral sm:text-[2.5rem]">
         {numeric ? (
           <span className="relative inline-block">
             <span className="invisible" aria-hidden="true">{numeric.prefix}{fmt(numeric.target)}</span>
@@ -79,7 +79,7 @@ function StatItem({ stat, run }: { stat: Stat; run: boolean }) {
           stat.value
         )}
       </div>
-      <div className="mt-2 text-[13px] font-medium tracking-wide text-paper/60 transition-colors duration-300 group-hover:text-paper/80">{stat.label}</div>
+      <div className="mt-1.5 text-[11px] font-medium leading-tight tracking-wide text-paper/60 transition-colors duration-300 group-hover:text-paper/80 sm:mt-2 sm:text-[13px]">{stat.label}</div>
     </div>
   );
 }
@@ -107,7 +107,7 @@ export function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div ref={ref} className="mx-auto flex max-w-4xl flex-wrap items-start justify-center gap-x-16 gap-y-10">
+    <div ref={ref} className="mx-auto flex max-w-4xl items-start justify-between gap-x-3 gap-y-10 sm:flex-wrap sm:justify-center sm:gap-x-16">
       {stats.map((s) => (
         <StatItem key={s.id} stat={s} run={run} />
       ))}
