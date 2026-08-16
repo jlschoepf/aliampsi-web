@@ -7,12 +7,15 @@ import { updatePublicacion } from '../actions';
 export const dynamic = 'force-dynamic';
 
 export default async function EditarPublicacion({ params }: { params: { id: string } }) {
-  const publicacion = await prisma.publicacion.findUnique({ where: { id: params.id } });
+  const [publicacion, portadas] = await Promise.all([
+    prisma.publicacion.findUnique({ where: { id: params.id } }),
+    prisma.portada.findMany({ orderBy: { order: 'asc' } }),
+  ]);
   if (!publicacion) notFound();
   return (
     <>
       <AdminHeader title="Editar publicación" subtitle={publicacion.title} />
-      <PublicacionForm action={updatePublicacion} publicacion={publicacion} />
+      <PublicacionForm action={updatePublicacion} publicacion={publicacion} covers={portadas.map((p) => p.url)} />
     </>
   );
 }
