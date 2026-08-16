@@ -2,6 +2,7 @@ import Link from 'next/link';
 import type { Noticia } from '@prisma/client';
 import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { ImageField } from '@/components/ImageField';
+import { FileField } from '@/components/FileField';
 
 export function NoticiaForm({
   action,
@@ -35,7 +36,17 @@ export function NoticiaForm({
         label="Imagen de portada"
         name="coverImage"
         defaultValue={noticia?.coverImage}
-        hint="Opcional. Subí un archivo o pegá una URL."
+        hint="Opcional. Si no ponés una, se usa la imagen genérica de AL·IAM·PSI."
+      />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Autor (opcional)" name="author" defaultValue={noticia?.author} placeholder="Ej: Comité de Comunicación" />
+        <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={noticia?.sourceUrl} placeholder="https://… (leer más / fuente)" />
+      </div>
+      <FileField
+        label="Documento adjunto (opcional)"
+        name="document"
+        defaultValue={noticia?.document}
+        hint="PDF u Office. Aparece como botón de descarga en la noticia."
       />
       <Checkbox label="Publicar (visible en el sitio)" name="published" defaultChecked={noticia?.published ?? true} />
 

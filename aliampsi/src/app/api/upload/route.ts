@@ -21,8 +21,15 @@ export async function POST(request: Request): Promise<NextResponse> {
             'image/webp',
             'image/gif',
             'image/svg+xml',
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
           ],
-          maximumSizeInBytes: 5 * 1024 * 1024, // 5 MB
+          maximumSizeInBytes: 15 * 1024 * 1024, // 15 MB
           addRandomSuffix: true,
         };
       },

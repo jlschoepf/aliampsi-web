@@ -35,14 +35,8 @@ export function NoticiaCard({ n }: { n: Noticia }) {
       href={`/noticias/${n.slug}`}
       className="group card flex flex-col overflow-hidden transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/5"
     >
-      {n.coverImage ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={n.coverImage} alt="" className="h-44 w-full object-cover" />
-      ) : (
-        <div className="flex h-44 w-full items-center justify-center bg-sand">
-          <span className="font-display text-4xl text-teal-600/40">·</span>
-        </div>
-      )}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={n.coverImage || '/noticia-default.png'} alt="" className="h-44 w-full object-cover" />
       <div className="flex flex-1 flex-col p-5">
         <time className="text-xs font-medium uppercase tracking-wider text-teal-600">
           {formatDate(n.publishedAt ?? n.createdAt)}
