@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     title: c.title,
     description: desc,
     alternates: { canonical: `/congresos/${c.id}` },
+    robots: c.published ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'article',
       title: c.title,
@@ -63,6 +64,17 @@ export default async function CongresoDetail({
           url: c.linkUrl || absUrl(`/congresos/${c.id}`),
         }}
       />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Inicio', item: absUrl('/') },
+            { '@type': 'ListItem', position: 2, name: 'Congresos', item: absUrl('/congresos') },
+            { '@type': 'ListItem', position: 3, name: c.title, item: absUrl(`/congresos/${c.id}`) },
+          ],
+        }}
+      />
       <Link href="/congresos" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a congresos
       </Link>
@@ -77,7 +89,7 @@ export default async function CongresoDetail({
 
       {c.coverImage && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={c.coverImage} alt="" className="mt-8 w-full rounded-xl2 border border-line object-cover" />
+        <img src={c.coverImage} alt={c.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
       )}
 
       {c.body && <NoticiaBody content={c.body} />}

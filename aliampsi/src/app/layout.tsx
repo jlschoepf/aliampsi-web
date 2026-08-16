@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Bricolage_Grotesque, Inter, Newsreader } from 'next/font/google';
 import './globals.css';
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, OG_IMAGE } from '@/lib/site';
@@ -21,6 +21,10 @@ const serif = Newsreader({
   style: ['italic', 'normal'],
   display: 'swap',
 });
+
+export const viewport: Viewport = {
+  themeColor: '#123B3C',
+};
 
 const DEFAULT_TITLE = 'AL·IAM·PSI — Alianza Iberoamericana de Psiquiatría Infantojuvenil';
 
@@ -52,6 +56,8 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [ogImage],
     },
     robots: { index: true, follow: true },
+    manifest: '/manifest.webmanifest',
+    icons: { icon: '/icon.png', apple: '/icon-192.png' },
     verification: s.gscVerification ? { google: s.gscVerification } : undefined,
   };
 }

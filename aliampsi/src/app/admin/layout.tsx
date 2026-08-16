@@ -2,7 +2,7 @@ import { requireAdmin } from '@/lib/auth';
 import { AdminNav } from '@/components/AdminNav';
 import { UpdateBanner } from '@/components/UpdateBanner';
 
-export const metadata = { title: 'Administración' };
+export const metadata = { title: 'Administración', robots: { index: false, follow: false } };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireAdmin();

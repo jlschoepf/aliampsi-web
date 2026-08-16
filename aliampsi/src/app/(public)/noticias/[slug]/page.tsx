@@ -18,6 +18,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     title: n.title,
     description: desc,
     alternates: { canonical: `/noticias/${n.slug}` },
+    robots: n.published ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'article',
       title: n.title,
@@ -69,6 +70,17 @@ export default async function NoticiaDetail({
           mainEntityOfPage: absUrl(`/noticias/${n.slug}`),
         }}
       />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Inicio', item: absUrl('/') },
+            { '@type': 'ListItem', position: 2, name: 'Noticias', item: absUrl('/noticias') },
+            { '@type': 'ListItem', position: 3, name: n.title, item: absUrl(`/noticias/${n.slug}`) },
+          ],
+        }}
+      />
       <Link href="/noticias" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a noticias
       </Link>
@@ -80,7 +92,7 @@ export default async function NoticiaDetail({
       {n.excerpt && <p className="mt-4 text-lg text-ink-muted">{n.excerpt}</p>}
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={cover} alt="" className="mt-8 w-full rounded-xl2 border border-line object-cover" />
+      <img src={cover} alt={n.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
 
       <NoticiaBody content={n.content} />
 

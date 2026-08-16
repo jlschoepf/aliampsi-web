@@ -17,6 +17,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     title: p.title,
     description: desc,
     alternates: { canonical: `/publicaciones/${p.id}` },
+    robots: p.published ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'article',
       title: p.title,
@@ -64,6 +65,17 @@ export default async function PublicacionDetail({
           mainEntityOfPage: absUrl(`/publicaciones/${p.id}`),
         }}
       />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Inicio', item: absUrl('/') },
+            { '@type': 'ListItem', position: 2, name: 'Publicaciones', item: absUrl('/publicaciones') },
+            { '@type': 'ListItem', position: 3, name: p.title, item: absUrl(`/publicaciones/${p.id}`) },
+          ],
+        }}
+      />
       <Link href="/publicaciones" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a publicaciones
       </Link>
@@ -76,7 +88,7 @@ export default async function PublicacionDetail({
 
       {p.coverImage && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.coverImage} alt="" className="mt-8 w-full rounded-xl2 border border-line object-cover" />
+        <img src={p.coverImage} alt={p.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
       )}
 
       {p.body && <NoticiaBody content={p.body} />}
