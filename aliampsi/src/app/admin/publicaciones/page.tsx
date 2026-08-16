@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
+import { StatusBadges } from '@/components/admin-status';
 import { deletePublicacion } from './actions';
 
 export const dynamic = 'force-dynamic';
@@ -30,6 +31,7 @@ export default async function AdminPublicaciones() {
                 <p className="mt-0.5 text-xs text-ink-muted">{KIND[p.kind] ?? p.kind}</p>
               </div>
               <div className="flex shrink-0 items-center gap-4">
+                <StatusBadges featured={p.featured} published={p.published} publishedAt={p.publishedAt} />
                 <Badge published={p.published} />
                 <a href={`/publicaciones/${p.id}?preview=1`} target="_blank" rel="noreferrer" className="text-sm font-medium text-ink-muted hover:text-ink">
                   Ver

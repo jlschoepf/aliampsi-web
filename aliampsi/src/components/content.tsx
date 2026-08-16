@@ -38,6 +38,7 @@ export function NoticiaCard({ n }: { n: Noticia }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={n.coverImage || '/noticia-default.png'} alt={n.title} className="h-44 w-full object-cover" />
       <div className="flex flex-1 flex-col p-5">
+        {n.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}
         <time className="text-xs font-medium uppercase tracking-wider text-teal-600">
           {formatDate(n.publishedAt ?? n.createdAt)}
         </time>
@@ -58,6 +59,7 @@ export function CongresoCard({ c }: { c: Congreso }) {
         <img src={c.coverImage} alt={c.title} className="h-40 w-full object-cover" />
       )}
       <div className="flex flex-1 flex-col p-6">
+        {c.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-coral">
           <span>Congreso</span>
           {c.location && <span className="text-ink-muted">· {c.location}</span>}
@@ -91,6 +93,7 @@ export function PublicacionCard({ p }: { p: Publicacion }) {
         <img src={p.coverImage} alt={p.title} className="h-40 w-full object-cover" />
       )}
       <div className="flex flex-1 flex-col p-6">
+        {p.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}
         <span className="w-fit rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
           {kindLabel}
         </span>

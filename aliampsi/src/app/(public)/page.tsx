@@ -11,17 +11,18 @@ import { StatsCounter } from '@/components/StatsCounter';
 import { CartaPresidente } from '@/components/CartaPresidente';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, SITE_NAME, SITE_LONG_NAME, SITE_DESCRIPTION, absUrl } from '@/lib/site';
+import { visibleNowWhere } from '@/lib/content';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const [noticias, congresos, asociaciones, counts] = await Promise.all([
     prisma.noticia.findMany({
-      where: { published: true },
+      where: visibleNowWhere(),
       orderBy: { publishedAt: 'desc' },
       take: 3,
     }),
-    prisma.congreso.findMany({ where: { published: true }, orderBy: { createdAt: 'desc' }, take: 3 }),
+    prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 3 }),
     prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 6 }),
     Promise.all([
       prisma.asociacion.count({ where: { published: true } }),

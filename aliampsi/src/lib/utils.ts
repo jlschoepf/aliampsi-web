@@ -35,3 +35,7 @@ export function parseDate(v: FormDataEntryValue | null): Date | null {
   const d = new Date(v);
   return Number.isNaN(d.getTime()) ? null : d;
 }
+
+export function toDateInput(d?: Date | null): string {
+  return d ? new Date(d).toISOString().slice(0, 10) : '';
+}

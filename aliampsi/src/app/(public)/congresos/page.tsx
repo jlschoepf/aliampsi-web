@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/db';
 import { CongresoCard } from '@/components/content';
+import { visibleNowWhere, sortForList, filterByTag } from '@/lib/content';
+import { TagFilterNote } from '@/components/TagFilterNote';
 
 export const metadata = {
   title: 'Congresos',
@@ -9,11 +11,10 @@ export const metadata = {
 };
 export const dynamic = 'force-dynamic';
 
-export default async function CongresosPage() {
-  const congresos = await prisma.congreso.findMany({
-    where: { published: true },
-    orderBy: { createdAt: 'desc' },
-  });
+export default async function CongresosPage({ searchParams }: { searchParams: { tag?: string } }) {
+  const all = await prisma.congreso.findMany({ where: visibleNowWhere() });
+  const tag = searchParams?.tag;
+  const congresos = filterByTag(sortForList(all), tag);
 
   return (
     <section className="wrap py-16 lg:py-20">
@@ -22,6 +23,7 @@ export default async function CongresosPage() {
       <p className="mt-4 max-w-2xl text-lg text-ink-muted">
         Las actividades científicas organizadas por AL·IAM·PSI y las asociaciones integrantes.
       </p>
+      <TagFilterNote tag={tag} basePath="/congresos" />
 
       {congresos.length === 0 ? (
         <p className="mt-12 text-ink-muted">Todavía no hay actividades cargadas.</p>

@@ -12,7 +12,10 @@ function revalidate() {
   revalidatePath('/admin/congresos');
 }
 
-function data(formData: FormData) {
+function data(formData: FormData, current?: { publishedAt: Date | null } | null) {
+  const published = formData.get('published') === 'on';
+  const dateStr = String(formData.get('publishedAt') || '').trim();
+  const publishedAt = dateStr ? new Date(dateStr) : (published ? (current?.publishedAt ?? new Date()) : null);
   return {
     title: String(formData.get('title') || '').trim(),
     description: String(formData.get('description') || ''),
@@ -27,7 +30,10 @@ function data(formData: FormData) {
     endDate: parseDate(formData.get('endDate')),
     linkUrl: String(formData.get('linkUrl') || ''),
     coverImage: String(formData.get('coverImage') || '') || null,
-    published: formData.get('published') === 'on',
+    featured: formData.get('featured') === 'on',
+    tags: String(formData.get('tags') || '').trim(),
+    published,
+    publishedAt,
   };
 }
 
@@ -40,7 +46,9 @@ export async function createCongreso(formData: FormData) {
 
 export async function updateCongreso(formData: FormData) {
   await requireAdmin();
-  await prisma.congreso.update({ where: { id: String(formData.get('id')) }, data: data(formData) });
+  const id = String(formData.get('id'));
+  const current = await prisma.congreso.findUnique({ where: { id } });
+  await prisma.congreso.update({ where: { id }, data: data(formData, current) });
   revalidate();
   redirect('/admin/congresos');
 }

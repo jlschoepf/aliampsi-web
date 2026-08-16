@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { formatDateRange } from '@/lib/utils';
 import { getSession } from '@/lib/auth';
+import { isVisibleNow, parseTags } from '@/lib/content';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
@@ -41,14 +42,15 @@ export default async function CongresoDetail({
   const c = await prisma.congreso.findUnique({ where: { id: params.id } });
   if (!c) notFound();
   const preview = searchParams?.preview === '1' && !!(await getSession());
-  if (!c.published && !preview) notFound();
+  const visible = isVisibleNow(c);
+  if (!visible && !preview) notFound();
   const dateLabel = formatDateRange(c.startDate, c.endDate);
 
   return (
     <article className="wrap max-w-3xl py-16 lg:py-20">
-      {!c.published && (
+      {!visible && (
         <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
-          Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
+          Vista previa — este contenido no está visible públicamente (borrador o programado). Solo lo ves como administrador.
         </div>
       )}
       <JsonLd
@@ -120,6 +122,15 @@ export default async function CongresoDetail({
             Fuente / leer más →
           </a>
         </p>
+      )}
+      {parseTags(c.tags).length > 0 && (
+        <div className="mt-10 flex flex-wrap gap-2 border-t border-line pt-6">
+          {parseTags(c.tags).map((t) => (
+            <a key={t} href={`/congresos?tag=${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
+              #{t}
+            </a>
+          ))}
+        </div>
       )}
     </article>
   );

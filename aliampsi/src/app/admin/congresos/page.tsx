@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
+import { StatusBadges } from '@/components/admin-status';
 import { formatDateRange } from '@/lib/utils';
 import { deleteCongreso } from './actions';
 
@@ -31,6 +32,7 @@ export default async function AdminCongresos() {
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-4">
+                <StatusBadges featured={c.featured} published={c.published} publishedAt={c.publishedAt} />
                 <Badge published={c.published} />
                 <a href={`/congresos/${c.id}?preview=1`} target="_blank" rel="noreferrer" className="text-sm font-medium text-ink-muted hover:text-ink">Ver</a>
                 <Link href={`/admin/congresos/${c.id}`} className="text-sm font-medium text-teal-600 hover:text-coral">

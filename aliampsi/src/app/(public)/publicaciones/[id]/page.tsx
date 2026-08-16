@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { getSession } from '@/lib/auth';
+import { isVisibleNow, parseTags } from '@/lib/content';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
@@ -40,14 +41,15 @@ export default async function PublicacionDetail({
   const p = await prisma.publicacion.findUnique({ where: { id: params.id } });
   if (!p) notFound();
   const preview = searchParams?.preview === '1' && !!(await getSession());
-  if (!p.published && !preview) notFound();
+  const visible = isVisibleNow(p);
+  if (!visible && !preview) notFound();
   const kindLabel = p.kind === 'revista' ? 'Revista' : p.kind === 'articulo' ? 'Artículo' : 'Documento';
 
   return (
     <article className="wrap max-w-3xl py-16 lg:py-20">
-      {!p.published && (
+      {!visible && (
         <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
-          Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
+          Vista previa — este contenido no está visible públicamente (borrador o programado). Solo lo ves como administrador.
         </div>
       )}
       <JsonLd
@@ -119,6 +121,15 @@ export default async function PublicacionDetail({
             Fuente / leer más →
           </a>
         </p>
+      )}
+      {parseTags(p.tags).length > 0 && (
+        <div className="mt-10 flex flex-wrap gap-2 border-t border-line pt-6">
+          {parseTags(p.tags).map((t) => (
+            <a key={t} href={`/publicaciones?tag=${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
+              #{t}
+            </a>
+          ))}
+        </div>
       )}
     </article>
   );

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { getSession } from '@/lib/auth';
+import { isVisibleNow, parseTags } from '@/lib/content';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
@@ -41,16 +42,17 @@ export default async function NoticiaDetail({
   const n = await prisma.noticia.findUnique({ where: { slug: params.slug } });
   if (!n) notFound();
   const preview = searchParams?.preview === '1' && !!(await getSession());
-  if (!n.published && !preview) notFound();
+  const visible = isVisibleNow(n);
+  if (!visible && !preview) notFound();
 
   const cover = n.coverImage || '/noticia-default.png';
   const docName = n.document ? decodeURIComponent(n.document.split('/').pop() || 'documento') : '';
 
   return (
     <article className="wrap max-w-3xl py-16 lg:py-20">
-      {!n.published && (
+      {!visible && (
         <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
-          Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
+          Vista previa — este contenido no está visible públicamente (borrador o programado). Solo lo ves como administrador.
         </div>
       )}
       <JsonLd
@@ -115,6 +117,15 @@ export default async function NoticiaDetail({
             Fuente / leer más →
           </a>
         </p>
+      )}
+      {parseTags(n.tags).length > 0 && (
+        <div className="mt-10 flex flex-wrap gap-2 border-t border-line pt-6">
+          {parseTags(n.tags).map((t) => (
+            <a key={t} href={`/noticias?tag=${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
+              #{t}
+            </a>
+          ))}
+        </div>
       )}
     </article>
   );

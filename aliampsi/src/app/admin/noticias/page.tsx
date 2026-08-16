@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { AdminHeader, Badge } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
+import { StatusBadges } from '@/components/admin-status';
 import { formatDate } from '@/lib/utils';
 import { deleteNoticia } from './actions';
 
@@ -31,6 +32,7 @@ export default async function AdminNoticias() {
                 <p className="mt-0.5 text-xs text-ink-muted">{formatDate(n.publishedAt ?? n.createdAt)}</p>
               </div>
               <div className="flex shrink-0 items-center gap-4">
+                <StatusBadges featured={n.featured} published={n.published} publishedAt={n.publishedAt} />
                 <Badge published={n.published} />
                 <a href={`/noticias/${n.slug}?preview=1`} target="_blank" rel="noreferrer" className="text-sm font-medium text-ink-muted hover:text-ink">
                   Ver

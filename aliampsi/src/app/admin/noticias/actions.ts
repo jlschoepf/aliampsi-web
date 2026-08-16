@@ -40,8 +40,10 @@ export async function createNoticia(formData: FormData) {
       sourceUrl: String(formData.get('sourceUrl') || ''),
       seoTitle: String(formData.get('seoTitle') || ''),
       seoDescription: String(formData.get('seoDescription') || ''),
+      featured: formData.get('featured') === 'on',
+      tags: String(formData.get('tags') || '').trim(),
       published,
-      publishedAt: published ? new Date() : null,
+      publishedAt: (() => { const d = String(formData.get('publishedAt') || '').trim(); return d ? new Date(d) : (published ? new Date() : null); })(),
     },
   });
   revalidate();
@@ -69,8 +71,10 @@ export async function updateNoticia(formData: FormData) {
       sourceUrl: String(formData.get('sourceUrl') || ''),
       seoTitle: String(formData.get('seoTitle') || ''),
       seoDescription: String(formData.get('seoDescription') || ''),
+      featured: formData.get('featured') === 'on',
+      tags: String(formData.get('tags') || '').trim(),
       published,
-      publishedAt: published ? current?.publishedAt ?? new Date() : null,
+      publishedAt: (() => { const d = String(formData.get('publishedAt') || '').trim(); return d ? new Date(d) : (published ? (current?.publishedAt ?? new Date()) : null); })(),
     },
   });
   revalidate();
