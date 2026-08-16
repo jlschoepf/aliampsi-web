@@ -3,6 +3,7 @@ import type { Noticia } from '@prisma/client';
 import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { ImageField } from '@/components/ImageField';
 import { FileField } from '@/components/FileField';
+import { MarkdownBodyField } from '@/components/MarkdownBodyField';
 
 export function NoticiaForm({
   action,
@@ -24,14 +25,7 @@ export function NoticiaForm({
         placeholder="Breve resumen que aparece en las tarjetas"
         hint="Aparece en el listado y en la portada."
       />
-      <TextArea
-        label="Contenido"
-        name="content"
-        rows={10}
-        defaultValue={noticia?.content}
-        placeholder="Texto completo de la noticia. Separá los párrafos con un salto de línea."
-        hint="Cada salto de línea genera un párrafo."
-      />
+      <MarkdownBodyField name="content" defaultValue={noticia?.content} />
       <ImageField
         label="Imagen de portada"
         name="coverImage"

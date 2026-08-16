@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
+import { NoticiaBody } from '@/components/NoticiaBody';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,11 +33,7 @@ export default async function NoticiaDetail({ params }: { params: { slug: string
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={cover} alt="" className="mt-8 w-full rounded-xl2 border border-line object-cover" />
 
-      <div className="prose-content mt-8 space-y-4 text-ink/90">
-        {n.content.split('\n').filter(Boolean).map((para, i) => (
-          <p key={i} className="leading-relaxed">{para}</p>
-        ))}
-      </div>
+      <NoticiaBody content={n.content} />
 
       {n.document && (
         <a
