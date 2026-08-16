@@ -107,7 +107,7 @@ export function StatsCounter({ stats }: { stats: Stat[] }) {
   }, []);
 
   return (
-    <div ref={ref} className="mx-auto flex max-w-4xl items-start justify-between gap-x-3 gap-y-10 sm:flex-wrap sm:justify-center sm:gap-x-16">
+    <div ref={ref} className="mx-auto flex max-w-4xl items-start justify-center gap-x-8 gap-y-10 sm:flex-wrap sm:gap-x-16">
       {stats.map((s) => (
         <StatItem key={s.id} stat={s} run={run} />
       ))}
