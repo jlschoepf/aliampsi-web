@@ -32,6 +32,9 @@ export default async function AdminNoticias() {
               </div>
               <div className="flex shrink-0 items-center gap-4">
                 <Badge published={n.published} />
+                <a href={`/noticias/${n.slug}?preview=1`} target="_blank" rel="noreferrer" className="text-sm font-medium text-ink-muted hover:text-ink">
+                  Ver
+                </a>
                 <Link href={`/admin/noticias/${n.id}`} className="text-sm font-medium text-teal-600 hover:text-coral">
                   Editar
                 </Link>

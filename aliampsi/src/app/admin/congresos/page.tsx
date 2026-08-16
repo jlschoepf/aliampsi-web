@@ -32,6 +32,7 @@ export default async function AdminCongresos() {
               </div>
               <div className="flex shrink-0 items-center gap-4">
                 <Badge published={c.published} />
+                <a href={`/congresos/${c.id}?preview=1`} target="_blank" rel="noreferrer" className="text-sm font-medium text-ink-muted hover:text-ink">Ver</a>
                 <Link href={`/admin/congresos/${c.id}`} className="text-sm font-medium text-teal-600 hover:text-coral">
                   Editar
                 </Link>

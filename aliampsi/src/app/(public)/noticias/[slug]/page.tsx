@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import { NoticiaBody } from '@/components/NoticiaBody';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,15 +12,28 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return { title: n?.title ?? 'Noticia' };
 }
 
-export default async function NoticiaDetail({ params }: { params: { slug: string } }) {
+export default async function NoticiaDetail({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { preview?: string };
+}) {
   const n = await prisma.noticia.findUnique({ where: { slug: params.slug } });
-  if (!n || !n.published) notFound();
+  if (!n) notFound();
+  const preview = searchParams?.preview === '1' && !!(await getSession());
+  if (!n.published && !preview) notFound();
 
   const cover = n.coverImage || '/noticia-default.png';
   const docName = n.document ? decodeURIComponent(n.document.split('/').pop() || 'documento') : '';
 
   return (
     <article className="wrap max-w-3xl py-16 lg:py-20">
+      {!n.published && (
+        <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
+          Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
+        </div>
+      )}
       <Link href="/noticias" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a noticias
       </Link>

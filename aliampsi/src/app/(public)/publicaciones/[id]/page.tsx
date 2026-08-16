@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,13 +11,26 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   return { title: p?.title ?? 'Publicación' };
 }
 
-export default async function PublicacionDetail({ params }: { params: { id: string } }) {
+export default async function PublicacionDetail({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { preview?: string };
+}) {
   const p = await prisma.publicacion.findUnique({ where: { id: params.id } });
-  if (!p || !p.published) notFound();
+  if (!p) notFound();
+  const preview = searchParams?.preview === '1' && !!(await getSession());
+  if (!p.published && !preview) notFound();
   const kindLabel = p.kind === 'revista' ? 'Revista' : p.kind === 'articulo' ? 'Artículo' : 'Documento';
 
   return (
     <article className="wrap max-w-3xl py-16 lg:py-20">
+      {!p.published && (
+        <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
+          Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
+        </div>
+      )}
       <Link href="/publicaciones" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a publicaciones
       </Link>

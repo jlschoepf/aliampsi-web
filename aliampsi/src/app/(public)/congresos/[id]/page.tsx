@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { formatDateRange } from '@/lib/utils';
+import { getSession } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,13 +12,26 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   return { title: c?.title ?? 'Congreso' };
 }
 
-export default async function CongresoDetail({ params }: { params: { id: string } }) {
+export default async function CongresoDetail({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { preview?: string };
+}) {
   const c = await prisma.congreso.findUnique({ where: { id: params.id } });
-  if (!c || !c.published) notFound();
+  if (!c) notFound();
+  const preview = searchParams?.preview === '1' && !!(await getSession());
+  if (!c.published && !preview) notFound();
   const dateLabel = formatDateRange(c.startDate, c.endDate);
 
   return (
     <article className="wrap max-w-3xl py-16 lg:py-20">
+      {!c.published && (
+        <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
+          Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
+        </div>
+      )}
       <Link href="/congresos" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a congresos
       </Link>
