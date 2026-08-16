@@ -148,3 +148,15 @@ model Hito {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model MenuItem {
+  id        String   @id @default(cuid())
+  label     String
+  href      String   @default("")
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  newTab    Boolean  @default(false)
+  cta       Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

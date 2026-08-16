@@ -6,19 +6,35 @@ import { usePathname } from 'next/navigation';
 import { Wordmark } from './Wordmark';
 import { cn } from '@/lib/utils';
 
-const NAV = [
-  { href: '/quienes-somos', label: 'Quiénes somos' },
-  { href: '/comision-directiva', label: 'Autoridades' },
-  { href: '/asociaciones', label: 'Asociaciones' },
-  { href: '/noticias', label: 'Noticias' },
-  { href: '/congresos', label: 'Congresos' },
-  { href: '/publicaciones', label: 'Publicaciones' },
-  { href: '/contacto', label: 'Contacto' },
-];
+export type NavItem = {
+  id: string;
+  label: string;
+  href: string;
+  newTab: boolean;
+  cta: boolean;
+};
 
-export function SiteHeader() {
+export function SiteHeader({ items }: { items: NavItem[] }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+
+  const links = items.filter((i) => !i.cta);
+  const ctas = items.filter((i) => i.cta);
+
+  const renderLink = (item: NavItem, className: string, onClick?: () => void) => {
+    if (item.newTab || /^https?:\/\//i.test(item.href)) {
+      return (
+        <a key={item.id} href={item.href} target="_blank" rel="noreferrer" className={className} onClick={onClick}>
+          {item.label}
+        </a>
+      );
+    }
+    return (
+      <Link key={item.id} href={item.href} className={className} onClick={onClick}>
+        {item.label}
+      </Link>
+    );
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/70 bg-paper/85 backdrop-blur-md">
@@ -26,27 +42,20 @@ export function SiteHeader() {
         <Wordmark />
 
         <nav className="hidden items-center gap-1 lg:flex">
-          {NAV.map((item) => {
+          {links.map((item) => {
             const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  'rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
-                  active ? 'bg-sand text-ink' : 'text-ink-muted hover:bg-sand hover:text-ink'
-                )}
-              >
-                {item.label}
-              </Link>
+            return renderLink(
+              item,
+              cn(
+                'rounded-full px-3.5 py-2 text-sm font-medium transition-colors',
+                active ? 'bg-sand text-ink' : 'text-ink-muted hover:bg-sand hover:text-ink'
+              )
             );
           })}
         </nav>
 
-        <div className="hidden lg:block">
-          <Link href="/contacto" className="btn-coral">
-            Asociarse
-          </Link>
+        <div className="hidden items-center gap-2 lg:flex">
+          {ctas.map((item) => renderLink(item, 'btn-coral'))}
         </div>
 
         <button
@@ -67,19 +76,14 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-line bg-paper lg:hidden">
           <nav className="wrap flex flex-col py-3">
-            {NAV.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-sand"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link href="/contacto" onClick={() => setOpen(false)} className="btn-coral mt-2">
-              Asociarse
-            </Link>
+            {links.map((item) =>
+              renderLink(
+                item,
+                'rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-sand',
+                () => setOpen(false)
+              )
+            )}
+            {ctas.map((item) => renderLink(item, 'btn-coral mt-2', () => setOpen(false)))}
           </nav>
         </div>
       )}

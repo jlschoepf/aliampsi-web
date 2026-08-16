@@ -10,6 +10,7 @@ const LINKS = [
   { href: '/admin', label: 'Panel', exact: true },
   { href: '/admin/banners', label: 'Banners' },
   { href: '/admin/indicadores', label: 'Indicadores' },
+  { href: '/admin/menu', label: 'Menú' },
   { href: '/admin/noticias', label: 'Noticias' },
   { href: '/admin/publicaciones', label: 'Publicaciones' },
   { href: '/admin/congresos', label: 'Congresos' },
