@@ -52,25 +52,31 @@ export function NoticiaCard({ n }: { n: Noticia }) {
 export function CongresoCard({ c }: { c: Congreso }) {
   const dateLabel = formatDateRange(c.startDate, c.endDate);
   return (
-    <article className="card flex flex-col p-6">
-      <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-coral">
-        <span>Congreso</span>
-        {c.location && <span className="text-ink-muted">· {c.location}</span>}
-      </div>
-      <h3 className="mt-3 text-xl font-semibold leading-snug">{c.title}</h3>
-      {dateLabel && <p className="mt-1 text-sm font-medium text-teal-600">{dateLabel}</p>}
-      {c.description && <p className="mt-3 flex-1 text-sm text-ink-muted">{c.description}</p>}
-      <div className="mt-5 flex flex-wrap items-center gap-4">
-        {c.body && (
-          <Link href={`/congresos/${c.id}`} className="text-sm font-semibold text-teal-600 hover:text-coral">
-            Leer más →
-          </Link>
-        )}
-        {c.linkUrl && (
-          <a href={c.linkUrl} target="_blank" rel="noreferrer" className="btn-ghost">
-            Ver programa
-          </a>
-        )}
+    <article className="card flex flex-col overflow-hidden">
+      {c.coverImage && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={c.coverImage} alt="" className="h-40 w-full object-cover" />
+      )}
+      <div className="flex flex-1 flex-col p-6">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-coral">
+          <span>Congreso</span>
+          {c.location && <span className="text-ink-muted">· {c.location}</span>}
+        </div>
+        <h3 className="mt-3 text-xl font-semibold leading-snug">{c.title}</h3>
+        {dateLabel && <p className="mt-1 text-sm font-medium text-teal-600">{dateLabel}</p>}
+        {c.description && <p className="mt-3 flex-1 text-sm text-ink-muted">{c.description}</p>}
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          {c.body && (
+            <Link href={`/congresos/${c.id}`} className="text-sm font-semibold text-teal-600 hover:text-coral">
+              Leer más →
+            </Link>
+          )}
+          {c.linkUrl && (
+            <a href={c.linkUrl} target="_blank" rel="noreferrer" className="btn-ghost">
+              Ver programa
+            </a>
+          )}
+        </div>
       </div>
     </article>
   );
@@ -79,23 +85,29 @@ export function CongresoCard({ c }: { c: Congreso }) {
 export function PublicacionCard({ p }: { p: Publicacion }) {
   const kindLabel = p.kind === 'revista' ? 'Revista' : p.kind === 'articulo' ? 'Artículo' : 'Documento';
   return (
-    <article className="card flex flex-col p-6">
-      <span className="w-fit rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
-        {kindLabel}
-      </span>
-      <h3 className="mt-3 font-serif text-xl italic leading-snug text-ink">{p.title}</h3>
-      {p.description && <p className="mt-2 flex-1 text-sm text-ink-muted">{p.description}</p>}
-      <div className="mt-5 flex flex-wrap items-center gap-4">
-        {p.body && (
-          <Link href={`/publicaciones/${p.id}`} className="text-sm font-semibold text-teal-600 hover:text-coral">
-            Leer más →
-          </Link>
-        )}
-        {p.linkUrl && (
-          <a href={p.linkUrl} target="_blank" rel="noreferrer" className="btn-primary">
-            Acceder
-          </a>
-        )}
+    <article className="card flex flex-col overflow-hidden">
+      {p.coverImage && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={p.coverImage} alt="" className="h-40 w-full object-cover" />
+      )}
+      <div className="flex flex-1 flex-col p-6">
+        <span className="w-fit rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
+          {kindLabel}
+        </span>
+        <h3 className="mt-3 font-serif text-xl italic leading-snug text-ink">{p.title}</h3>
+        {p.description && <p className="mt-2 flex-1 text-sm text-ink-muted">{p.description}</p>}
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          {p.body && (
+            <Link href={`/publicaciones/${p.id}`} className="text-sm font-semibold text-teal-600 hover:text-coral">
+              Leer más →
+            </Link>
+          )}
+          {p.linkUrl && (
+            <a href={p.linkUrl} target="_blank" rel="noreferrer" className="btn-primary">
+              Acceder
+            </a>
+          )}
+        </div>
       </div>
     </article>
   );
