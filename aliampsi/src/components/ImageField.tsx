@@ -71,6 +71,7 @@ export function ImageField({
   value: controlledValue,
   onChange,
   showHiddenInput = true,
+  showUrlInput = true,
 }: {
   label: string;
   name: string;
@@ -79,6 +80,7 @@ export function ImageField({
   value?: string;
   onChange?: (v: string) => void;
   showHiddenInput?: boolean;
+  showUrlInput?: boolean;
 }) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
   const controlled = controlledValue !== undefined;
@@ -200,14 +202,16 @@ export function ImageField({
       ) : null}
 
       <div className="flex flex-col gap-2 sm:flex-row">
-        <input
-          id={`${name}-url`}
-          type="url"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="Pegá una URL o subí un archivo"
-          className="field"
-        />
+        {showUrlInput && (
+          <input
+            id={`${name}-url`}
+            type="url"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="Pegá una URL o subí un archivo"
+            className="field"
+          />
+        )}
         <label className="btn-ghost shrink-0 cursor-pointer">
           {status === 'uploading' ? 'Subiendo…' : 'Subir archivo'}
           <input

@@ -53,6 +53,7 @@ export function CoverField({
         name={name}
         value={value}
         onChange={setValue}
+        showUrlInput={false}
         hint="Opcional. Se recorta a formato horizontal."
       />
     </div>
