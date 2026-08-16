@@ -37,3 +37,17 @@ export function filterByTag<T extends { tags: string }>(items: T[], tag?: string
   const t = tag.trim().toLowerCase();
   return items.filter((i) => parseTags(i.tags).some((x) => x.toLowerCase() === t));
 }
+
+// Elige contenidos relacionados: primero los que comparten etiquetas, luego los más recientes.
+export function pickRelated<
+  T extends { id: string; tags: string; featured: boolean; publishedAt: Date | null; createdAt: Date }
+>(all: T[], current: { id: string; tags: string }, n = 3): T[] {
+  const currentTags = parseTags(current.tags).map((t) => t.toLowerCase());
+  const others = all.filter((x) => x.id !== current.id);
+  const shared = others.filter((x) =>
+    parseTags(x.tags).some((t) => currentTags.includes(t.toLowerCase()))
+  );
+  const sharedIds = new Set(shared.map((x) => x.id));
+  const rest = others.filter((x) => !sharedIds.has(x.id));
+  return [...sortForList(shared), ...sortForList(rest)].slice(0, n);
+}

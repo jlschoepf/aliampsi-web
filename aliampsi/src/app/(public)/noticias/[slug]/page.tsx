@@ -4,7 +4,8 @@ import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { getSession } from '@/lib/auth';
-import { isVisibleNow, parseTags } from '@/lib/content';
+import { NoticiaCard, SectionHeading } from '@/components/content';
+import { isVisibleNow, parseTags, pickRelated, visibleNowWhere } from '@/lib/content';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
@@ -45,10 +46,14 @@ export default async function NoticiaDetail({
   const visible = isVisibleNow(n);
   if (!visible && !preview) notFound();
 
+  const relatedPool = await prisma.noticia.findMany({ where: visibleNowWhere() });
+  const related = pickRelated(relatedPool, n, 3);
+
   const cover = n.coverImage || '/noticia-default.png';
   const docName = n.document ? decodeURIComponent(n.document.split('/').pop() || 'documento') : '';
 
   return (
+    <>
     <article className="wrap max-w-3xl py-16 lg:py-20">
       {!visible && (
         <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
@@ -121,12 +126,21 @@ export default async function NoticiaDetail({
       {parseTags(n.tags).length > 0 && (
         <div className="mt-10 flex flex-wrap gap-2 border-t border-line pt-6">
           {parseTags(n.tags).map((t) => (
-            <a key={t} href={`/noticias?tag=${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
+            <a key={t} href={`/etiqueta/${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
               #{t}
             </a>
           ))}
         </div>
       )}
     </article>
+    {related.length > 0 && (
+      <section className="wrap pb-16 lg:pb-24">
+        <SectionHeading eyebrow="Seguir leyendo" title="Contenidos relacionados" />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((r) => <NoticiaCard key={r.id} n={r} />)}
+        </div>
+      </section>
+    )}
+    </>
   );
 }

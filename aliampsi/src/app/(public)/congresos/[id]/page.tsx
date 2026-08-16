@@ -4,7 +4,8 @@ import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { formatDateRange } from '@/lib/utils';
 import { getSession } from '@/lib/auth';
-import { isVisibleNow, parseTags } from '@/lib/content';
+import { CongresoCard, SectionHeading } from '@/components/content';
+import { isVisibleNow, parseTags, pickRelated, visibleNowWhere } from '@/lib/content';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
@@ -44,9 +45,13 @@ export default async function CongresoDetail({
   const preview = searchParams?.preview === '1' && !!(await getSession());
   const visible = isVisibleNow(c);
   if (!visible && !preview) notFound();
+
+  const relatedPool = await prisma.congreso.findMany({ where: visibleNowWhere() });
+  const related = pickRelated(relatedPool, c, 3);
   const dateLabel = formatDateRange(c.startDate, c.endDate);
 
   return (
+    <>
     <article className="wrap max-w-3xl py-16 lg:py-20">
       {!visible && (
         <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
@@ -126,12 +131,21 @@ export default async function CongresoDetail({
       {parseTags(c.tags).length > 0 && (
         <div className="mt-10 flex flex-wrap gap-2 border-t border-line pt-6">
           {parseTags(c.tags).map((t) => (
-            <a key={t} href={`/congresos?tag=${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
+            <a key={t} href={`/etiqueta/${encodeURIComponent(t)}`} className="rounded-full bg-sand px-3 py-1 text-xs font-medium text-ink-muted transition hover:bg-teal-600/10 hover:text-teal-700">
               #{t}
             </a>
           ))}
         </div>
       )}
     </article>
+    {related.length > 0 && (
+      <section className="wrap pb-16 lg:pb-24">
+        <SectionHeading eyebrow="Seguir leyendo" title="Contenidos relacionados" />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((r) => <CongresoCard key={r.id} c={r} />)}
+        </div>
+      </section>
+    )}
+    </>
   );
 }
