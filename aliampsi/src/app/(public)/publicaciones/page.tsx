@@ -1,7 +1,12 @@
 import { prisma } from '@/lib/db';
 import { PublicacionCard } from '@/components/content';
 
-export const metadata = { title: 'Publicaciones' };
+export const metadata = {
+  title: 'Publicaciones',
+  description: 'Artículos, revistas y documentos de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.',
+  alternates: { canonical: '/publicaciones' },
+  openGraph: { title: 'Publicaciones', description: 'Artículos, revistas y documentos de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.', url: '/publicaciones' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function PublicacionesPage() {

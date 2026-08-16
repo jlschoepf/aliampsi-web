@@ -1,6 +1,11 @@
 import { prisma } from '@/lib/db';
 
-export const metadata = { title: 'Comisión Directiva' };
+export const metadata = {
+  title: 'Comisión Directiva',
+  description: 'Autoridades y comisión directiva de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.',
+  alternates: { canonical: '/comision-directiva' },
+  openGraph: { title: 'Comisión Directiva', description: 'Autoridades y comisión directiva de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.', url: '/comision-directiva' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function ComisionDirectivaPage() {

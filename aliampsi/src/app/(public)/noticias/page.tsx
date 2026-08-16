@@ -1,7 +1,12 @@
 import { prisma } from '@/lib/db';
 import { NoticiaCard } from '@/components/content';
 
-export const metadata = { title: 'Noticias' };
+export const metadata = {
+  title: 'Noticias',
+  description: 'Novedades y comunicados de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.',
+  alternates: { canonical: '/noticias' },
+  openGraph: { title: 'Noticias', description: 'Novedades y comunicados de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.', url: '/noticias' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function NoticiasPage() {

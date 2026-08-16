@@ -1,7 +1,12 @@
 import { prisma } from '@/lib/db';
 import { AsociacionCard } from '@/components/content';
 
-export const metadata = { title: 'Asociaciones integrantes' };
+export const metadata = {
+  title: 'Asociaciones',
+  description: 'Asociaciones que integran la Alianza Iberoamericana de Psiquiatría Infantojuvenil en toda Iberoamérica.',
+  alternates: { canonical: '/asociaciones' },
+  openGraph: { title: 'Asociaciones', description: 'Asociaciones que integran la Alianza Iberoamericana de Psiquiatría Infantojuvenil en toda Iberoamérica.', url: '/asociaciones' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function AsociacionesPage() {

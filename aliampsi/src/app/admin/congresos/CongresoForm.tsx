@@ -3,6 +3,7 @@ import type { Congreso } from '@prisma/client';
 import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { CoverField } from '@/components/CoverField';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
+import { FileField } from '@/components/FileField';
 
 function toInputDate(d?: Date | null) {
   if (!d) return '';
@@ -25,6 +26,16 @@ export function CongresoForm({
       <Field label="Título" name="title" required defaultValue={congreso?.title} placeholder="Nombre del congreso o actividad" />
       <TextArea label="Descripción (resumen)" name="description" rows={2} defaultValue={congreso?.description} placeholder="Resumen corto que aparece en la tarjeta" hint="Aparece en el listado." />
       <MarkdownBodyField name="body" label="Contenido (opcional)" defaultValue={congreso?.body} />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Autor (opcional)" name="author" defaultValue={congreso?.author} placeholder="Ej: Comité editorial" />
+        <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={congreso?.sourceUrl} placeholder="https://… (leer más / fuente)" />
+      </div>
+      <FileField
+        label="Documento adjunto (opcional)"
+        name="document"
+        defaultValue={congreso?.document}
+        hint="PDF u Office. Aparece como botón de descarga en el detalle."
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Fecha de inicio" name="startDate" type="date" defaultValue={toInputDate(congreso?.startDate)} />
         <Field label="Fecha de fin" name="endDate" type="date" defaultValue={toInputDate(congreso?.endDate)} />

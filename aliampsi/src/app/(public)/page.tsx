@@ -9,6 +9,8 @@ import {
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { StatsCounter } from '@/components/StatsCounter';
 import { CartaPresidente } from '@/components/CartaPresidente';
+import { JsonLd } from '@/components/JsonLd';
+import { SITE_URL, SITE_NAME, SITE_LONG_NAME, SITE_DESCRIPTION, absUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
@@ -49,6 +51,26 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: SITE_LONG_NAME,
+          alternateName: SITE_NAME,
+          url: SITE_URL,
+          logo: absUrl('/emblem.png'),
+          description: SITE_DESCRIPTION,
+        }}
+      />
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: SITE_NAME,
+          url: SITE_URL,
+          inLanguage: 'es',
+        }}
+      />
       {/* HERO */}
       {banners.length > 0 ? (
         <HeroCarousel banners={banners} />

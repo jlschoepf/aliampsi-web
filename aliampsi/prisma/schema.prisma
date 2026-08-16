@@ -40,6 +40,9 @@ model Publicacion {
   title       String
   description String   @default("")
   body        String   @default("")
+  author      String   @default("")
+  document    String?
+  sourceUrl   String   @default("")
   kind        String   @default("revista") // revista | documento | articulo
   linkUrl     String   @default("")
   coverImage  String?
@@ -53,6 +56,9 @@ model Congreso {
   title       String
   description String    @default("")
   body        String    @default("")
+  author      String    @default("")
+  document    String?
+  sourceUrl   String    @default("")
   location    String    @default("")
   startDate   DateTime?
   endDate     DateTime?

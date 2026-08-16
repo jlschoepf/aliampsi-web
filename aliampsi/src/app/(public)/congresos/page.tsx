@@ -1,7 +1,12 @@
 import { prisma } from '@/lib/db';
 import { CongresoCard } from '@/components/content';
 
-export const metadata = { title: 'Congresos y actividades' };
+export const metadata = {
+  title: 'Congresos',
+  description: 'Congresos y actividades científicas de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.',
+  alternates: { canonical: '/congresos' },
+  openGraph: { title: 'Congresos', description: 'Congresos y actividades científicas de la Alianza Iberoamericana de Psiquiatría Infantojuvenil.', url: '/congresos' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function CongresosPage() {

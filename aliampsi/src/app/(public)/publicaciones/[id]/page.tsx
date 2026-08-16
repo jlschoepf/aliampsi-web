@@ -3,12 +3,29 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { getSession } from '@/lib/auth';
+import { JsonLd } from '@/components/JsonLd';
+import { SITE_NAME, absUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const p = await prisma.publicacion.findUnique({ where: { id: params.id } });
-  return { title: p?.title ?? 'Publicación' };
+  if (!p) return { title: 'Publicación' };
+  const img = absUrl(p.coverImage);
+  const desc = p.description || undefined;
+  return {
+    title: p.title,
+    description: desc,
+    alternates: { canonical: `/publicaciones/${p.id}` },
+    openGraph: {
+      type: 'article',
+      title: p.title,
+      description: desc,
+      url: `/publicaciones/${p.id}`,
+      images: [{ url: img, width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image', title: p.title, description: desc, images: [img] },
+  };
 }
 
 export default async function PublicacionDetail({
@@ -31,6 +48,22 @@ export default async function PublicacionDetail({
           Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
         </div>
       )}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: p.title,
+          description: p.description || undefined,
+          image: [absUrl(p.coverImage)],
+          dateModified: p.updatedAt.toISOString(),
+          publisher: {
+            '@type': 'Organization',
+            name: SITE_NAME,
+            logo: { '@type': 'ImageObject', url: absUrl('/emblem.png') },
+          },
+          mainEntityOfPage: absUrl(`/publicaciones/${p.id}`),
+        }}
+      />
       <Link href="/publicaciones" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a publicaciones
       </Link>
@@ -39,6 +72,7 @@ export default async function PublicacionDetail({
       </span>
       <h1 className="mt-3 font-serif text-4xl italic leading-tight text-ink">{p.title}</h1>
       {p.description && <p className="mt-4 text-lg text-ink-muted">{p.description}</p>}
+      {p.author && <p className="mt-2 text-sm text-ink-muted">Por {p.author}</p>}
 
       {p.coverImage && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -47,10 +81,31 @@ export default async function PublicacionDetail({
 
       {p.body && <NoticiaBody content={p.body} />}
 
-      {p.linkUrl && (
-        <a href={p.linkUrl} target="_blank" rel="noreferrer" className="btn-primary mt-8 inline-flex">
-          Acceder a la publicación
+      {p.document && (
+        <a
+          href={p.document}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-8 inline-flex items-center gap-2 rounded-full border border-line bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-sm transition hover:border-coral hover:text-coral"
+        >
+          📎 Descargar documento
         </a>
+      )}
+
+      {p.linkUrl && (
+        <div className="mt-8">
+          <a href={p.linkUrl} target="_blank" rel="noreferrer" className="btn-primary inline-flex">
+            Acceder a la publicación
+          </a>
+        </div>
+      )}
+
+      {p.sourceUrl && (
+        <p className="mt-6">
+          <a href={p.sourceUrl} target="_blank" rel="noreferrer" className="text-sm font-semibold text-teal-600 hover:text-coral">
+            Fuente / leer más →
+          </a>
+        </p>
       )}
     </article>
   );

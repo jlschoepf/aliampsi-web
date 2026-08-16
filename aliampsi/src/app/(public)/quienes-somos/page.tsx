@@ -2,7 +2,12 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { getSettings } from '@/lib/settings';
 
-export const metadata = { title: 'Quiénes somos' };
+export const metadata = {
+  title: 'Quiénes somos',
+  description: 'Conocé la Alianza Iberoamericana de Psiquiatría Infantojuvenil: su historia, misión y compromiso con la salud mental de niños, niñas y adolescentes.',
+  alternates: { canonical: '/quienes-somos' },
+  openGraph: { title: 'Quiénes somos', description: 'Conocé la Alianza Iberoamericana de Psiquiatría Infantojuvenil: su historia, misión y compromiso con la salud mental de niños, niñas y adolescentes.', url: '/quienes-somos' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function QuienesSomosPage() {

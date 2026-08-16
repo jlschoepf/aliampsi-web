@@ -3,6 +3,7 @@ import type { Publicacion } from '@prisma/client';
 import { Field, TextArea, Select, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { CoverField } from '@/components/CoverField';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
+import { FileField } from '@/components/FileField';
 
 export function PublicacionForm({
   action,
@@ -30,6 +31,16 @@ export function PublicacionForm({
       />
       <TextArea label="Descripción (resumen)" name="description" rows={2} defaultValue={publicacion?.description} placeholder="Resumen corto que aparece en la tarjeta" hint="Aparece en el listado." />
       <MarkdownBodyField name="body" label="Contenido (opcional)" defaultValue={publicacion?.body} />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Autor (opcional)" name="author" defaultValue={publicacion?.author} placeholder="Ej: Comité editorial" />
+        <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={publicacion?.sourceUrl} placeholder="https://… (leer más / fuente)" />
+      </div>
+      <FileField
+        label="Documento adjunto (opcional)"
+        name="document"
+        defaultValue={publicacion?.document}
+        hint="PDF u Office. Aparece como botón de descarga en el detalle."
+      />
       <Field label="Enlace (URL)" name="linkUrl" defaultValue={publicacion?.linkUrl} placeholder="https://…" hint="Adónde lleva el botón “Acceder”." />
       <CoverField name="coverImage" defaultValue={publicacion?.coverImage} covers={covers} />
       <Checkbox label="Publicar (visible en el sitio)" name="published" defaultChecked={publicacion?.published ?? true} />

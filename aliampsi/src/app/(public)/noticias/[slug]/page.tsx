@@ -4,12 +4,29 @@ import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import { NoticiaBody } from '@/components/NoticiaBody';
 import { getSession } from '@/lib/auth';
+import { JsonLd } from '@/components/JsonLd';
+import { SITE_NAME, absUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const n = await prisma.noticia.findUnique({ where: { slug: params.slug } });
-  return { title: n?.title ?? 'Noticia' };
+  if (!n) return { title: 'Noticia' };
+  const img = absUrl(n.coverImage);
+  const desc = n.excerpt || undefined;
+  return {
+    title: n.title,
+    description: desc,
+    alternates: { canonical: `/noticias/${n.slug}` },
+    openGraph: {
+      type: 'article',
+      title: n.title,
+      description: desc,
+      url: `/noticias/${n.slug}`,
+      images: [{ url: img, width: 1200, height: 630 }],
+    },
+    twitter: { card: 'summary_large_image', title: n.title, description: desc, images: [img] },
+  };
 }
 
 export default async function NoticiaDetail({
@@ -34,6 +51,24 @@ export default async function NoticiaDetail({
           Vista previa — este contenido está sin publicar. Solo lo ves como administrador.
         </div>
       )}
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: n.title,
+          description: n.excerpt || undefined,
+          image: [absUrl(n.coverImage)],
+          datePublished: (n.publishedAt ?? n.createdAt).toISOString(),
+          dateModified: n.updatedAt.toISOString(),
+          author: { '@type': 'Organization', name: n.author || SITE_NAME },
+          publisher: {
+            '@type': 'Organization',
+            name: SITE_NAME,
+            logo: { '@type': 'ImageObject', url: absUrl('/emblem.png') },
+          },
+          mainEntityOfPage: absUrl(`/noticias/${n.slug}`),
+        }}
+      />
       <Link href="/noticias" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a noticias
       </Link>

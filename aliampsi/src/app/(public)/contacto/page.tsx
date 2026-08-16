@@ -1,6 +1,11 @@
 import { getSettings, waLink } from '@/lib/settings';
 
-export const metadata = { title: 'Contacto' };
+export const metadata = {
+  title: 'Contacto',
+  description: 'Contactate con la Alianza Iberoamericana de Psiquiatría Infantojuvenil.',
+  alternates: { canonical: '/contacto' },
+  openGraph: { title: 'Contacto', description: 'Contactate con la Alianza Iberoamericana de Psiquiatría Infantojuvenil.', url: '/contacto' },
+};
 export const dynamic = 'force-dynamic';
 
 export default async function ContactoPage() {
