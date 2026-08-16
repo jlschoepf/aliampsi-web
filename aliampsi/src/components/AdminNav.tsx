@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { logoutAction } from '@/app/admin/actions';
@@ -46,6 +47,18 @@ const GROUPS: { title: string | null; links: { href: string; label: string; exac
 
 export function AdminNav({ email }: { email: string }) {
   const pathname = usePathname();
+  const [query, setQuery] = useState('');
+  const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
+
+  const q = query.trim().toLowerCase();
+  const toggle = (gi: number) => {
+    setCollapsed((prev) => {
+      const next = new Set(prev);
+      if (next.has(gi)) next.delete(gi);
+      else next.add(gi);
+      return next;
+    });
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -58,33 +71,62 @@ export function AdminNav({ email }: { email: string }) {
         <p className="mt-1 text-xs text-paper/50">Administración</p>
       </div>
 
+      <div className="px-3 pb-3">
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Buscar sección…"
+          className="w-full rounded-lg border border-paper/15 bg-paper/10 px-3 py-2 text-sm text-paper placeholder:text-paper/40 focus:border-paper/40 focus:outline-none"
+        />
+      </div>
+
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
-        {GROUPS.map((group, gi) => (
-          <div key={gi} className={gi === 0 ? '' : 'mt-5'}>
-            {group.title && (
-              <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-paper/35">
-                {group.title}
-              </p>
-            )}
-            <div className="space-y-1">
-              {group.links.map((l) => {
-                const active = l.exact ? pathname === l.href : pathname.startsWith(l.href);
-                return (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className={cn(
-                      'block rounded-lg px-3 py-2.5 text-sm font-medium transition',
-                      active ? 'bg-paper/15 text-paper' : 'text-paper/70 hover:bg-paper/10 hover:text-paper'
-                    )}
-                  >
-                    {l.label}
-                  </Link>
-                );
-              })}
+        {GROUPS.map((group, gi) => {
+          const links = group.links.filter(
+            (l) => !q || l.label.toLowerCase().includes(q) || (group.title ?? '').toLowerCase().includes(q)
+          );
+          if (links.length === 0) return null;
+          const open = q ? true : !collapsed.has(gi);
+
+          return (
+            <div key={gi} className={gi === 0 ? '' : 'mt-4'}>
+              {group.title && (
+                <button
+                  type="button"
+                  onClick={() => toggle(gi)}
+                  className="flex w-full items-center justify-between px-3 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-wider text-paper/35 transition hover:text-paper/60"
+                  aria-expanded={open}
+                >
+                  <span>{group.title}</span>
+                  <span className={cn('text-[8px] transition-transform', open ? 'rotate-90' : 'rotate-0')}>▶</span>
+                </button>
+              )}
+              {open && (
+                <div className="space-y-1">
+                  {links.map((l) => {
+                    const active = l.exact ? pathname === l.href : pathname.startsWith(l.href);
+                    return (
+                      <Link
+                        key={l.href}
+                        href={l.href}
+                        className={cn(
+                          'block rounded-lg px-3 py-2.5 text-sm font-medium transition',
+                          active ? 'bg-paper/15 text-paper' : 'text-paper/70 hover:bg-paper/10 hover:text-paper'
+                        )}
+                      >
+                        {l.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
+        {q && GROUPS.every((g) => g.links.every((l) => !l.label.toLowerCase().includes(q) && !(g.title ?? '').toLowerCase().includes(q))) && (
+          <p className="px-3 py-4 text-sm text-paper/40">Sin resultados.</p>
+        )}
       </nav>
 
       <div className="border-t border-paper/10 px-5 py-4">
