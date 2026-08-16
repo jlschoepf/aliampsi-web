@@ -13,20 +13,21 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   const c = await prisma.congreso.findUnique({ where: { id: params.id } });
   if (!c) return { title: 'Congreso' };
   const img = absUrl(c.coverImage);
-  const desc = c.description || undefined;
+  const title = c.seoTitle || c.title;
+  const desc = c.seoDescription || c.description || undefined;
   return {
-    title: c.title,
+    title,
     description: desc,
     alternates: { canonical: `/congresos/${c.id}` },
     robots: c.published ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'article',
-      title: c.title,
+      title,
       description: desc,
       url: `/congresos/${c.id}`,
       images: [{ url: img, width: 1200, height: 630 }],
     },
-    twitter: { card: 'summary_large_image', title: c.title, description: desc, images: [img] },
+    twitter: { card: 'summary_large_image', title, description: desc, images: [img] },
   };
 }
 

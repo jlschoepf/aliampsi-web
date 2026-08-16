@@ -12,20 +12,21 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
   const p = await prisma.publicacion.findUnique({ where: { id: params.id } });
   if (!p) return { title: 'Publicación' };
   const img = absUrl(p.coverImage);
-  const desc = p.description || undefined;
+  const title = p.seoTitle || p.title;
+  const desc = p.seoDescription || p.description || undefined;
   return {
-    title: p.title,
+    title,
     description: desc,
     alternates: { canonical: `/publicaciones/${p.id}` },
     robots: p.published ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'article',
-      title: p.title,
+      title,
       description: desc,
       url: `/publicaciones/${p.id}`,
       images: [{ url: img, width: 1200, height: 630 }],
     },
-    twitter: { card: 'summary_large_image', title: p.title, description: desc, images: [img] },
+    twitter: { card: 'summary_large_image', title, description: desc, images: [img] },
   };
 }
 

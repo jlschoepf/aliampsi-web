@@ -13,20 +13,21 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   const n = await prisma.noticia.findUnique({ where: { slug: params.slug } });
   if (!n) return { title: 'Noticia' };
   const img = absUrl(n.coverImage);
-  const desc = n.excerpt || undefined;
+  const title = n.seoTitle || n.title;
+  const desc = n.seoDescription || n.excerpt || undefined;
   return {
-    title: n.title,
+    title,
     description: desc,
     alternates: { canonical: `/noticias/${n.slug}` },
     robots: n.published ? undefined : { index: false, follow: false },
     openGraph: {
       type: 'article',
-      title: n.title,
+      title,
       description: desc,
       url: `/noticias/${n.slug}`,
       images: [{ url: img, width: 1200, height: 630 }],
     },
-    twitter: { card: 'summary_large_image', title: n.title, description: desc, images: [img] },
+    twitter: { card: 'summary_large_image', title, description: desc, images: [img] },
   };
 }
 

@@ -43,6 +43,16 @@ export function PublicacionForm({
       />
       <Field label="Enlace (URL)" name="linkUrl" defaultValue={publicacion?.linkUrl} placeholder="https://…" hint="Adónde lleva el botón “Acceder”." />
       <CoverField name="coverImage" defaultValue={publicacion?.coverImage} covers={covers} />
+      <div className="rounded-lg border border-line bg-sand/30 p-4">
+        <p className="mb-1 text-sm font-semibold text-ink">SEO (opcional)</p>
+        <p className="mb-4 text-xs text-ink-muted">
+          Personalizá cómo se ve en Google y al compartir. Si lo dejás vacío, se usa el título y el resumen.
+        </p>
+        <div className="space-y-4">
+          <Field label="Título SEO" name="seoTitle" defaultValue={publicacion?.seoTitle} placeholder="Título para buscadores (si difiere del título)" />
+          <TextArea label="Descripción SEO" name="seoDescription" rows={2} defaultValue={publicacion?.seoDescription} hint="Ideal 120–160 caracteres." />
+        </div>
+      </div>
       <Checkbox label="Publicar (visible en el sitio)" name="published" defaultChecked={publicacion?.published ?? true} />
 
       <div className="flex items-center gap-3 pt-2">

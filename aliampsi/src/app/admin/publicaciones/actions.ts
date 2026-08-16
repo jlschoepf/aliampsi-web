@@ -18,6 +18,8 @@ function data(formData: FormData) {
     author: String(formData.get('author') || ''),
     document: String(formData.get('document') || '') || null,
     sourceUrl: String(formData.get('sourceUrl') || ''),
+    seoTitle: String(formData.get('seoTitle') || ''),
+    seoDescription: String(formData.get('seoDescription') || ''),
     kind: String(formData.get('kind') || 'revista'),
     linkUrl: String(formData.get('linkUrl') || ''),
     coverImage: String(formData.get('coverImage') || '') || null,

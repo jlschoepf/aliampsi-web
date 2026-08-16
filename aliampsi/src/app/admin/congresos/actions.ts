@@ -20,6 +20,8 @@ function data(formData: FormData) {
     author: String(formData.get('author') || ''),
     document: String(formData.get('document') || '') || null,
     sourceUrl: String(formData.get('sourceUrl') || ''),
+    seoTitle: String(formData.get('seoTitle') || ''),
+    seoDescription: String(formData.get('seoDescription') || ''),
     location: String(formData.get('location') || ''),
     startDate: parseDate(formData.get('startDate')),
     endDate: parseDate(formData.get('endDate')),
