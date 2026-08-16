@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import { NoticiaBody } from '@/components/NoticiaBody';
+import { GalleryView } from '@/components/GalleryView';
 import { getSession } from '@/lib/auth';
 import { NoticiaCard, SectionHeading } from '@/components/content';
 import { isVisibleNow, parseTags, pickRelated, visibleNowWhere } from '@/lib/content';

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
+import { GalleryView } from '@/components/GalleryView';
 import { formatDateRange } from '@/lib/utils';
 import { getSession } from '@/lib/auth';
 import { CongresoCard, SectionHeading } from '@/components/content';

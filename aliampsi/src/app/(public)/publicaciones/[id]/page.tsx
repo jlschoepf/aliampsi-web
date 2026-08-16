@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { NoticiaBody } from '@/components/NoticiaBody';
+import { GalleryView } from '@/components/GalleryView';
 import { getSession } from '@/lib/auth';
 import { PublicacionCard, SectionHeading } from '@/components/content';
 import { isVisibleNow, parseTags, pickRelated, visibleNowWhere } from '@/lib/content';
