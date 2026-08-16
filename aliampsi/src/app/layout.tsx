@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Bricolage_Grotesque, Inter, Newsreader } from 'next/font/google';
 import './globals.css';
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, OG_IMAGE } from '@/lib/site';
+import { getSettings } from '@/lib/settings';
 
 const display = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -21,32 +22,39 @@ const serif = Newsreader({
   display: 'swap',
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: 'AL·IAM·PSI — Alianza Iberoamericana de Psiquiatría Infantojuvenil',
-    template: '%s · AL·IAM·PSI',
-  },
-  description: SITE_DESCRIPTION,
-  applicationName: SITE_NAME,
-  alternates: { canonical: '/' },
-  openGraph: {
-    type: 'website',
-    siteName: SITE_NAME,
-    locale: 'es_ES',
-    url: SITE_URL,
-    title: 'AL·IAM·PSI — Alianza Iberoamericana de Psiquiatría Infantojuvenil',
-    description: SITE_DESCRIPTION,
-    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: SITE_NAME }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'AL·IAM·PSI',
-    description: SITE_DESCRIPTION,
-    images: [OG_IMAGE],
-  },
-  robots: { index: true, follow: true },
-};
+const DEFAULT_TITLE = 'AL·IAM·PSI — Alianza Iberoamericana de Psiquiatría Infantojuvenil';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const s = await getSettings();
+  const title = s.seoTitle || DEFAULT_TITLE;
+  const description = s.seoDescription || SITE_DESCRIPTION;
+  const ogImage = s.seoImage || OG_IMAGE;
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: title, template: '%s · AL·IAM·PSI' },
+    description,
+    applicationName: SITE_NAME,
+    alternates: { canonical: '/' },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      locale: 'es_ES',
+      url: SITE_URL,
+      title,
+      description,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: SITE_NAME }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: SITE_NAME,
+      description,
+      images: [ogImage],
+    },
+    robots: { index: true, follow: true },
+    verification: s.gscVerification ? { google: s.gscVerification } : undefined,
+  };
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -29,6 +29,11 @@ export const DEFAULT_SETTINGS = {
   qsPilar3Title: 'Difusión científica',
   qsPilar3Text:
     'Promovemos publicaciones y contenidos que elevan los estándares de atención en salud mental infantojuvenil.',
+  seoTitle: '',
+  seoDescription: '',
+  seoImage: '',
+  gscVerification: '',
+  gaId: '',
 };
 
 export type SiteSettings = typeof DEFAULT_SETTINGS;
@@ -59,6 +64,11 @@ export async function getSettings(): Promise<SiteSettings> {
       qsPilar2Text: pick(s.qsPilar2Text, DEFAULT_SETTINGS.qsPilar2Text),
       qsPilar3Title: pick(s.qsPilar3Title, DEFAULT_SETTINGS.qsPilar3Title),
       qsPilar3Text: pick(s.qsPilar3Text, DEFAULT_SETTINGS.qsPilar3Text),
+      seoTitle: s.seoTitle || '',
+      seoDescription: s.seoDescription || '',
+      seoImage: s.seoImage || '',
+      gscVerification: s.gscVerification || '',
+      gaId: s.gaId || '',
     };
   } catch {
     return DEFAULT_SETTINGS;

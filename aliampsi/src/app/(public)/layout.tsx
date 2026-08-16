@@ -1,6 +1,8 @@
+import Script from 'next/script';
 import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { prisma } from '@/lib/db';
+import { getSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,8 +31,22 @@ export default async function PublicLayout({ children }: { children: React.React
     // usa el fallback
   }
 
+  const settings = await getSettings();
+  const gaId = settings.gaId;
+
   return (
     <div className="flex min-h-screen flex-col">
+      {gaId && (
+        <>
+          <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} strategy="afterInteractive" />
+          <Script id="ga-init" strategy="afterInteractive">
+            {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${gaId}');`}
+          </Script>
+        </>
+      )}
       <SiteHeader items={items} />
       <main className="flex-1">{children}</main>
       <SiteFooter />

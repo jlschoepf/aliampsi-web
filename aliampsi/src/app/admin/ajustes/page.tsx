@@ -1,4 +1,5 @@
 import { AdminHeader, Field, TextArea, SubmitButton } from '@/components/admin-ui';
+import { ImageField } from '@/components/ImageField';
 import { getSettings } from '@/lib/settings';
 import { updateSettings } from './actions';
 
@@ -77,6 +78,56 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
               <Field label="Pilar 3 — título" name="qsPilar3Title" defaultValue={s.qsPilar3Title} />
               <div className="sm:col-span-2"><Field label="Pilar 3 — texto" name="qsPilar3Text" defaultValue={s.qsPilar3Text} /></div>
             </div>
+          </div>
+        </div>
+
+        <div className="border-t border-line pt-6">
+          <h2 className="font-display text-lg font-bold text-ink">SEO y buscadores</h2>
+          <p className="text-sm text-ink-muted">
+            Cómo se ve tu sitio en Google y al compartirlo. Si dejás un campo vacío, se usan los valores por defecto.
+          </p>
+        </div>
+        <Field
+          label="Título por defecto"
+          name="seoTitle"
+          defaultValue={s.seoTitle}
+          placeholder="AL·IAM·PSI — Alianza Iberoamericana de Psiquiatría Infantojuvenil"
+          hint="El título general del sitio (pestaña del navegador y buscadores)."
+        />
+        <TextArea
+          label="Descripción por defecto"
+          name="seoDescription"
+          rows={2}
+          defaultValue={s.seoDescription}
+          hint="El texto que aparece bajo el título en Google (ideal: 120–160 caracteres)."
+        />
+        <ImageField
+          label="Imagen para compartir (por defecto)"
+          name="seoImage"
+          defaultValue={s.seoImage}
+          hint="Se muestra al compartir el sitio en WhatsApp, Facebook o LinkedIn. Ideal horizontal 1200×630."
+        />
+
+        <div className="rounded-lg border border-line bg-sand/30 p-4">
+          <p className="mb-1 text-sm font-semibold text-ink">Conexión con Google</p>
+          <p className="mb-4 text-xs text-ink-muted">
+            Para verificar el sitio en Search Console y medir visitas con Analytics.
+          </p>
+          <div className="space-y-4">
+            <Field
+              label="Verificación de Google Search Console"
+              name="gscVerification"
+              defaultValue={s.gscVerification}
+              placeholder="Ej: AbCdEf123... (solo el código)"
+              hint="En Search Console elegí «Etiqueta HTML» y pegá acá solo el valor content del meta google-site-verification."
+            />
+            <Field
+              label="ID de Google Analytics"
+              name="gaId"
+              defaultValue={s.gaId}
+              placeholder="G-XXXXXXXXXX"
+              hint="El identificador de medición de Google Analytics 4 (empieza con G-). Dejá vacío para no medir."
+            />
           </div>
         </div>
 

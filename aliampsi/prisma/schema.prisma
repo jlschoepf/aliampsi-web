@@ -146,6 +146,11 @@ model Settings {
   qsPilar2Text  String  @default("")
   qsPilar3Title String  @default("")
   qsPilar3Text  String  @default("")
+  seoTitle       String  @default("")
+  seoDescription String  @default("")
+  seoImage       String  @default("")
+  gscVerification String @default("")
+  gaId           String  @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
