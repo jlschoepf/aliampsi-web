@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { Wordmark } from './Wordmark';
+import { HeaderSearch } from './HeaderSearch';
 import { cn } from '@/lib/utils';
 
 export type NavItem = {
@@ -55,16 +56,7 @@ export function SiteHeader({ items }: { items: NavItem[] }) {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <Link
-            href="/buscar"
-            aria-label="Buscar"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-ink-muted transition hover:bg-sand hover:text-ink"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" />
-              <path d="m21 21-4.3-4.3" />
-            </svg>
-          </Link>
+          <HeaderSearch />
           {ctas.map((item) => renderLink(item, 'btn-coral'))}
         </div>
 
@@ -86,17 +78,7 @@ export function SiteHeader({ items }: { items: NavItem[] }) {
       {open && (
         <div className="border-t border-line bg-paper lg:hidden">
           <nav className="wrap flex flex-col py-3">
-            <Link
-              href="/buscar"
-              onClick={() => setOpen(false)}
-              className="mb-1 flex items-center gap-2 rounded-lg px-3 py-3 text-sm font-medium text-ink hover:bg-sand"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.3-4.3" />
-              </svg>
-              Buscar
-            </Link>
+            <HeaderSearch variant="mobile" />
             {links.map((item) =>
               renderLink(
                 item,

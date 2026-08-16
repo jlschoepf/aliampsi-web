@@ -5,7 +5,7 @@ import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { CoverField } from '@/components/CoverField';
 import { Collapsible } from '@/components/Collapsible';
 import { FileField } from '@/components/FileField';
-import { MarkdownBodyField } from '@/components/MarkdownBodyField';
+import { BodyEditor } from '@/components/BodyEditor';
 import { GalleryField } from '@/components/GalleryField';
 
 export function NoticiaForm({
@@ -30,7 +30,7 @@ export function NoticiaForm({
         placeholder="Breve resumen que aparece en las tarjetas"
         hint="Aparece en el listado y en la portada."
       />
-      <MarkdownBodyField name="content" defaultValue={noticia?.content} />
+      <BodyEditor name="content" defaultValue={noticia?.content} />
       <GalleryField name="gallery" defaultValue={noticia?.gallery} />
       <CoverField name="coverImage" defaultValue={noticia?.coverImage} covers={covers} />
       <div className="grid gap-5 sm:grid-cols-2">

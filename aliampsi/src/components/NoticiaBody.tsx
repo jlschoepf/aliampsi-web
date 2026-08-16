@@ -1,5 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
 function toEmbed(url?: string): string | null {
   if (!url) return null;
@@ -10,11 +12,24 @@ function toEmbed(url?: string): string | null {
   return null;
 }
 
+// Permitimos el HTML que genera el editor (con saneado de seguridad).
+const schema = {
+  ...defaultSchema,
+  tagNames: [...(defaultSchema.tagNames || []), 'u', 's', 'figure', 'figcaption', 'hr'],
+  attributes: {
+    ...defaultSchema.attributes,
+    '*': [...((defaultSchema.attributes && defaultSchema.attributes['*']) || []), 'style', 'className'],
+    img: [...((defaultSchema.attributes && defaultSchema.attributes.img) || []), 'src', 'alt', 'title', 'width', 'height'],
+    a: [...((defaultSchema.attributes && defaultSchema.attributes.a) || []), 'href', 'target', 'rel'],
+  },
+};
+
 export function NoticiaBody({ content }: { content: string }) {
   return (
     <div className="mt-8 space-y-4 text-ink/90">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
         components={{
           p: ({ children }) => <p className="leading-relaxed">{children}</p>,
           h2: ({ children }) => <h2 className="mt-8 text-2xl font-bold text-ink">{children}</h2>,
@@ -25,6 +40,8 @@ export function NoticiaBody({ content }: { content: string }) {
             <blockquote className="border-l-4 border-coral pl-4 italic text-ink-muted">{children}</blockquote>
           ),
           strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
+          em: ({ children }) => <em className="italic">{children}</em>,
+          hr: () => <hr className="my-8 border-line" />,
           img: ({ src, alt }) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
