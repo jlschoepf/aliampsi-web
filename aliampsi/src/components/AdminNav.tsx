@@ -6,19 +6,42 @@ import { cn } from '@/lib/utils';
 import { logoutAction } from '@/app/admin/actions';
 import { APP_VERSION } from '@/lib/version';
 
-const LINKS = [
-  { href: '/admin', label: 'Panel', exact: true },
-  { href: '/admin/banners', label: 'Banners' },
-  { href: '/admin/indicadores', label: 'Indicadores' },
-  { href: '/admin/menu', label: 'Menú' },
-  { href: '/admin/noticias', label: 'Noticias' },
-  { href: '/admin/publicaciones', label: 'Publicaciones' },
-  { href: '/admin/congresos', label: 'Congresos' },
-  { href: '/admin/asociaciones', label: 'Asociaciones' },
-  { href: '/admin/autoridades', label: 'Comisión Directiva' },
-  { href: '/admin/historia', label: 'Historia' },
-  { href: '/admin/usuarios', label: 'Usuarios' },
-  { href: '/admin/ajustes', label: 'Ajustes' },
+const GROUPS: { title: string | null; links: { href: string; label: string; exact?: boolean }[] }[] = [
+  {
+    title: null,
+    links: [{ href: '/admin', label: 'Panel', exact: true }],
+  },
+  {
+    title: 'Portada',
+    links: [
+      { href: '/admin/banners', label: 'Banners' },
+      { href: '/admin/indicadores', label: 'Indicadores' },
+    ],
+  },
+  {
+    title: 'Contenido',
+    links: [
+      { href: '/admin/noticias', label: 'Noticias' },
+      { href: '/admin/publicaciones', label: 'Publicaciones' },
+      { href: '/admin/congresos', label: 'Congresos' },
+    ],
+  },
+  {
+    title: 'Institucional',
+    links: [
+      { href: '/admin/autoridades', label: 'Comisión Directiva' },
+      { href: '/admin/asociaciones', label: 'Asociaciones' },
+      { href: '/admin/historia', label: 'Historia' },
+    ],
+  },
+  {
+    title: 'Configuración',
+    links: [
+      { href: '/admin/menu', label: 'Menú' },
+      { href: '/admin/ajustes', label: 'Ajustes' },
+      { href: '/admin/usuarios', label: 'Usuarios' },
+    ],
+  },
 ];
 
 export function AdminNav({ email }: { email: string }) {
@@ -35,22 +58,33 @@ export function AdminNav({ email }: { email: string }) {
         <p className="mt-1 text-xs text-paper/50">Administración</p>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3">
-        {LINKS.map((l) => {
-          const active = l.exact ? pathname === l.href : pathname.startsWith(l.href);
-          return (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={cn(
-                'block rounded-lg px-3 py-2.5 text-sm font-medium transition',
-                active ? 'bg-paper/15 text-paper' : 'text-paper/70 hover:bg-paper/10 hover:text-paper'
-              )}
-            >
-              {l.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto px-3 pb-4">
+        {GROUPS.map((group, gi) => (
+          <div key={gi} className={gi === 0 ? '' : 'mt-5'}>
+            {group.title && (
+              <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-paper/35">
+                {group.title}
+              </p>
+            )}
+            <div className="space-y-1">
+              {group.links.map((l) => {
+                const active = l.exact ? pathname === l.href : pathname.startsWith(l.href);
+                return (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className={cn(
+                      'block rounded-lg px-3 py-2.5 text-sm font-medium transition',
+                      active ? 'bg-paper/15 text-paper' : 'text-paper/70 hover:bg-paper/10 hover:text-paper'
+                    )}
+                  >
+                    {l.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="border-t border-paper/10 px-5 py-4">
