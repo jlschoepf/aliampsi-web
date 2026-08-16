@@ -28,6 +28,7 @@ function data(formData: FormData, current?: { publishedAt: Date | null } | null)
     coverImage: String(formData.get('coverImage') || '') || null,
     featured: formData.get('featured') === 'on',
     tags: String(formData.get('tags') || '').trim(),
+    gallery: String(formData.get('gallery') || ''),
     published,
     publishedAt,
   };

@@ -103,6 +103,7 @@ export default async function NoticiaDetail({
       <img src={cover} alt={n.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
 
       <NoticiaBody content={n.content} />
+      <GalleryView gallery={n.gallery} />
 
       {n.document && (
         <a

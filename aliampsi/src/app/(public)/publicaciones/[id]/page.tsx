@@ -100,6 +100,7 @@ export default async function PublicacionDetail({
       )}
 
       {p.body && <NoticiaBody content={p.body} />}
+      <GalleryView gallery={p.gallery} />
 
       {p.document && (
         <a

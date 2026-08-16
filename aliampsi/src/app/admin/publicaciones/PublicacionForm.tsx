@@ -5,6 +5,7 @@ import { Field, TextArea, Select, Checkbox, SubmitButton } from '@/components/ad
 import { CoverField } from '@/components/CoverField';
 import { Collapsible } from '@/components/Collapsible';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
+import { GalleryField } from '@/components/GalleryField';
 import { FileField } from '@/components/FileField';
 
 export function PublicacionForm({
@@ -33,6 +34,7 @@ export function PublicacionForm({
       />
       <TextArea label="Descripción (resumen)" name="description" rows={2} defaultValue={publicacion?.description} placeholder="Resumen corto que aparece en la tarjeta" hint="Aparece en el listado." />
       <MarkdownBodyField name="body" label="Contenido (opcional)" defaultValue={publicacion?.body} />
+      <GalleryField name="gallery" defaultValue={publicacion?.gallery} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Autor (opcional)" name="author" defaultValue={publicacion?.author} placeholder="Ej: Comité editorial" />
         <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={publicacion?.sourceUrl} placeholder="https://… (leer más / fuente)" />

@@ -33,6 +33,7 @@ model Noticia {
   seoDescription String @default("")
   featured    Boolean   @default(false)
   tags        String    @default("")
+  gallery     String    @default("")
   published   Boolean   @default(false)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
@@ -54,6 +55,7 @@ model Publicacion {
   coverImage  String?
   featured    Boolean   @default(false)
   tags        String    @default("")
+  gallery     String    @default("")
   publishedAt DateTime?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -77,6 +79,7 @@ model Congreso {
   coverImage  String?
   featured    Boolean   @default(false)
   tags        String    @default("")
+  gallery     String    @default("")
   publishedAt DateTime?
   published   Boolean   @default(true)
   createdAt   DateTime  @default(now())

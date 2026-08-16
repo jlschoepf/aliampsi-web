@@ -5,6 +5,7 @@ import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { CoverField } from '@/components/CoverField';
 import { Collapsible } from '@/components/Collapsible';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
+import { GalleryField } from '@/components/GalleryField';
 import { FileField } from '@/components/FileField';
 
 function toInputDate(d?: Date | null) {
@@ -28,6 +29,7 @@ export function CongresoForm({
       <Field label="Título" name="title" required defaultValue={congreso?.title} placeholder="Nombre del congreso o actividad" />
       <TextArea label="Descripción (resumen)" name="description" rows={2} defaultValue={congreso?.description} placeholder="Resumen corto que aparece en la tarjeta" hint="Aparece en el listado." />
       <MarkdownBodyField name="body" label="Contenido (opcional)" defaultValue={congreso?.body} />
+      <GalleryField name="gallery" defaultValue={congreso?.gallery} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Autor (opcional)" name="author" defaultValue={congreso?.author} placeholder="Ej: Comité editorial" />
         <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={congreso?.sourceUrl} placeholder="https://… (leer más / fuente)" />

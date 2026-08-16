@@ -101,6 +101,7 @@ export default async function CongresoDetail({
       )}
 
       {c.body && <NoticiaBody content={c.body} />}
+      <GalleryView gallery={c.gallery} />
 
       {c.document && (
         <a

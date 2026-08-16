@@ -6,6 +6,7 @@ import { CoverField } from '@/components/CoverField';
 import { Collapsible } from '@/components/Collapsible';
 import { FileField } from '@/components/FileField';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
+import { GalleryField } from '@/components/GalleryField';
 
 export function NoticiaForm({
   action,
@@ -30,6 +31,7 @@ export function NoticiaForm({
         hint="Aparece en el listado y en la portada."
       />
       <MarkdownBodyField name="content" defaultValue={noticia?.content} />
+      <GalleryField name="gallery" defaultValue={noticia?.gallery} />
       <CoverField name="coverImage" defaultValue={noticia?.coverImage} covers={covers} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Autor (opcional)" name="author" defaultValue={noticia?.author} placeholder="Ej: Comité de Comunicación" />
