@@ -3,6 +3,7 @@ import { toDateInput } from '@/lib/utils';
 import type { Congreso } from '@prisma/client';
 import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { CoverField } from '@/components/CoverField';
+import { Collapsible } from '@/components/Collapsible';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
 import { FileField } from '@/components/FileField';
 
@@ -44,20 +45,14 @@ export function CongresoForm({
       <Field label="Lugar" name="location" defaultValue={congreso?.location} placeholder="Ciudad, país o modalidad" />
       <Field label="Enlace (URL)" name="linkUrl" defaultValue={congreso?.linkUrl} placeholder="https://…" hint="Programa, inscripción o galería." />
       <CoverField name="coverImage" defaultValue={congreso?.coverImage} covers={covers} />
-      <div className="rounded-lg border border-line bg-sand/30 p-4">
-        <p className="mb-1 text-sm font-semibold text-ink">SEO (opcional)</p>
-        <p className="mb-4 text-xs text-ink-muted">
-          Personalizá cómo se ve en Google y al compartir. Si lo dejás vacío, se usa el título y el resumen.
-        </p>
-        <div className="space-y-4">
-          <Field label="Título SEO" name="seoTitle" defaultValue={congreso?.seoTitle} placeholder="Título para buscadores (si difiere del título)" />
-          <TextArea label="Descripción SEO" name="seoDescription" rows={2} defaultValue={congreso?.seoDescription} hint="Ideal 120–160 caracteres." />
+      <Collapsible title="Opciones avanzadas — SEO, fecha de publicación y etiquetas">
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field label="Fecha de publicación (opcional)" name="publishedAt" type="date" defaultValue={toDateInput(congreso?.publishedAt)} hint="Vacía: se usa hoy al publicar. Fecha futura: se publica sola ese día." />
+          <Field label="Etiquetas (opcional)" name="tags" defaultValue={congreso?.tags} placeholder="Ej: salud mental, infancia" hint="Separadas por comas." />
         </div>
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field label="Fecha de publicación (opcional)" name="publishedAt" type="date" defaultValue={toDateInput(congreso?.publishedAt)} hint="Vacía: se usa hoy al publicar. Fecha futura: se publica sola ese día." />
-        <Field label="Etiquetas (opcional)" name="tags" defaultValue={congreso?.tags} placeholder="Ej: salud mental, infancia" hint="Separadas por comas." />
-      </div>
+        <Field label="Título SEO" name="seoTitle" defaultValue={congreso?.seoTitle} placeholder="Título para buscadores (si difiere del título)" />
+        <TextArea label="Descripción SEO" name="seoDescription" rows={2} defaultValue={congreso?.seoDescription} hint="Ideal 120–160 caracteres." />
+      </Collapsible>
       <Checkbox label="Destacar (aparece primero y con distintivo)" name="featured" defaultChecked={congreso?.featured ?? false} />
       <Checkbox label="Publicar (visible en el sitio)" name="published" defaultChecked={congreso?.published ?? true} />
 
