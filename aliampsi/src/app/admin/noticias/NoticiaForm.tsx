@@ -1,16 +1,18 @@
 import Link from 'next/link';
 import type { Noticia } from '@prisma/client';
 import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
-import { ImageField } from '@/components/ImageField';
+import { CoverField } from '@/components/CoverField';
 import { FileField } from '@/components/FileField';
 import { MarkdownBodyField } from '@/components/MarkdownBodyField';
 
 export function NoticiaForm({
   action,
   noticia,
+  covers,
 }: {
   action: (formData: FormData) => void;
   noticia?: Noticia;
+  covers: string[];
 }) {
   return (
     <form action={action} className="card space-y-5 p-6">
@@ -26,12 +28,7 @@ export function NoticiaForm({
         hint="Aparece en el listado y en la portada."
       />
       <MarkdownBodyField name="content" defaultValue={noticia?.content} />
-      <ImageField
-        label="Imagen de portada"
-        name="coverImage"
-        defaultValue={noticia?.coverImage}
-        hint="Opcional. Si no ponés una, se usa la imagen genérica de AL·IAM·PSI."
-      />
+      <CoverField name="coverImage" defaultValue={noticia?.coverImage} covers={covers} />
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Autor (opcional)" name="author" defaultValue={noticia?.author} placeholder="Ej: Comité de Comunicación" />
         <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={noticia?.sourceUrl} placeholder="https://… (leer más / fuente)" />

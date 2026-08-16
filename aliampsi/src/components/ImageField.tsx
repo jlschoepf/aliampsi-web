@@ -68,13 +68,25 @@ export function ImageField({
   name,
   defaultValue,
   hint,
+  value: controlledValue,
+  onChange,
+  showHiddenInput = true,
 }: {
   label: string;
   name: string;
   defaultValue?: string | null;
   hint?: string;
+  value?: string;
+  onChange?: (v: string) => void;
+  showHiddenInput?: boolean;
 }) {
-  const [value, setValue] = useState(defaultValue ?? '');
+  const [internalValue, setInternalValue] = useState(defaultValue ?? '');
+  const controlled = controlledValue !== undefined;
+  const value = controlled ? controlledValue : internalValue;
+  const setValue = (v: string) => {
+    if (controlled) onChange?.(v);
+    else setInternalValue(v);
+  };
   const [status, setStatus] = useState<'idle' | 'uploading' | 'error'>('idle');
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -210,7 +222,7 @@ export function ImageField({
       </div>
 
       {/* Valor que viaja en el formulario */}
-      <input type="hidden" name={name} value={value} />
+      {showHiddenInput && <input type="hidden" name={name} value={value} />}
 
       {error && <p className="mt-1.5 text-xs text-coral-dark">{error}</p>}
       {hint && !error && <p className="mt-1.5 text-xs text-ink-muted">{hint}</p>}

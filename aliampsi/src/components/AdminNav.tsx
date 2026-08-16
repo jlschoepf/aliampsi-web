@@ -25,6 +25,7 @@ const GROUPS: { title: string | null; links: { href: string; label: string; exac
       { href: '/admin/noticias', label: 'Noticias' },
       { href: '/admin/publicaciones', label: 'Publicaciones' },
       { href: '/admin/congresos', label: 'Congresos' },
+      { href: '/admin/portadas', label: 'Portadas' },
     ],
   },
   {
