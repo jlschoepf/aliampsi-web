@@ -39,6 +39,7 @@ model Publicacion {
   id          String   @id @default(cuid())
   title       String
   description String   @default("")
+  body        String   @default("")
   kind        String   @default("revista") // revista | documento | articulo
   linkUrl     String   @default("")
   coverImage  String?
@@ -51,6 +52,7 @@ model Congreso {
   id          String    @id @default(cuid())
   title       String
   description String    @default("")
+  body        String    @default("")
   location    String    @default("")
   startDate   DateTime?
   endDate     DateTime?

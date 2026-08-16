@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { upload } from '@vercel/blob/client';
 
-export function MarkdownBodyField({ name, defaultValue }: { name: string; defaultValue?: string | null }) {
+export function MarkdownBodyField({ name, defaultValue, label = 'Contenido' }: { name: string; defaultValue?: string | null; label?: string }) {
   const [value, setValue] = useState(defaultValue ?? '');
   const [status, setStatus] = useState<'idle' | 'uploading' | 'error'>('idle');
   const taRef = useRef<HTMLTextAreaElement>(null);
@@ -57,7 +57,7 @@ export function MarkdownBodyField({ name, defaultValue }: { name: string; defaul
 
   return (
     <div>
-      <label className="field-label">Contenido</label>
+      <label className="field-label">{label}</label>
       <div className="mb-2 flex flex-wrap gap-2">
         <label className="cursor-pointer rounded-lg border border-line px-2.5 py-1.5 text-xs font-medium text-ink transition hover:bg-sand">
           {status === 'uploading' ? 'Subiendo…' : '🖼 Insertar imagen'}

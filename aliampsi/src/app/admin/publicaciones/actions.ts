@@ -14,6 +14,7 @@ function data(formData: FormData) {
   return {
     title: String(formData.get('title') || '').trim(),
     description: String(formData.get('description') || ''),
+    body: String(formData.get('body') || ''),
     kind: String(formData.get('kind') || 'revista'),
     linkUrl: String(formData.get('linkUrl') || ''),
     coverImage: String(formData.get('coverImage') || '') || null,

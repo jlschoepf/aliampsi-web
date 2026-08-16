@@ -60,11 +60,18 @@ export function CongresoCard({ c }: { c: Congreso }) {
       <h3 className="mt-3 text-xl font-semibold leading-snug">{c.title}</h3>
       {dateLabel && <p className="mt-1 text-sm font-medium text-teal-600">{dateLabel}</p>}
       {c.description && <p className="mt-3 flex-1 text-sm text-ink-muted">{c.description}</p>}
-      {c.linkUrl && (
-        <a href={c.linkUrl} target="_blank" rel="noreferrer" className="btn-ghost mt-5 self-start">
-          Ver programa
-        </a>
-      )}
+      <div className="mt-5 flex flex-wrap items-center gap-4">
+        {c.body && (
+          <Link href={`/congresos/${c.id}`} className="text-sm font-semibold text-teal-600 hover:text-coral">
+            Leer más →
+          </Link>
+        )}
+        {c.linkUrl && (
+          <a href={c.linkUrl} target="_blank" rel="noreferrer" className="btn-ghost">
+            Ver programa
+          </a>
+        )}
+      </div>
     </article>
   );
 }
@@ -78,11 +85,18 @@ export function PublicacionCard({ p }: { p: Publicacion }) {
       </span>
       <h3 className="mt-3 font-serif text-xl italic leading-snug text-ink">{p.title}</h3>
       {p.description && <p className="mt-2 flex-1 text-sm text-ink-muted">{p.description}</p>}
-      {p.linkUrl && (
-        <a href={p.linkUrl} target="_blank" rel="noreferrer" className="btn-primary mt-5 self-start">
-          Acceder
-        </a>
-      )}
+      <div className="mt-5 flex flex-wrap items-center gap-4">
+        {p.body && (
+          <Link href={`/publicaciones/${p.id}`} className="text-sm font-semibold text-teal-600 hover:text-coral">
+            Leer más →
+          </Link>
+        )}
+        {p.linkUrl && (
+          <a href={p.linkUrl} target="_blank" rel="noreferrer" className="btn-primary">
+            Acceder
+          </a>
+        )}
+      </div>
     </article>
   );
 }

@@ -16,6 +16,7 @@ function data(formData: FormData) {
   return {
     title: String(formData.get('title') || '').trim(),
     description: String(formData.get('description') || ''),
+    body: String(formData.get('body') || ''),
     location: String(formData.get('location') || ''),
     startDate: parseDate(formData.get('startDate')),
     endDate: parseDate(formData.get('endDate')),
