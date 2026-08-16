@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { logoutAction } from '@/app/admin/actions';
@@ -49,6 +49,30 @@ export function AdminNav({ email }: { email: string }) {
   const pathname = usePathname();
   const [query, setQuery] = useState('');
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
+  const [loaded, setLoaded] = useState(false);
+
+  const STORAGE_KEY = 'aliampsi:adminNavCollapsed';
+
+  // Cargar el estado guardado al iniciar
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) setCollapsed(new Set(JSON.parse(raw) as number[]));
+    } catch {
+      // ignorar
+    }
+    setLoaded(true);
+  }, []);
+
+  // Guardar cuando cambia
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
+    } catch {
+      // ignorar
+    }
+  }, [collapsed, loaded]);
 
   const q = query.trim().toLowerCase();
   const toggle = (gi: number) => {
