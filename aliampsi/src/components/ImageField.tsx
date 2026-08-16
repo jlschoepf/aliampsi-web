@@ -205,7 +205,7 @@ export function ImageField({
         {showUrlInput && (
           <input
             id={`${name}-url`}
-            type="url"
+            type="text"
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="Pegá una URL o subí un archivo"

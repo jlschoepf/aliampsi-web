@@ -51,7 +51,7 @@ export function FileField({
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <input
-          type="url"
+          type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Pegá una URL o subí un archivo"
