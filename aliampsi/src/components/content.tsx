@@ -130,10 +130,11 @@ export function AsociacionCard({ a, compact = false }: { a: Asociacion; compact?
         )}
       </div>
       <h3 className="mt-2.5 line-clamp-2 text-[13px] font-semibold leading-snug text-ink">{a.name}</h3>
-      <div className="mt-0.5 flex items-end justify-between gap-2">
+      {/* El país empuja hacia abajo; la flecha queda anclada al pie en todas las tarjetas */}
+      <div className="mt-0.5 flex flex-1 items-end justify-between gap-2">
         {a.country ? <span className="text-[11px] text-ink-muted">{a.country}</span> : <span />}
         {a.website && (
-          <span className="text-teal-600 group-hover:text-coral" title="Tiene sitio web" aria-label="Tiene sitio web">
+          <span className="shrink-0 text-teal-600 group-hover:text-coral" title="Tiene sitio web" aria-label="Tiene sitio web">
             <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M7 17 17 7" />
               <path d="M7 7h10v10" />
@@ -175,7 +176,7 @@ export function AsociacionCard({ a, compact = false }: { a: Asociacion; compact?
     </>
   );
 
-  const base = compact ? 'group card flex flex-col p-3 transition' : 'group card flex flex-col p-5 transition';
+  const base = compact ? 'group card flex h-full flex-col p-3 transition' : 'group card flex flex-col p-5 transition';
   const interactive = a.website
     ? compact
       ? ' hover:-translate-y-0.5 hover:border-coral/40 hover:shadow-md hover:shadow-ink/5'
