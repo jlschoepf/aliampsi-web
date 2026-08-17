@@ -4,7 +4,7 @@ export const LOGO_SRC = '/logo.png';
 export const EMBLEM_SRC = '/emblem.png';
 
 // URL pública del sitio (para SEO, sitemap, Open Graph). Configurable por entorno.
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://aliampsi-web.vercel.app').replace(/\/$/, '');
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://aliampsi.com').replace(/\/$/, '');
 export const SITE_NAME = 'AL·IAM·PSI';
 export const SITE_LONG_NAME =
   'Alianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines';

@@ -57,7 +57,7 @@ export default async function AdminEnvios({ searchParams }: { searchParams: { es
       <div className="mb-5 rounded-lg border border-line bg-sand/30 p-4">
         <p className="text-sm font-medium text-ink">Enlace para compartir con las asociaciones</p>
         <p className="mt-1 break-all font-mono text-xs text-teal-700">
-          {process.env.NEXT_PUBLIC_SITE_URL || 'https://aliampsi-web.vercel.app'}/enviar
+          {process.env.NEXT_PUBLIC_SITE_URL || 'https://aliampsi.com'}/enviar
         </p>
         <p className="mt-1.5 text-xs text-ink-muted">
           Cualquiera con este enlace puede enviar una propuesta. Nada se publica sin tu aprobación.
