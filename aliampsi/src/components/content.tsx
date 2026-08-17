@@ -130,25 +130,15 @@ export function AsociacionCard({ a, compact = false }: { a: Asociacion; compact?
         )}
       </div>
       <h3 className="mt-2.5 line-clamp-2 text-[13px] font-semibold leading-snug text-ink">{a.name}</h3>
-      <div className="mt-0.5 flex items-center justify-between gap-2">
-        {a.country ? (
-          <span className="text-[11px] text-ink-muted">{a.country}</span>
-        ) : (
-          <span />
-        )}
-        {a.website ? (
-          <span
-            className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-teal-600 group-hover:text-coral"
-            title="Tiene sitio web"
-          >
-            Sitio
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <div className="mt-0.5 flex items-end justify-between gap-2">
+        {a.country ? <span className="text-[11px] text-ink-muted">{a.country}</span> : <span />}
+        {a.website && (
+          <span className="text-teal-600 group-hover:text-coral" title="Tiene sitio web" aria-label="Tiene sitio web">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M7 17 17 7" />
               <path d="M7 7h10v10" />
             </svg>
           </span>
-        ) : (
-          <span className="text-[11px] text-ink-muted/60" title="Sin sitio web">Sin sitio</span>
         )}
       </div>
     </>
@@ -190,7 +180,7 @@ export function AsociacionCard({ a, compact = false }: { a: Asociacion; compact?
     ? compact
       ? ' hover:-translate-y-0.5 hover:border-coral/40 hover:shadow-md hover:shadow-ink/5'
       : ' hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/5'
-    : ' bg-paper/60';
+    : '';
   const className = base + interactive;
   return a.website ? (
     <a href={a.website} target="_blank" rel="noreferrer" className={className}>
