@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
 import { getSettings } from '@/lib/settings';
 import { notificarEnvio } from '@/lib/notify';
+import { registrarEstadoAviso } from '@/app/admin/ajustes/actions';
 import { SITE_URL } from '@/lib/site';
 
 export async function createEnvio(formData: FormData) {
@@ -45,7 +46,7 @@ export async function createEnvio(formData: FormData) {
     const settings = await getSettings();
     const destino = settings.notifyEmail || settings.contactEmail;
     if (destino) {
-      await notificarEnvio(
+      const r = await notificarEnvio(
         destino,
         {
           tipo: creado.tipo,
@@ -58,6 +59,7 @@ export async function createEnvio(formData: FormData) {
         },
         `${SITE_URL}/admin/envios/${creado.id}`
       );
+      await registrarEstadoAviso(r.ok, r.detalle);
     }
   } catch {
     // Si falla el aviso, el envío igual quedó guardado.

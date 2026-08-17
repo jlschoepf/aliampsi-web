@@ -1,12 +1,17 @@
 import { AdminHeader, Field, TextArea, SubmitButton } from '@/components/admin-ui';
 import { ImageField } from '@/components/ImageField';
 import { getSettings } from '@/lib/settings';
-import { updateSettings } from './actions';
+import { updateSettings, probarAviso } from './actions';
+import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AjustesPage({ searchParams }: { searchParams: { ok?: string } }) {
+export default async function AjustesPage({ searchParams }: { searchParams: { ok?: string; prueba?: string } }) {
   const s = await getSettings();
+  const destinoAvisos = s.notifyEmail || s.contactEmail;
+  const estadoAviso = s.notifyStatus || '';
+  const estadoOk = estadoAviso.startsWith('ok|');
+  const estadoDetalle = estadoAviso.includes('|') ? estadoAviso.split('|').slice(1).join('|') : estadoAviso;
 
   return (
     <>
@@ -108,10 +113,11 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
           hint="Se muestra al compartir el sitio en WhatsApp, Facebook o LinkedIn. Ideal horizontal 1200×630."
         />
 
-        <div className="rounded-lg border border-line bg-sand/30 p-4">
+        <div id="avisos" className="rounded-lg border border-line bg-sand/30 p-4">
           <p className="mb-1 text-sm font-semibold text-ink">Avisos de envíos</p>
           <p className="mb-4 text-xs text-ink-muted">
             Cuando una asociación envía contenido desde el formulario público, mandamos un correo a esta casilla.
+            Guardá el correo y después probalo con el botón que está debajo del formulario.
           </p>
           <Field
             label="Correo para avisos"
@@ -150,6 +156,52 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
           <SubmitButton>Guardar ajustes</SubmitButton>
         </div>
       </form>
+
+      {/* Verificación del correo de avisos (fuera del formulario principal) */}
+      <div className="card mt-6 space-y-4 p-6">
+        <div>
+          <h2 className="font-display text-lg font-bold text-ink">Probar los avisos por correo</h2>
+          <p className="mt-1 text-sm text-ink-muted">
+            Envía un correo de prueba a <strong>{destinoAvisos || 'ninguna casilla configurada'}</strong> y te muestra
+            el resultado acá mismo.
+          </p>
+        </div>
+
+        {searchParams?.prueba === 'ok' && (
+          <p className="rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">
+            Prueba enviada. Revisá la casilla (y la carpeta de spam).
+          </p>
+        )}
+        {searchParams?.prueba === 'error' && (
+          <p className="rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
+            No se pudo enviar. Mirá el detalle debajo.
+          </p>
+        )}
+
+        {estadoAviso && (
+          <div className={`rounded-lg border px-4 py-3 text-sm ${estadoOk ? 'border-teal-600/30 bg-teal-600/5 text-teal-700' : 'border-coral/40 bg-coral/10 text-coral-dark'}`}>
+            <p className="font-semibold">
+              Último intento: {estadoOk ? 'correcto' : 'con error'}
+              {s.notifyAt ? ` · ${formatDate(s.notifyAt)}` : ''}
+            </p>
+            <p className="mt-1 text-ink-muted">{estadoDetalle}</p>
+          </div>
+        )}
+
+        <form action={probarAviso}>
+          <SubmitButton>Enviar correo de prueba</SubmitButton>
+        </form>
+
+        <div className="rounded-lg bg-sand/40 p-4 text-xs text-ink-muted">
+          <p className="mb-1 font-semibold text-ink">Si no llega el correo</p>
+          <p>
+            Usamos FormSubmit, un servicio gratuito que exige <strong>confirmar la casilla la primera vez</strong>:
+            fijate si recibiste un correo de activación de FormSubmit (revisá spam) y confirmalo. Después volvé a
+            probar. Para envíos más confiables y con remitente propio, se puede conectar Resend cargando la clave
+            RESEND_API_KEY.
+          </p>
+        </div>
+      </div>
     </>
   );
 }

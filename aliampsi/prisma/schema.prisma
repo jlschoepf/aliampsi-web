@@ -169,6 +169,8 @@ model Settings {
   gscVerification String @default("")
   gaId           String  @default("")
   notifyEmail    String  @default("")
+  notifyStatus   String  @default("")
+  notifyAt       DateTime?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

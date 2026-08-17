@@ -35,6 +35,8 @@ export const DEFAULT_SETTINGS = {
   gscVerification: '',
   gaId: '',
   notifyEmail: '',
+  notifyStatus: '',
+  notifyAt: null as Date | null,
 };
 
 export type SiteSettings = typeof DEFAULT_SETTINGS;
@@ -71,6 +73,8 @@ export async function getSettings(): Promise<SiteSettings> {
       gscVerification: s.gscVerification || '',
       gaId: s.gaId || '',
       notifyEmail: s.notifyEmail || '',
+      notifyStatus: s.notifyStatus || '',
+      notifyAt: s.notifyAt ?? null,
     };
   } catch {
     return DEFAULT_SETTINGS;
