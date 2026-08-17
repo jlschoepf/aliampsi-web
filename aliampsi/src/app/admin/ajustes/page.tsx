@@ -1,7 +1,8 @@
 import { AdminHeader, Field, TextArea, SubmitButton } from '@/components/admin-ui';
 import { ImageField } from '@/components/ImageField';
 import { getSettings } from '@/lib/settings';
-import { updateSettings, probarAviso } from './actions';
+import { updateSettings, probarAviso, registrarEstadoAviso } from './actions';
+import { AvisoPrueba } from '@/components/AvisoPrueba';
 import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
@@ -216,9 +217,13 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
           </div>
         )}
 
-        <form action={probarAviso}>
-          <SubmitButton>Enviar correo de prueba</SubmitButton>
-        </form>
+        <AvisoPrueba
+          provider={s.mailProvider}
+          apiKey={s.mailApiKey}
+          destino={destinoAvisos}
+          registrar={registrarEstadoAviso}
+          probarServidor={probarAviso}
+        />
 
         <div className="rounded-lg bg-sand/40 p-4 text-xs text-ink-muted">
           <p className="mb-1 font-semibold text-ink">Cómo dejarlo funcionando en 2 minutos</p>
@@ -229,8 +234,9 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
             <li>Volvé acá y tocá <strong>Enviar correo de prueba</strong>.</li>
           </ol>
           <p className="mt-2">
-            Nota: FormSubmit dejó de servir porque bloquea los envíos hechos desde un servidor (error 403). Si preferís
-            un remitente propio (avisos@aliampsi.com), la opción es Resend con el dominio verificado.
+            Con Web3Forms el aviso se envía desde el navegador (así lo exige su plan gratuito) y llega a la casilla que
+            registraste al crear la clave. Si preferís un remitente propio (avisos@aliampsi.com) y envío desde el
+            servidor, la opción es Resend con el dominio verificado.
           </p>
         </div>
       </div>

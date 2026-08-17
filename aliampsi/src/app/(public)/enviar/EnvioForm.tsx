@@ -11,7 +11,7 @@ function Label({ htmlFor, children, required }: { htmlFor: string; children: Rea
   );
 }
 
-export function EnvioForm({ action }: { action: (formData: FormData) => void }) {
+export function EnvioForm({ action, web3Key }: { action: (formData: FormData) => void; web3Key?: string }) {
   const [tipo, setTipo] = useState('noticia');
   const [cover, setCover] = useState('');
   const [doc, setDoc] = useState('');
@@ -54,7 +54,46 @@ export function EnvioForm({ action }: { action: (formData: FormData) => void }) 
   const docName = doc ? decodeURIComponent(doc.split('/').pop() || 'documento') : '';
 
   return (
-    <form action={action} onSubmit={() => setSending(true)} className="card mt-8 space-y-6 p-6 sm:p-8">
+    <form
+      action={action}
+      onSubmit={(e) => {
+        setSending(true);
+        // Aviso al equipo desde el navegador (requisito del plan gratuito de Web3Forms).
+        if (web3Key) {
+          const f = e.currentTarget;
+          const get = (n: string) => (f.elements.namedItem(n) as HTMLInputElement | HTMLTextAreaElement | null)?.value || '';
+          try {
+            fetch('https://api.web3forms.com/submit', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+              keepalive: true,
+              body: JSON.stringify({
+                access_key: web3Key,
+                subject: `Nuevo envío en el sitio: ${get('title')}`,
+                from_name: 'Sitio AL·IAM·PSI',
+                email: get('contactEmail') || undefined,
+                message: [
+                  'Llegó un nuevo contenido desde el formulario público.',
+                  '',
+                  `Tipo: ${get('tipo')}${get('tipoOtro') ? ` — ${get('tipoOtro')}` : ''}`,
+                  `Título: ${get('title')}`,
+                  `Institución: ${get('orgName')}`,
+                  `Contacto: ${get('contactName')} (${get('contactEmail')})`,
+                  get('summary') ? `Resumen: ${get('summary')}` : '',
+                  '',
+                  'Revisalo en el panel: /admin/envios',
+                ]
+                  .filter(Boolean)
+                  .join('\n'),
+              }),
+            }).catch(() => {});
+          } catch {
+            // El aviso nunca debe impedir el envío.
+          }
+        }
+      }}
+      className="card mt-8 space-y-6 p-6 sm:p-8"
+    >
       {/* Campo trampa anti-spam: las personas no lo ven */}
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
 

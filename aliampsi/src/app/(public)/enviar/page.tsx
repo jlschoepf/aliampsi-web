@@ -1,5 +1,6 @@
 import { EnvioForm } from './EnvioForm';
 import { createEnvio } from './actions';
+import { getSettings } from '@/lib/settings';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,7 +10,9 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function EnviarPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function EnviarPage({ searchParams }: { searchParams: { error?: string } }) {
+  const settings = await getSettings();
+  const web3Key = settings.mailProvider === 'web3forms' ? settings.mailApiKey : '';
   return (
     <section className="wrap max-w-3xl py-16 lg:py-20">
       <p className="eyebrow"><span className="text-coral">·</span> Para las asociaciones</p>
@@ -25,7 +28,7 @@ export default function EnviarPage({ searchParams }: { searchParams: { error?: s
         </p>
       )}
 
-      <EnvioForm action={createEnvio} />
+      <EnvioForm action={createEnvio} web3Key={web3Key} />
     </section>
   );
 }
