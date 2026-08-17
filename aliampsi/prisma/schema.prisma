@@ -169,6 +169,9 @@ model Settings {
   gscVerification String @default("")
   gaId           String  @default("")
   notifyEmail    String  @default("")
+  mailProvider   String  @default("web3forms")
+  mailApiKey     String  @default("")
+  mailFrom       String  @default("")
   notifyStatus   String  @default("")
   notifyAt       DateTime?
   createdAt    DateTime @default(now())

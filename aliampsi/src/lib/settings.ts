@@ -35,6 +35,9 @@ export const DEFAULT_SETTINGS = {
   gscVerification: '',
   gaId: '',
   notifyEmail: '',
+  mailProvider: 'web3forms',
+  mailApiKey: '',
+  mailFrom: '',
   notifyStatus: '',
   notifyAt: null as Date | null,
 };
@@ -73,6 +76,9 @@ export async function getSettings(): Promise<SiteSettings> {
       gscVerification: s.gscVerification || '',
       gaId: s.gaId || '',
       notifyEmail: s.notifyEmail || '',
+      mailProvider: s.mailProvider || 'web3forms',
+      mailApiKey: s.mailApiKey || '',
+      mailFrom: s.mailFrom || '',
       notifyStatus: s.notifyStatus || '',
       notifyAt: s.notifyAt ?? null,
     };

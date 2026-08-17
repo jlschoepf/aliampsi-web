@@ -127,6 +127,34 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
             placeholder="avisos@aliampsi.com"
             hint="Si lo dejás vacío, se usa el correo de contacto del sitio."
           />
+
+          <div className="mt-4 space-y-4 border-t border-line pt-4">
+            <div>
+              <label className="field-label" htmlFor="mailProvider">Servicio de envío</label>
+              <select id="mailProvider" name="mailProvider" defaultValue={s.mailProvider} className="field">
+                <option value="web3forms">Web3Forms (gratis, solo pide una clave por correo)</option>
+                <option value="resend">Resend (profesional, requiere cuenta)</option>
+                <option value="formsubmit">FormSubmit (sin clave, no funciona desde el servidor)</option>
+              </select>
+              <p className="mt-1.5 text-xs text-ink-muted">
+                Recomendado: Web3Forms. Entrá a web3forms.com, poné tu correo y te llega una «Access Key» al instante.
+              </p>
+            </div>
+            <Field
+              label="Clave del servicio"
+              name="mailApiKey"
+              defaultValue={s.mailApiKey}
+              placeholder="Pegá acá la Access Key (Web3Forms) o la API Key (Resend)"
+              hint="Se guarda en el sitio y solo la usa el servidor para enviar los avisos."
+            />
+            <Field
+              label="Remitente (solo Resend)"
+              name="mailFrom"
+              defaultValue={s.mailFrom}
+              placeholder="AL·IAM·PSI <avisos@aliampsi.com>"
+              hint="Opcional. Con Resend, el dominio del remitente debe estar verificado en su panel."
+            />
+          </div>
         </div>
 
         <div className="rounded-lg border border-line bg-sand/30 p-4">
@@ -193,12 +221,16 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
         </form>
 
         <div className="rounded-lg bg-sand/40 p-4 text-xs text-ink-muted">
-          <p className="mb-1 font-semibold text-ink">Si no llega el correo</p>
-          <p>
-            Usamos FormSubmit, un servicio gratuito que exige <strong>confirmar la casilla la primera vez</strong>:
-            fijate si recibiste un correo de activación de FormSubmit (revisá spam) y confirmalo. Después volvé a
-            probar. Para envíos más confiables y con remitente propio, se puede conectar Resend cargando la clave
-            RESEND_API_KEY.
+          <p className="mb-1 font-semibold text-ink">Cómo dejarlo funcionando en 2 minutos</p>
+          <ol className="ml-4 list-decimal space-y-1">
+            <li>Entrá a <strong>web3forms.com</strong>, escribí el correo donde querés recibir los avisos y pedí la clave.</li>
+            <li>Te llega al instante una <strong>Access Key</strong> por correo.</li>
+            <li>Pegala arriba en «Clave del servicio», con el servicio <strong>Web3Forms</strong> seleccionado, y guardá.</li>
+            <li>Volvé acá y tocá <strong>Enviar correo de prueba</strong>.</li>
+          </ol>
+          <p className="mt-2">
+            Nota: FormSubmit dejó de servir porque bloquea los envíos hechos desde un servidor (error 403). Si preferís
+            un remitente propio (avisos@aliampsi.com), la opción es Resend con el dominio verificado.
           </p>
         </div>
       </div>

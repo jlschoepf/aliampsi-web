@@ -13,7 +13,7 @@ const FIELDS = [
   'contactTitle', 'contactText', 'footerText',
   'qsTitle', 'qsIntro', 'qsMision', 'qsCompromiso',
   'qsPilar1Title', 'qsPilar1Text', 'qsPilar2Title', 'qsPilar2Text', 'qsPilar3Title', 'qsPilar3Text',
-  'seoTitle', 'seoDescription', 'seoImage', 'gscVerification', 'gaId', 'notifyEmail',
+  'seoTitle', 'seoDescription', 'seoImage', 'gscVerification', 'gaId', 'notifyEmail', 'mailProvider', 'mailApiKey', 'mailFrom',
 ];
 
 export async function updateSettings(formData: FormData) {
@@ -57,7 +57,8 @@ export async function probarAviso() {
       contactEmail: destino,
       summary: 'Este es un correo de prueba para verificar los avisos de nuevos envíos.',
     },
-    `${SITE_URL}/admin/envios`
+    `${SITE_URL}/admin/envios`,
+    { provider: s.mailProvider, apiKey: s.mailApiKey, from: s.mailFrom }
   );
 
   await registrarEstadoAviso(r.ok, r.detalle);

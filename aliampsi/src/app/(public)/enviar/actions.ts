@@ -57,7 +57,8 @@ export async function createEnvio(formData: FormData) {
           contactEmail: creado.contactEmail,
           summary: creado.summary,
         },
-        `${SITE_URL}/admin/envios/${creado.id}`
+        `${SITE_URL}/admin/envios/${creado.id}`,
+        { provider: settings.mailProvider, apiKey: settings.mailApiKey, from: settings.mailFrom }
       );
       await registrarEstadoAviso(r.ok, r.detalle);
     }
