@@ -201,3 +201,24 @@ model Portada {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Envio {
+  id           String   @id @default(cuid())
+  tipo         String   @default("noticia")
+  title        String
+  summary      String   @default("")
+  body         String   @default("")
+  orgName      String   @default("")
+  contactName  String   @default("")
+  contactEmail String   @default("")
+  contactPhone String   @default("")
+  linkUrl      String   @default("")
+  location     String   @default("")
+  eventDate    String   @default("")
+  coverImage   String?
+  document     String?
+  status       String   @default("pendiente")
+  adminNote    String   @default("")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

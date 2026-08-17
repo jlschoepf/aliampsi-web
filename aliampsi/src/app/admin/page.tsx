@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db';
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboard() {
-  const [noticias, publicaciones, congresos, asociaciones, autoridades, banners, indicadores] = await Promise.all([
+  const [noticias, publicaciones, congresos, asociaciones, autoridades, banners, indicadores, enviosPendientes] = await Promise.all([
     prisma.noticia.count(),
     prisma.publicacion.count(),
     prisma.congreso.count(),
@@ -12,6 +12,7 @@ export default async function AdminDashboard() {
     prisma.autoridad.count(),
     prisma.banner.count(),
     prisma.indicador.count(),
+    prisma.envio.count({ where: { status: 'pendiente' } }),
   ]);
 
   const cards = [
@@ -32,6 +33,23 @@ export default async function AdminDashboard() {
           Gestioná los contenidos del sitio de AL·IAM·PSI.
         </p>
       </div>
+
+      {enviosPendientes > 0 && (
+        <Link
+          href="/admin/envios"
+          className="mb-6 flex items-center justify-between gap-4 rounded-lg border border-coral/40 bg-coral/10 px-5 py-4 transition hover:bg-coral/15"
+        >
+          <span>
+            <span className="block text-sm font-semibold text-coral-dark">
+              {enviosPendientes} envío{enviosPendientes === 1 ? '' : 's'} sin revisar
+            </span>
+            <span className="block text-xs text-ink-muted">
+              Contenidos que enviaron las asociaciones desde el formulario público.
+            </span>
+          </span>
+          <span className="shrink-0 text-sm font-semibold text-coral-dark">Revisar →</span>
+        </Link>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
