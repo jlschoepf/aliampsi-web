@@ -7,7 +7,7 @@ import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AjustesPage({ searchParams }: { searchParams: { ok?: string; prueba?: string } }) {
+export default async function AjustesPage({ searchParams }: { searchParams: { ok?: string } }) {
   const s = await getSettings();
   const destinoAvisos = s.notifyEmail || s.contactEmail;
   const estadoAviso = s.notifyStatus || '';
@@ -196,21 +196,10 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
           </p>
         </div>
 
-        {searchParams?.prueba === 'ok' && (
-          <p className="rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">
-            Prueba enviada. Revisá la casilla (y la carpeta de spam).
-          </p>
-        )}
-        {searchParams?.prueba === 'error' && (
-          <p className="rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
-            No se pudo enviar. Mirá el detalle debajo.
-          </p>
-        )}
-
         {estadoAviso && (
           <div className={`rounded-lg border px-4 py-3 text-sm ${estadoOk ? 'border-teal-600/30 bg-teal-600/5 text-teal-700' : 'border-coral/40 bg-coral/10 text-coral-dark'}`}>
             <p className="font-semibold">
-              Último intento: {estadoOk ? 'correcto' : 'con error'}
+              Último intento registrado: {estadoOk ? 'correcto' : 'con error'}
               {s.notifyAt ? ` · ${formatDate(s.notifyAt)}` : ''}
             </p>
             <p className="mt-1 text-ink-muted">{estadoDetalle}</p>
