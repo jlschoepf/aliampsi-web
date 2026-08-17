@@ -23,7 +23,7 @@ export default async function HomePage() {
       take: 3,
     }),
     prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 3 }),
-    prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 6 }),
+    prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 10 }),
     Promise.all([
       prisma.asociacion.count({ where: { published: true } }),
       prisma.congreso.count({ where: { published: true } }),
@@ -201,9 +201,9 @@ export default async function HomePage() {
               </Link>
             }
           />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {asociaciones.map((a) => (
-              <AsociacionCard key={a.id} a={a} />
+              <AsociacionCard key={a.id} a={a} compact />
             ))}
           </div>
         </section>

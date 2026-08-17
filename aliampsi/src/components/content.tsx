@@ -112,8 +112,27 @@ export function PublicacionCard({ p }: { p: Publicacion }) {
   );
 }
 
-export function AsociacionCard({ a }: { a: Asociacion }) {
-  const body = (
+export function AsociacionCard({ a, compact = false }: { a: Asociacion; compact?: boolean }) {
+  const body = compact ? (
+    <>
+      <div className="flex h-20 items-center justify-center rounded-lg border border-line bg-white p-3">
+        {a.logoImage ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={a.logoImage}
+            alt={`Logo de ${a.name}`}
+            className="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div className="font-display text-lg font-bold text-ink/70">
+            {a.acronym ? a.acronym.slice(0, 6) : a.name.slice(0, 3).toUpperCase()}
+          </div>
+        )}
+      </div>
+      <h3 className="mt-2.5 line-clamp-2 text-[13px] font-semibold leading-snug text-ink">{a.name}</h3>
+      {a.country && <p className="mt-0.5 text-[11px] text-ink-muted">{a.country}</p>}
+    </>
+  ) : (
     <>
       <div className="flex h-28 items-center justify-center rounded-xl border border-line bg-white p-5">
         {a.logoImage ? (
@@ -146,7 +165,9 @@ export function AsociacionCard({ a }: { a: Asociacion }) {
     </>
   );
 
-  const className = 'group card flex flex-col p-5 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/5';
+  const className = compact
+    ? 'group card flex flex-col p-3 transition hover:-translate-y-0.5 hover:shadow-md hover:shadow-ink/5'
+    : 'group card flex flex-col p-5 transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/5';
   return a.website ? (
     <a href={a.website} target="_blank" rel="noreferrer" className={className}>
       {body}
