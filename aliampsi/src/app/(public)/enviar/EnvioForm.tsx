@@ -70,8 +70,23 @@ export function EnvioForm({ action }: { action: (formData: FormData) => void }) 
           <option value="noticia">Una noticia o novedad</option>
           <option value="congreso">Un congreso o actividad</option>
           <option value="publicacion">Una publicación o documento</option>
+          <option value="otro">Otro (contanos qué es)</option>
         </select>
       </div>
+
+      {tipo === 'otro' && (
+        <div>
+          <Label htmlFor="tipoOtro" required>¿De qué se trata?</Label>
+          <input
+            id="tipoOtro"
+            name="tipoOtro"
+            required
+            maxLength={120}
+            className="field"
+            placeholder="Ej: convocatoria, curso, premio, comunicado…"
+          />
+        </div>
+      )}
 
       <div>
         <Label htmlFor="title" required>Título</Label>

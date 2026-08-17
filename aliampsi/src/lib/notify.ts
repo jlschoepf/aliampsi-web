@@ -4,6 +4,7 @@
 
 type EnvioAviso = {
   tipo: string;
+  tipoOtro?: string;
   title: string;
   orgName: string;
   contactName: string;
@@ -15,12 +16,14 @@ const TIPO_LABEL: Record<string, string> = {
   noticia: 'Noticia',
   congreso: 'Congreso',
   publicacion: 'Publicación',
+  otro: 'Otro',
 };
 
 export async function notificarEnvio(to: string, envio: EnvioAviso, adminUrl: string): Promise<void> {
   if (!to) return;
 
-  const tipo = TIPO_LABEL[envio.tipo] || envio.tipo;
+  const base = TIPO_LABEL[envio.tipo] || envio.tipo;
+  const tipo = envio.tipo === 'otro' && envio.tipoOtro ? `${base} — ${envio.tipoOtro}` : base;
   const subject = `Nuevo envío en el sitio: ${envio.title}`;
   const lines = [
     `Llegó un nuevo contenido desde el formulario público de AL·IAM·PSI.`,

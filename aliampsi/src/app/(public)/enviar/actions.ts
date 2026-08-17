@@ -18,11 +18,12 @@ export async function createEnvio(formData: FormData) {
   if (!title || !body || !contactEmail) redirect('/enviar?error=1');
 
   const tipo = String(formData.get('tipo') || 'noticia');
-  const allowed = ['noticia', 'congreso', 'publicacion'];
+  const allowed = ['noticia', 'congreso', 'publicacion', 'otro'];
 
   const creado = await prisma.envio.create({
     data: {
       tipo: allowed.includes(tipo) ? tipo : 'noticia',
+      tipoOtro: String(formData.get('tipoOtro') || '').trim().slice(0, 120),
       title: title.slice(0, 200),
       summary: String(formData.get('summary') || '').trim().slice(0, 400),
       body: body.slice(0, 20000),
@@ -48,6 +49,7 @@ export async function createEnvio(formData: FormData) {
         destino,
         {
           tipo: creado.tipo,
+          tipoOtro: creado.tipoOtro,
           title: creado.title,
           orgName: creado.orgName,
           contactName: creado.contactName,

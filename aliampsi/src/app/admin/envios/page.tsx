@@ -11,6 +11,7 @@ const TIPO_LABEL: Record<string, string> = {
   noticia: 'Noticia',
   congreso: 'Congreso',
   publicacion: 'Publicación',
+  otro: 'Otro',
 };
 
 function StatusChip({ status }: { status: string }) {
@@ -88,6 +89,7 @@ export default async function AdminEnvios({ searchParams }: { searchParams: { es
                   <StatusChip status={e.status} />
                   <span className="text-[11px] font-semibold uppercase tracking-wider text-teal-600">
                     {TIPO_LABEL[e.tipo] || e.tipo}
+                    {e.tipo === 'otro' && e.tipoOtro ? `: ${e.tipoOtro}` : ''}
                   </span>
                 </p>
                 <p className="mt-1 truncate font-medium text-ink">{e.title}</p>

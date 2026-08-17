@@ -206,6 +206,7 @@ model Portada {
 model Envio {
   id           String   @id @default(cuid())
   tipo         String   @default("noticia")
+  tipoOtro     String   @default("")
   title        String
   summary      String   @default("")
   body         String   @default("")

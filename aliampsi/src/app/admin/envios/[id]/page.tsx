@@ -11,6 +11,7 @@ const TIPO_LABEL: Record<string, string> = {
   noticia: 'Noticia',
   congreso: 'Congreso',
   publicacion: 'Publicación',
+  otro: 'Otro',
 };
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
@@ -32,7 +33,10 @@ export default async function RevisarEnvio({ params }: { params: { id: string } 
 
       <div className="card p-6">
         <dl className="divide-y divide-line">
-          <Row label="Tipo">{TIPO_LABEL[e.tipo] || e.tipo}</Row>
+          <Row label="Tipo">
+            {TIPO_LABEL[e.tipo] || e.tipo}
+            {e.tipo === 'otro' && e.tipoOtro && <> — <strong>{e.tipoOtro}</strong></>}
+          </Row>
           <Row label="Recibido">{formatDate(e.createdAt)}</Row>
           <Row label="Institución">{e.orgName || '—'}</Row>
           <Row label="Contacto">
@@ -82,6 +86,7 @@ export default async function RevisarEnvio({ params }: { params: { id: string } 
             <p className="text-sm text-ink-muted">
               Crea {e.tipo === 'congreso' ? 'un congreso' : e.tipo === 'publicacion' ? 'una publicación' : 'una noticia'} con
               estos datos, <strong>como borrador</strong>. Después la editás y publicás cuando quieras.
+              {e.tipo === 'otro' && ' Como el envío es de tipo «Otro», se crea como noticia: podés cambiarla luego.'}
             </p>
             <SubmitButton>Aprobar y crear borrador</SubmitButton>
           </form>
