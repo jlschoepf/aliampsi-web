@@ -10,7 +10,7 @@ const FIELDS = [
   'contactTitle', 'contactText', 'footerText',
   'qsTitle', 'qsIntro', 'qsMision', 'qsCompromiso',
   'qsPilar1Title', 'qsPilar1Text', 'qsPilar2Title', 'qsPilar2Text', 'qsPilar3Title', 'qsPilar3Text',
-  'seoTitle', 'seoDescription', 'seoImage', 'gscVerification', 'gaId',
+  'seoTitle', 'seoDescription', 'seoImage', 'gscVerification', 'gaId', 'notifyEmail',
 ];
 
 export async function updateSettings(formData: FormData) {

@@ -34,6 +34,7 @@ export const DEFAULT_SETTINGS = {
   seoImage: '',
   gscVerification: '',
   gaId: '',
+  notifyEmail: '',
 };
 
 export type SiteSettings = typeof DEFAULT_SETTINGS;
@@ -69,6 +70,7 @@ export async function getSettings(): Promise<SiteSettings> {
       seoImage: s.seoImage || '',
       gscVerification: s.gscVerification || '',
       gaId: s.gaId || '',
+      notifyEmail: s.notifyEmail || '',
     };
   } catch {
     return DEFAULT_SETTINGS;

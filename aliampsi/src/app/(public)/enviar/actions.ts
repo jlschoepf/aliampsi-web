@@ -3,6 +3,9 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/db';
+import { getSettings } from '@/lib/settings';
+import { notificarEnvio } from '@/lib/notify';
+import { SITE_URL } from '@/lib/site';
 
 export async function createEnvio(formData: FormData) {
   // Campo trampa: si viene completo, es spam automático.
@@ -17,7 +20,7 @@ export async function createEnvio(formData: FormData) {
   const tipo = String(formData.get('tipo') || 'noticia');
   const allowed = ['noticia', 'congreso', 'publicacion'];
 
-  await prisma.envio.create({
+  const creado = await prisma.envio.create({
     data: {
       tipo: allowed.includes(tipo) ? tipo : 'noticia',
       title: title.slice(0, 200),
@@ -35,6 +38,28 @@ export async function createEnvio(formData: FormData) {
       status: 'pendiente',
     },
   });
+
+  // Aviso por correo a la casilla configurada en Ajustes (no bloquea el envío).
+  try {
+    const settings = await getSettings();
+    const destino = settings.notifyEmail || settings.contactEmail;
+    if (destino) {
+      await notificarEnvio(
+        destino,
+        {
+          tipo: creado.tipo,
+          title: creado.title,
+          orgName: creado.orgName,
+          contactName: creado.contactName,
+          contactEmail: creado.contactEmail,
+          summary: creado.summary,
+        },
+        `${SITE_URL}/admin/envios/${creado.id}`
+      );
+    }
+  } catch {
+    // Si falla el aviso, el envío igual quedó guardado.
+  }
 
   revalidatePath('/admin/envios');
   redirect('/enviar/gracias');

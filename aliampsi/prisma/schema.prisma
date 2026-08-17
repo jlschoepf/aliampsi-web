@@ -168,6 +168,7 @@ model Settings {
   seoImage       String  @default("")
   gscVerification String @default("")
   gaId           String  @default("")
+  notifyEmail    String  @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }

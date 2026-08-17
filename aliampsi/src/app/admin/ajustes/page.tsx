@@ -109,6 +109,21 @@ export default async function AjustesPage({ searchParams }: { searchParams: { ok
         />
 
         <div className="rounded-lg border border-line bg-sand/30 p-4">
+          <p className="mb-1 text-sm font-semibold text-ink">Avisos de envíos</p>
+          <p className="mb-4 text-xs text-ink-muted">
+            Cuando una asociación envía contenido desde el formulario público, mandamos un correo a esta casilla.
+          </p>
+          <Field
+            label="Correo para avisos"
+            name="notifyEmail"
+            type="email"
+            defaultValue={s.notifyEmail}
+            placeholder="avisos@aliampsi.com"
+            hint="Si lo dejás vacío, se usa el correo de contacto del sitio."
+          />
+        </div>
+
+        <div className="rounded-lg border border-line bg-sand/30 p-4">
           <p className="mb-1 text-sm font-semibold text-ink">Conexión con Google</p>
           <p className="mb-4 text-xs text-ink-muted">
             Para verificar el sitio en Search Console y medir visitas con Analytics.
