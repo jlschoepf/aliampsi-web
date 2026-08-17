@@ -86,7 +86,23 @@ export function EnvioForm({ action, web3Key }: { action: (formData: FormData) =>
                   .filter(Boolean)
                   .join('\n'),
               }),
-            }).catch(() => {});
+            })
+              .then(async (res) => {
+                const data = await res.json().catch(() => null);
+                const ok = !!(res.ok && data?.success);
+                fetch('/api/aviso-estado', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  keepalive: true,
+                  body: JSON.stringify({
+                    ok,
+                    detalle: ok
+                      ? 'Aviso enviado al recibirse un envío del formulario público.'
+                      : `Web3Forms respondió ${res.status}`,
+                  }),
+                }).catch(() => {});
+              })
+              .catch(() => {});
           } catch {
             // El aviso nunca debe impedir el envío.
           }

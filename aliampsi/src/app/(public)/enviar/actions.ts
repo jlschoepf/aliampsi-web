@@ -45,7 +45,10 @@ export async function createEnvio(formData: FormData) {
   try {
     const settings = await getSettings();
     const destino = settings.notifyEmail || settings.contactEmail;
-    if (destino) {
+    // Con Web3Forms el aviso ya lo mandó el navegador al enviar el formulario
+    // (su plan gratuito no acepta envíos desde el servidor): no lo repetimos.
+    const avisaElNavegador = settings.mailProvider === 'web3forms' && !!settings.mailApiKey;
+    if (destino && !avisaElNavegador) {
       const r = await notificarEnvio(
         destino,
         {
