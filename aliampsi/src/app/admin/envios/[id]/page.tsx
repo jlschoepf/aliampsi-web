@@ -26,6 +26,9 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 export default async function RevisarEnvio({ params }: { params: { id: string } }) {
   const e = await prisma.envio.findUnique({ where: { id: params.id } });
   if (!e) notFound();
+  const colaborador = e.colaboradorId
+    ? await prisma.colaborador.findUnique({ where: { id: e.colaboradorId } })
+    : null;
 
   return (
     <>
@@ -39,6 +42,15 @@ export default async function RevisarEnvio({ params }: { params: { id: string } 
           </Row>
           <Row label="Recibido">{formatDate(e.createdAt)}</Row>
           <Row label="Institución">{e.orgName || '—'}</Row>
+          <Row label="Origen">
+            {colaborador ? (
+              <>
+                Colaborador registrado: <strong>{colaborador.name}</strong> ({colaborador.email})
+              </>
+            ) : (
+              'Envío sin cuenta (formulario abierto)'
+            )}
+          </Row>
           <Row label="Contacto">
             {e.contactName || '—'}
             {e.contactEmail && (
