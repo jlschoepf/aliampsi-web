@@ -209,7 +209,8 @@ model Portada {
 }
 
 model Envio {
-  id           String   @id @default(cuid())
+  id            String   @id @default(cuid())
+  colaboradorId String?
   tipo         String   @default("noticia")
   tipoOtro     String   @default("")
   title        String
@@ -228,4 +229,18 @@ model Envio {
   adminNote    String   @default("")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Colaborador {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  orgName      String    @default("")
+  country      String    @default("")
+  phone        String    @default("")
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

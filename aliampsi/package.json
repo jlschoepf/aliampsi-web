@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push --skip-generate && node prisma/seed-autoridades.cjs && node prisma/seed-indicadores.cjs && node prisma/seed-banners.cjs && node prisma/seed-settings.cjs && node prisma/seed-hitos.cjs && node prisma/seed-menu.cjs && node prisma/seed-portadas.cjs && next build",
+    "build": "prisma generate && prisma db push --skip-generate && node prisma/seed-autoridades.cjs && node prisma/seed-indicadores.cjs && node prisma/seed-banners.cjs && node prisma/seed-settings.cjs && node prisma/seed-hitos.cjs && node prisma/seed-menu.cjs && node prisma/seed-portadas.cjs && node prisma/seed-menu-enviar.cjs && next build",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",

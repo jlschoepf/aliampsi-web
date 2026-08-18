@@ -11,7 +11,15 @@ function Label({ htmlFor, children, required }: { htmlFor: string; children: Rea
   );
 }
 
-export function EnvioForm({ action, web3Key }: { action: (formData: FormData) => void; web3Key?: string }) {
+export function EnvioForm({
+  action,
+  web3Key,
+  colaborador,
+}: {
+  action: (formData: FormData) => void;
+  web3Key?: string;
+  colaborador?: { name: string; orgName: string; email: string; phone: string } | null;
+}) {
   const [tipo, setTipo] = useState('noticia');
   const [cover, setCover] = useState('');
   const [doc, setDoc] = useState('');
@@ -216,6 +224,16 @@ export function EnvioForm({ action, web3Key }: { action: (formData: FormData) =>
         </div>
       </div>
 
+      {colaborador ? (
+        <div className="rounded-lg border border-line bg-sand/30 p-4 text-sm">
+          <p className="font-semibold text-ink">Enviás como {colaborador.name}</p>
+          <p className="text-ink-muted">{colaborador.orgName} · {colaborador.email}</p>
+          <input type="hidden" name="orgName" value={colaborador.orgName} />
+          <input type="hidden" name="contactName" value={colaborador.name} />
+          <input type="hidden" name="contactEmail" value={colaborador.email} />
+          <input type="hidden" name="contactPhone" value={colaborador.phone} />
+        </div>
+      ) : (
       <div className="border-t border-line pt-6">
         <h2 className="text-sm font-semibold text-ink">Datos de contacto</h2>
         <p className="mb-4 text-xs text-ink-muted">Para poder consultarte si hace falta antes de publicar.</p>
@@ -238,6 +256,7 @@ export function EnvioForm({ action, web3Key }: { action: (formData: FormData) =>
           </div>
         </div>
       </div>
+      )}
 
       <div className="flex items-center gap-3 pt-2">
         <button type="submit" disabled={sending || upImg || upDoc} className="btn-coral disabled:opacity-60">

@@ -7,6 +7,7 @@ import { getSettings } from '@/lib/settings';
 import { notificarEnvio } from '@/lib/notify';
 import { registrarEstadoAviso } from '@/app/admin/ajustes/actions';
 import { SITE_URL } from '@/lib/site';
+import { getColaborador } from '@/lib/colaborador-auth';
 
 export async function createEnvio(formData: FormData) {
   // Campo trampa: si viene completo, es spam automático.
@@ -21,8 +22,11 @@ export async function createEnvio(formData: FormData) {
   const tipo = String(formData.get('tipo') || 'noticia');
   const allowed = ['noticia', 'congreso', 'publicacion', 'otro'];
 
+  const sesion = await getColaborador();
+
   const creado = await prisma.envio.create({
     data: {
+      colaboradorId: sesion?.id ?? null,
       tipo: allowed.includes(tipo) ? tipo : 'noticia',
       tipoOtro: String(formData.get('tipoOtro') || '').trim().slice(0, 120),
       title: title.slice(0, 200),
@@ -70,5 +74,5 @@ export async function createEnvio(formData: FormData) {
   }
 
   revalidatePath('/admin/envios');
-  redirect('/enviar/gracias');
+  redirect(sesion ? '/colaboradores/panel' : '/enviar/gracias');
 }
