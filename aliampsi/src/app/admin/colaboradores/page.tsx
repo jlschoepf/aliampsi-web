@@ -2,7 +2,7 @@ import { prisma } from '@/lib/db';
 import { AdminHeader } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
 import { formatDate } from '@/lib/utils';
-import { toggleColaborador, deleteColaborador } from './actions';
+import { toggleColaborador, deleteColaborador, generarEnlaceReset, marcarResetAtendido } from './actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,10 +13,18 @@ const TIPO_LABEL: Record<string, string> = {
   otro: 'Otros',
 };
 
-export default async function AdminColaboradores() {
-  const [colaboradores, envios] = await Promise.all([
+export default async function AdminColaboradores({
+  searchParams,
+}: {
+  searchParams: { enlace?: string; para?: string };
+}) {
+  const [colaboradores, envios, pedidos] = await Promise.all([
     prisma.colaborador.findMany({ orderBy: { createdAt: 'desc' } }),
     prisma.envio.findMany(),
+    prisma.passwordReset.findMany({
+      where: { usedAt: null, notified: false, expiresAt: { gt: new Date() } },
+      orderBy: { createdAt: 'desc' },
+    }),
   ]);
 
   // Resumen por colaborador
@@ -52,6 +60,58 @@ export default async function AdminColaboradores() {
         title="Colaboradores"
         subtitle="Quiénes envían contenido a la Alianza y cuánto aportan."
       />
+
+      {searchParams?.enlace && (
+        <div className="mb-6 rounded-lg border border-teal-600/30 bg-teal-600/5 p-4">
+          <p className="text-sm font-semibold text-teal-700">Enlace de recuperación generado</p>
+          <p className="mt-1 text-xs text-ink-muted">
+            Copialo y envialo a la persona por el medio que prefieras. Vence en 24 horas y sirve una sola vez.
+          </p>
+          <p className="mt-2 break-all rounded bg-white px-3 py-2 font-mono text-xs text-ink">
+            {searchParams.enlace}
+          </p>
+        </div>
+      )}
+
+      {pedidos.length > 0 && (
+        <div className="mb-6 rounded-lg border border-coral/40 bg-coral/10 p-4">
+          <p className="text-sm font-semibold text-coral-dark">
+            {pedidos.length} pedido{pedidos.length === 1 ? '' : 's'} de recuperación de contraseña sin atender
+          </p>
+          <p className="mt-1 text-xs text-ink-muted">
+            Estas personas pidieron restablecer su contraseña y el correo automático no pudo enviarse.
+            Generá el enlace y pasáselo.
+          </p>
+          <div className="mt-3 space-y-2">
+            {pedidos.map((p) => {
+              const quien = colaboradores.find((c) => c.id === p.colaboradorId);
+              return (
+                <div key={p.id} className="flex flex-wrap items-center justify-between gap-3 rounded bg-white px-3 py-2">
+                  <span className="text-sm text-ink">
+                    {quien ? `${quien.name} · ${quien.email}` : 'Cuenta eliminada'}
+                  </span>
+                  <span className="flex items-center gap-3">
+                    {quien && (
+                      <form action={generarEnlaceReset}>
+                        <input type="hidden" name="id" value={quien.id} />
+                        <button type="submit" className="text-sm font-medium text-teal-600 hover:text-coral">
+                          Generar enlace
+                        </button>
+                      </form>
+                    )}
+                    <form action={marcarResetAtendido}>
+                      <input type="hidden" name="id" value={p.id} />
+                      <button type="submit" className="text-sm font-medium text-ink-muted hover:text-ink">
+                        Marcar atendido
+                      </button>
+                    </form>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="card p-5">
@@ -135,6 +195,12 @@ export default async function AdminColaboradores() {
                     {aprobados} aprobados · {pendientes} pendientes
                   </p>
                 </div>
+                <form action={generarEnlaceReset}>
+                  <input type="hidden" name="id" value={c.id} />
+                  <button type="submit" className="text-sm font-medium text-ink-muted hover:text-ink">
+                    Restablecer clave
+                  </button>
+                </form>
                 <form action={toggleColaborador}>
                   <input type="hidden" name="id" value={c.id} />
                   <button type="submit" className="text-sm font-medium text-teal-600 hover:text-coral">

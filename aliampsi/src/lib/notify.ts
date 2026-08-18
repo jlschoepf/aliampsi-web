@@ -131,3 +131,44 @@ export async function notificarEnvio(
     return { ok: false, proveedor: provider, detalle: `No se pudo conectar: ${(e as Error).message}` };
   }
 }
+
+/** Envío genérico de un correo a cualquier destinatario (requiere Resend). */
+export async function enviarCorreo(
+  to: string,
+  subject: string,
+  text: string,
+  config: ConfigCorreo
+): Promise<ResultadoAviso> {
+  const apiKey = config.apiKey || process.env.RESEND_API_KEY || '';
+  const usaResend = (config.provider === 'resend' && config.apiKey) || !!process.env.RESEND_API_KEY;
+
+  if (!esCorreoValido(to)) {
+    return { ok: false, proveedor: 'resend', detalle: `La dirección «${to}» no parece válida.` };
+  }
+  if (!usaResend) {
+    return {
+      ok: false,
+      proveedor: config.provider,
+      detalle:
+        'Para enviar correos a los colaboradores hace falta Resend. Con Web3Forms solo se puede avisar a la casilla propia.',
+    };
+  }
+
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: config.from || process.env.RESEND_FROM || 'AL·IAM·PSI <onboarding@resend.dev>',
+        to: [to],
+        subject,
+        text,
+      }),
+    });
+    const cuerpo = await r.text();
+    if (r.ok) return { ok: true, proveedor: 'resend', detalle: 'Correo enviado.' };
+    return { ok: false, proveedor: 'resend', detalle: `Resend respondió ${r.status}: ${cuerpo.slice(0, 250)}` };
+  } catch (e) {
+    return { ok: false, proveedor: 'resend', detalle: `No se pudo conectar: ${(e as Error).message}` };
+  }
+}
