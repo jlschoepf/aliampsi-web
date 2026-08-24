@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Compilación de Next.js
+.next/
+out/
+*.tsbuildinfo
+
+# Variables de entorno
+.env
+.env.local
+.env*.local
+
+# Artefactos temporales del chequeo de tipos
+.typecheck/
+tsconfig.typecheck.json
+
+# Sistema
+.DS_Store

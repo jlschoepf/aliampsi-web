@@ -12,11 +12,27 @@ generator client {
 }
 
 model Admin {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String?
-  createdAt    DateTime @default(now())
+  id                String   @id @default(cuid())
+  email             String   @unique
+  passwordHash      String
+  name              String?
+  passwordChangedAt DateTime?
+  createdAt         DateTime @default(now())
+}
+
+/// Enlaces de recuperación de contraseña de administradores.
+/// Se guarda solo el hash del token: si alguien leyera la base de datos,
+/// no podría reconstruir un enlace utilizable.
+model AdminPasswordReset {
+  id        String    @id @default(cuid())
+  adminId   String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  notified  Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  @@index([adminId])
 }
 
 model Noticia {

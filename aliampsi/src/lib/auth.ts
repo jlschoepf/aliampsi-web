@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { SignJWT, jwtVerify } from 'jose';
 import bcrypt from 'bcryptjs';
+import { createHash } from 'crypto';
 import { prisma } from './db';
 
 const COOKIE = 'aliampsi_session';
@@ -11,6 +12,15 @@ const secret = new TextEncoder().encode(
 );
 
 export type SessionUser = { id: string; email: string; name: string | null };
+
+/** Hash de un token de recuperación. En la base solo guardamos esto. */
+export function hashResetToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+export async function hashPassword(password: string) {
+  return bcrypt.hash(password, 10);
+}
 
 export async function verifyCredentials(email: string, password: string) {
   const admin = await prisma.admin.findUnique({ where: { email: email.toLowerCase().trim() } });
@@ -40,12 +50,17 @@ export async function destroySession() {
   cookies().set(COOKIE, '', { path: '/', maxAge: 0 });
 }
 
-export async function getSession(): Promise<SessionUser | null> {
+export async function getSession(): Promise<(SessionUser & { iat?: number }) | null> {
   const token = cookies().get(COOKIE)?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret);
-    return { id: String(payload.id), email: String(payload.email), name: (payload.name as string) ?? null };
+    return {
+      id: String(payload.id),
+      email: String(payload.email),
+      name: (payload.name as string) ?? null,
+      iat: typeof payload.iat === 'number' ? payload.iat : undefined,
+    };
   } catch {
     return null;
   }
@@ -54,5 +69,25 @@ export async function getSession(): Promise<SessionUser | null> {
 export async function requireAdmin(): Promise<SessionUser> {
   const session = await getSession();
   if (!session) redirect('/login');
-  return session;
+
+  // La cuenta puede haberse eliminado, o la contraseña puede haber cambiado
+  // después de emitida esta sesión (por ejemplo, tras una recuperación).
+  // En ambos casos la sesión deja de ser válida.
+  const admin = await prisma.admin.findUnique({
+    where: { id: session.id },
+    select: { id: true, email: true, name: true, passwordChangedAt: true },
+  });
+  if (!admin) {
+    await destroySession();
+    redirect('/login');
+  }
+  if (admin.passwordChangedAt && session.iat) {
+    const emitida = session.iat * 1000;
+    if (admin.passwordChangedAt.getTime() > emitida) {
+      await destroySession();
+      redirect('/login?estado=sesion-vencida');
+    }
+  }
+
+  return { id: admin.id, email: admin.email, name: admin.name };
 }
