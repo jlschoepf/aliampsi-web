@@ -7,14 +7,16 @@ import { getSettings } from '@/lib/settings';
 export const dynamic = 'force-dynamic';
 
 const FALLBACK = [
-  { id: 'f1', label: 'Quiénes somos', href: '/quienes-somos', newTab: false, cta: false },
-  { id: 'f2', label: 'Autoridades', href: '/comision-directiva', newTab: false, cta: false },
-  { id: 'f3', label: 'Asociaciones', href: '/asociaciones', newTab: false, cta: false },
-  { id: 'f4', label: 'Noticias', href: '/noticias', newTab: false, cta: false },
-  { id: 'f5', label: 'Congresos', href: '/congresos', newTab: false, cta: false },
-  { id: 'f6', label: 'Publicaciones', href: '/publicaciones', newTab: false, cta: false },
-  { id: 'f7', label: 'Contacto', href: '/contacto', newTab: false, cta: false },
-  { id: 'f8', label: 'Asociarse', href: '/contacto', newTab: false, cta: true },
+  { id: 'f1', label: 'La Alianza', href: '/quienes-somos', newTab: false, cta: false, parentId: null },
+  { id: 'f1a', label: 'Quiénes somos', href: '/quienes-somos', newTab: false, cta: false, parentId: 'f1' },
+  { id: 'f1b', label: 'Autoridades', href: '/comision-directiva', newTab: false, cta: false, parentId: 'f1' },
+  { id: 'f1c', label: 'Asociaciones integrantes', href: '/asociaciones', newTab: false, cta: false, parentId: 'f1' },
+  { id: 'f1d', label: 'Contacto', href: '/contacto', newTab: false, cta: false, parentId: 'f1' },
+  { id: 'f4', label: 'Noticias', href: '/noticias', newTab: false, cta: false, parentId: null },
+  { id: 'f6', label: 'Publicaciones', href: '/publicaciones', newTab: false, cta: false, parentId: null },
+  { id: 'f5', label: 'Congresos', href: '/congresos', newTab: false, cta: false, parentId: null },
+  { id: 'f7', label: 'Enviar contenido', href: '/enviar', newTab: false, cta: false, parentId: null },
+  { id: 'f8', label: 'Asociarse', href: '/contacto', newTab: false, cta: true, parentId: null },
 ];
 
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -25,7 +27,7 @@ export default async function PublicLayout({ children }: { children: React.React
       orderBy: { order: 'asc' },
     });
     if (rows.length > 0) {
-      items = rows.map((r) => ({ id: r.id, label: r.label, href: r.href, newTab: r.newTab, cta: r.cta }));
+      items = rows.map((r) => ({ id: r.id, label: r.label, href: r.href, newTab: r.newTab, cta: r.cta, parentId: r.parentId }));
     }
   } catch {
     // usa el fallback

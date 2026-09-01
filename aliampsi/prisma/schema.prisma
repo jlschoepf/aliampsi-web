@@ -212,8 +212,12 @@ model MenuItem {
   published Boolean  @default(true)
   newTab    Boolean  @default(false)
   cta       Boolean  @default(false)
+  /// Si tiene valor, este ítem es una opción dentro del desplegable de otro.
+  parentId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([parentId])
 }
 
 model Portada {

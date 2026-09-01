@@ -13,6 +13,10 @@ function revalidate() {
 function data(formData: FormData) {
   const orderRaw = String(formData.get('order') || '0');
   const order = Number.parseInt(orderRaw, 10);
+  const parentRaw = String(formData.get('parentId') || '').trim();
+  const propioId = String(formData.get('id') || '').trim();
+  // Un ítem no puede colgar de sí mismo.
+  const parentId = !parentRaw || parentRaw === propioId ? null : parentRaw;
   return {
     label: String(formData.get('label') || '').trim(),
     href: String(formData.get('href') || '').trim(),
@@ -20,6 +24,7 @@ function data(formData: FormData) {
     cta: formData.get('cta') === 'on',
     order: Number.isNaN(order) ? 0 : order,
     published: formData.get('published') === 'on',
+    parentId,
   };
 }
 
@@ -39,7 +44,10 @@ export async function updateMenuItem(formData: FormData) {
 
 export async function deleteMenuItem(formData: FormData) {
   await requireAdmin();
-  await prisma.menuItem.delete({ where: { id: String(formData.get('id')) } });
+  const id = String(formData.get('id'));
+  // Si tenía opciones dentro, vuelven a la barra en vez de quedar huérfanas.
+  await prisma.menuItem.updateMany({ where: { parentId: id }, data: { parentId: null } });
+  await prisma.menuItem.delete({ where: { id } });
   revalidate();
 }
 
