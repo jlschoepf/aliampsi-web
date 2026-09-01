@@ -92,9 +92,17 @@ export function PublicacionCard({ p }: { p: Publicacion }) {
       )}
       <div className="flex flex-1 flex-col p-6">
         {p.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}
-        <span className="w-fit rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
-          {kindLabel}
-        </span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="w-fit rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
+            {kindLabel}
+          </span>
+          <time
+            dateTime={new Date(p.publishedAt ?? p.createdAt).toISOString()}
+            className="text-xs font-medium uppercase tracking-wider text-teal-600"
+          >
+            {formatDate(p.publishedAt ?? p.createdAt)}
+          </time>
+        </div>
         <h3 className="mt-3 font-serif text-xl italic leading-snug text-ink">{p.title}</h3>
         {p.description && <p className="mt-2 flex-1 text-sm text-ink-muted">{p.description}</p>}
         <div className="mt-5 flex flex-wrap items-center gap-4">

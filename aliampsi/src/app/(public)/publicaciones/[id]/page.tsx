@@ -6,6 +6,7 @@ import { GalleryView } from '@/components/GalleryView';
 import { getSession } from '@/lib/auth';
 import { PublicacionCard, SectionHeading } from '@/components/content';
 import { isVisibleNow, parseTags, pickRelated, visibleNowWhere } from '@/lib/content';
+import { formatDate } from '@/lib/utils';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
@@ -88,9 +89,17 @@ export default async function PublicacionDetail({
       <Link href="/publicaciones" className="text-sm font-semibold text-teal-600 hover:text-coral">
         ← Volver a publicaciones
       </Link>
-      <span className="mt-8 inline-block rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
-        {kindLabel}
-      </span>
+      <div className="mt-8 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <span className="inline-block rounded-full bg-teal-600/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-teal-700">
+          {kindLabel}
+        </span>
+        <time
+          dateTime={new Date(p.publishedAt ?? p.createdAt).toISOString()}
+          className="text-sm font-medium uppercase tracking-wider text-teal-600"
+        >
+          {formatDate(p.publishedAt ?? p.createdAt)}
+        </time>
+      </div>
       <h1 className="mt-3 font-serif text-4xl italic leading-tight text-ink">{p.title}</h1>
       {p.description && <p className="mt-4 text-lg text-ink-muted">{p.description}</p>}
       {p.author && <p className="mt-2 text-sm text-ink-muted">Por {p.author}</p>}
