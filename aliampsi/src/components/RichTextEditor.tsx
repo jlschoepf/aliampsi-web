@@ -93,6 +93,44 @@ function Toolbar({ editor }: { editor: Editor }) {
       .run();
   }, [editor]);
 
+  const addEvento = useCallback(() => {
+    const entrada = window.prompt(
+      'Pegá el enlace del evento de Luma.\n\n' +
+        'Serví el que tiene el identificador evt-… o la dirección para insertar.\n' +
+        'Lo encontrás en Luma: Gestionar evento → Más → Insertar página del evento.'
+    );
+    if (!entrada || !entrada.trim()) return;
+    const texto = entrada.trim();
+
+    // Acepta el enlace pelado o el código <iframe …> que copia Luma.
+    const desdeIframe = texto.match(/src="(https:\/\/(?:lu\.ma|luma\.com)\/embed\/event\/[^"]+)"/);
+    const directo = texto.match(/^https:\/\/(?:lu\.ma|luma\.com)\/(?:embed\/event\/)?(evt-[\w-]+)/);
+
+    let url: string | null = null;
+    if (desdeIframe) url = desdeIframe[1];
+    else if (/^https:\/\/(?:lu\.ma|luma\.com)\/embed\/event\//.test(texto)) url = texto;
+    else if (directo) url = `https://lu.ma/embed/event/${directo[1]}/simple`;
+
+    if (!url) {
+      window.alert(
+        'No pude reconocer ese enlace.\n\n' +
+          'Necesito el que incluye el identificador evt-… Por ejemplo:\n' +
+          'https://lu.ma/embed/event/evt-abc123/simple\n\n' +
+          'En Luma: Gestionar evento → Más → Insertar página del evento, y copiá de ahí.'
+      );
+      return;
+    }
+
+    editor
+      .chain()
+      .focus()
+      .insertContent([
+        { type: 'paragraph', content: [{ type: 'text', text: url, marks: [{ type: 'link', attrs: { href: url } }] }] },
+        { type: 'paragraph' },
+      ])
+      .run();
+  }, [editor]);
+
   const blockValue = editor.isActive('heading', { level: 2 })
     ? 'h2'
     : editor.isActive('heading', { level: 3 })
@@ -184,6 +222,9 @@ function Toolbar({ editor }: { editor: Editor }) {
       </label>
       <Tool title="Insertar video (YouTube o Vimeo)" onClick={addVideo}>
         🎬
+      </Tool>
+      <Tool title="Insertar evento de Luma (con inscripción)" onClick={addEvento}>
+        🎟️
       </Tool>
 
       <Divider />

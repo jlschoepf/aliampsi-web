@@ -3,24 +3,59 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
-function toEmbed(url?: string): string | null {
+type Embed = { src: string; tipo: 'video' | 'luma' };
+
+/** Dominios cuyos iframes se permiten. Todo lo demás se descarta. */
+const IFRAMES_PERMITIDOS = [
+  'www.youtube.com',
+  'youtube.com',
+  'www.youtube-nocookie.com',
+  'player.vimeo.com',
+  'lu.ma',
+  'luma.com',
+];
+
+function origenPermitido(src?: string): boolean {
+  if (!src) return false;
+  try {
+    const u = new URL(src, 'https://aliampsi.com');
+    return u.protocol === 'https:' && IFRAMES_PERMITIDOS.includes(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function toEmbed(url?: string): Embed | null {
   if (!url) return null;
+
   const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{11})/);
-  if (yt) return `https://www.youtube.com/embed/${yt[1]}`;
+  if (yt) return { src: `https://www.youtube.com/embed/${yt[1]}`, tipo: 'video' };
+
   const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
-  if (vm) return `https://player.vimeo.com/video/${vm[1]}`;
+  if (vm) return { src: `https://player.vimeo.com/video/${vm[1]}`, tipo: 'video' };
+
+  // Luma: si ya es la dirección para insertar, se usa tal cual.
+  const lumaEmbed = url.match(/^https:\/\/(?:lu\.ma|luma\.com)\/embed\/event\/([\w-]+)/);
+  if (lumaEmbed) return { src: url, tipo: 'luma' };
+
+  // Luma: dirección normal del evento. Solo sirve con el identificador evt-…,
+  // que es el que aparece en el código que da Luma en Gestionar evento → Más.
+  const lumaEvt = url.match(/^https:\/\/(?:lu\.ma|luma\.com)\/(evt-[\w-]+)/);
+  if (lumaEvt) return { src: `https://lu.ma/embed/event/${lumaEvt[1]}/simple`, tipo: 'luma' };
+
   return null;
 }
 
 // Permitimos el HTML que genera el editor (con saneado de seguridad).
 const schema = {
   ...defaultSchema,
-  tagNames: [...(defaultSchema.tagNames || []), 'u', 's', 'figure', 'figcaption', 'hr'],
+  tagNames: [...(defaultSchema.tagNames || []), 'u', 's', 'figure', 'figcaption', 'hr', 'iframe'],
   attributes: {
     ...defaultSchema.attributes,
     '*': [...((defaultSchema.attributes && defaultSchema.attributes['*']) || []), 'style', 'className'],
     img: [...((defaultSchema.attributes && defaultSchema.attributes.img) || []), 'src', 'alt', 'title', 'width', 'height'],
     a: [...((defaultSchema.attributes && defaultSchema.attributes.a) || []), 'href', 'target', 'rel'],
+    iframe: ['src', 'title', 'width', 'height', 'allow', 'allowFullScreen', 'allowfullscreen', 'style', 'frameBorder', 'frameborder'],
   },
 };
 
@@ -50,19 +85,66 @@ export function NoticiaBody({ content }: { content: string }) {
               className="my-6 w-full rounded-xl2 border border-line"
             />
           ),
+          iframe: ({ src, title, height }) => {
+            // Solo se muestran los iframes de servicios conocidos.
+            if (!origenPermitido(typeof src === 'string' ? src : undefined)) return null;
+            const esLuma = /(?:lu\.ma|luma\.com)/.test(String(src));
+            const alto = Number.parseInt(String(height || ''), 10);
+            if (esLuma) {
+              return (
+                <span className="my-6 block w-full overflow-hidden rounded-xl2 border border-line">
+                  <iframe
+                    src={String(src)}
+                    title={typeof title === 'string' ? title : 'Inscripción al evento'}
+                    className="w-full"
+                    style={{ height: Number.isNaN(alto) ? 560 : alto, border: 0 }}
+                    allow="fullscreen; payment"
+                    loading="lazy"
+                  />
+                </span>
+              );
+            }
+            return (
+              <span className="my-6 block aspect-video w-full overflow-hidden rounded-xl2 border border-line">
+                <iframe
+                  src={String(src)}
+                  title={typeof title === 'string' ? title : 'Video'}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </span>
+            );
+          },
           a: ({ href, children }) => {
             const embed = toEmbed(href);
             const first = Array.isArray(children) ? children[0] : children;
             const bare = typeof first === 'string' && first === href;
             if (embed && bare) {
+              if (embed.tipo === 'luma') {
+                return (
+                  <span className="my-6 block w-full overflow-hidden rounded-xl2 border border-line">
+                    <iframe
+                      src={embed.src}
+                      title="Inscripción al evento"
+                      className="w-full"
+                      style={{ height: 560, border: 0 }}
+                      allow="fullscreen; payment"
+                      loading="lazy"
+                    />
+                  </span>
+                );
+              }
               return (
                 <span className="my-6 block aspect-video w-full overflow-hidden rounded-xl2 border border-line">
                   <iframe
-                    src={embed}
+                    src={embed.src}
                     title="Video"
                     className="h-full w-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
+                    loading="lazy"
                   />
                 </span>
               );
