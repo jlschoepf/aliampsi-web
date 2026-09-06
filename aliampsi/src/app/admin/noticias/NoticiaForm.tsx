@@ -6,6 +6,7 @@ import { CoverField } from '@/components/CoverField';
 import { Collapsible } from '@/components/Collapsible';
 import { FileField } from '@/components/FileField';
 import { BodyEditor } from '@/components/BodyEditor';
+import { SlugField } from '@/components/SlugField';
 import { GalleryField } from '@/components/GalleryField';
 
 export function NoticiaForm({
@@ -22,6 +23,7 @@ export function NoticiaForm({
       {noticia && <input type="hidden" name="id" value={noticia.id} />}
 
       <Field label="Título" name="title" required defaultValue={noticia?.title} placeholder="Título de la noticia" />
+      <SlugField defaultValue={noticia?.slug} publicada={Boolean(noticia?.published)} />
       <TextArea
         label="Resumen"
         name="excerpt"

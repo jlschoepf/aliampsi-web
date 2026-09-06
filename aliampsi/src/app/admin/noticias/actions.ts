@@ -16,6 +16,16 @@ async function uniqueSlug(base: string, ignoreId?: string) {
   }
 }
 
+/**
+ * Enlace elegido a mano; si viene vacío, se arma con el título.
+ * Se recorta a 80 caracteres para que no queden direcciones interminables.
+ */
+async function resolverSlug(formData: FormData, title: string, ignoreId?: string) {
+  const pedido = String(formData.get('slug') || '').trim();
+  const base = slugify(pedido || title).slice(0, 80).replace(/-+$/, '');
+  return uniqueSlug(base, ignoreId);
+}
+
 function revalidate() {
   revalidatePath('/');
   revalidatePath('/noticias');
@@ -26,7 +36,7 @@ export async function createNoticia(formData: FormData) {
   await requireAdmin();
   const title = String(formData.get('title') || '').trim();
   const published = formData.get('published') === 'on';
-  const slug = await uniqueSlug(slugify(title));
+  const slug = await resolverSlug(formData, title);
 
   await prisma.noticia.create({
     data: {
@@ -57,7 +67,7 @@ export async function updateNoticia(formData: FormData) {
   const title = String(formData.get('title') || '').trim();
   const published = formData.get('published') === 'on';
   const current = await prisma.noticia.findUnique({ where: { id } });
-  const slug = await uniqueSlug(slugify(title), id);
+  const slug = await resolverSlug(formData, title, id);
 
   await prisma.noticia.update({
     where: { id },
