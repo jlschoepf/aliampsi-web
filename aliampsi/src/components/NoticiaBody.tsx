@@ -3,7 +3,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
-type Embed = { src: string; tipo: 'video' | 'luma' };
+type Embed = { src: string; tipo: 'video' | 'luma'; original?: string };
 
 /** Dominios cuyos iframes se permiten. Todo lo demás se descarta. */
 const IFRAMES_PERMITIDOS = [
@@ -38,10 +38,12 @@ function toEmbed(url?: string): Embed | null {
   const lumaEmbed = url.match(/^https:\/\/(?:lu\.ma|luma\.com)\/embed\/event\/([\w-]+)/);
   if (lumaEmbed) return { src: url, tipo: 'luma' };
 
-  // Luma: dirección normal del evento. Solo sirve con el identificador evt-…,
-  // que es el que aparece en el código que da Luma en Gestionar evento → Más.
-  const lumaEvt = url.match(/^https:\/\/(?:lu\.ma|luma\.com)\/(evt-[\w-]+)/);
-  if (lumaEvt) return { src: `https://lu.ma/embed/event/${lumaEvt[1]}/simple`, tipo: 'luma' };
+  // Luma: dirección normal del evento, sea el identificador evt-… o el enlace
+  // corto que se comparte (luma.com/9bqhbhd9). Los dos sirven para insertar.
+  const lumaEvt = url.match(/^https:\/\/(?:lu\.ma|luma\.com)\/([\w-]+)\/?$/);
+  if (lumaEvt && !['home', 'discover', 'pricing', 'terms', 'privacy'].includes(lumaEvt[1])) {
+    return { src: `https://lu.ma/embed/event/${lumaEvt[1]}/simple`, tipo: 'luma', original: url };
+  }
 
   return null;
 }
@@ -124,15 +126,29 @@ export function NoticiaBody({ content }: { content: string }) {
             if (embed && bare) {
               if (embed.tipo === 'luma') {
                 return (
-                  <span className="my-6 block w-full overflow-hidden rounded-xl2 border border-line">
-                    <iframe
-                      src={embed.src}
-                      title="Inscripción al evento"
-                      className="w-full"
-                      style={{ height: 560, border: 0 }}
-                      allow="fullscreen; payment"
-                      loading="lazy"
-                    />
+                  <span className="my-6 block">
+                    <span className="block w-full overflow-hidden rounded-xl2 border border-line">
+                      <iframe
+                        src={embed.src}
+                        title="Inscripción al evento"
+                        className="w-full"
+                        style={{ height: 560, border: 0 }}
+                        allow="fullscreen; payment"
+                        loading="lazy"
+                      />
+                    </span>
+                    <span className="mt-2 block text-center text-sm text-ink-muted">
+                      ¿No ves el formulario?{' '}
+                      <a
+                        href={embed.original || href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-teal-600 underline hover:text-coral"
+                      >
+                        Inscribite en la página del evento
+                      </a>
+                      .
+                    </span>
                   </span>
                 );
               }

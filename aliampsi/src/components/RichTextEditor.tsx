@@ -96,27 +96,26 @@ function Toolbar({ editor }: { editor: Editor }) {
   const addEvento = useCallback(() => {
     const entrada = window.prompt(
       'Pegá el enlace del evento de Luma.\n\n' +
-        'Serví el que tiene el identificador evt-… o la dirección para insertar.\n' +
-        'Lo encontrás en Luma: Gestionar evento → Más → Insertar página del evento.'
+        'Sirve el enlace normal que compartís (luma.com/abc123) o el código\n' +
+        'de Gestionar evento → Más → Insertar página del evento.'
     );
     if (!entrada || !entrada.trim()) return;
     const texto = entrada.trim();
 
     // Acepta el enlace pelado o el código <iframe …> que copia Luma.
     const desdeIframe = texto.match(/src="(https:\/\/(?:lu\.ma|luma\.com)\/embed\/event\/[^"]+)"/);
-    const directo = texto.match(/^https:\/\/(?:lu\.ma|luma\.com)\/(?:embed\/event\/)?(evt-[\w-]+)/);
+    const directo = texto.match(/^https:\/\/(?:lu\.ma|luma\.com)\/(?:embed\/event\/)?([\w-]+)\/?$/);
 
     let url: string | null = null;
     if (desdeIframe) url = desdeIframe[1];
     else if (/^https:\/\/(?:lu\.ma|luma\.com)\/embed\/event\//.test(texto)) url = texto;
-    else if (directo) url = `https://lu.ma/embed/event/${directo[1]}/simple`;
+    else if (directo) url = `https://luma.com/${directo[1]}`;
 
     if (!url) {
       window.alert(
         'No pude reconocer ese enlace.\n\n' +
-          'Necesito el que incluye el identificador evt-… Por ejemplo:\n' +
-          'https://lu.ma/embed/event/evt-abc123/simple\n\n' +
-          'En Luma: Gestionar evento → Más → Insertar página del evento, y copiá de ahí.'
+          'Tiene que ser de Luma. Por ejemplo:\n' +
+          'https://luma.com/9bqhbhd9'
       );
       return;
     }
