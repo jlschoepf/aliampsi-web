@@ -72,6 +72,8 @@ model Publicacion {
   featured    Boolean   @default(false)
   tags        String    @default("")
   gallery     String    @default("")
+  /// Orden manual en el listado. 0 = sin fijar: se ordena por fecha.
+  order       Int       @default(0)
   publishedAt DateTime?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
