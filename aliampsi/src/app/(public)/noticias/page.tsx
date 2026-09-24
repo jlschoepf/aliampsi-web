@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { NoticiaCard } from '@/components/content';
 import { visibleNowWhere, sortForList, filterByTag } from '@/lib/content';
 import { TagFilterNote } from '@/components/TagFilterNote';
+import { cachear } from '@/lib/cache';
 
 export const metadata = {
   title: 'Noticias',
@@ -12,7 +13,9 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function NoticiasPage({ searchParams }: { searchParams: { tag?: string } }) {
-  const all = await prisma.noticia.findMany({ where: visibleNowWhere() });
+  const all = await cachear(['noticias-publicas'], () =>
+    prisma.noticia.findMany({ where: visibleNowWhere() })
+  );
   const tag = searchParams?.tag;
   const noticias = filterByTag(sortForList(all), tag);
 

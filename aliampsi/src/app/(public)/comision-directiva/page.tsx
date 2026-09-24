@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { cachear } from '@/lib/cache';
 
 export const metadata = {
   title: 'Comisión Directiva',
@@ -9,10 +10,12 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function ComisionDirectivaPage() {
-  const autoridades = await prisma.autoridad.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
+  const autoridades = await cachear(['autoridades-publicas'], () =>
+    prisma.autoridad.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+    })
+  );
 
   return (
     <section className="wrap py-16 lg:py-20">

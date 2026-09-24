@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { CongresoCard } from '@/components/content';
 import { visibleNowWhere, sortForList, filterByTag } from '@/lib/content';
 import { TagFilterNote } from '@/components/TagFilterNote';
+import { cachear } from '@/lib/cache';
 
 export const metadata = {
   title: 'Congresos',
@@ -12,7 +13,9 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function CongresosPage({ searchParams }: { searchParams: { tag?: string } }) {
-  const all = await prisma.congreso.findMany({ where: visibleNowWhere() });
+  const all = await cachear(['congresos-publicos'], () =>
+    prisma.congreso.findMany({ where: visibleNowWhere() })
+  );
   const tag = searchParams?.tag;
   const congresos = filterByTag(sortForList(all), tag);
 

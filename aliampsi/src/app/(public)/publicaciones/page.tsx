@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db';
 import { PublicacionCard } from '@/components/content';
 import { visibleNowWhere, sortForList, filterByTag } from '@/lib/content';
 import { TagFilterNote } from '@/components/TagFilterNote';
+import { cachear } from '@/lib/cache';
 
 export const metadata = {
   title: 'Publicaciones',
@@ -12,7 +13,9 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function PublicacionesPage({ searchParams }: { searchParams: { tag?: string } }) {
-  const all = await prisma.publicacion.findMany({ where: visibleNowWhere() });
+  const all = await cachear(['publicaciones-publicas'], () =>
+    prisma.publicacion.findMany({ where: visibleNowWhere() })
+  );
   const tag = searchParams?.tag;
   const publicaciones = filterByTag(sortForList(all), tag);
 

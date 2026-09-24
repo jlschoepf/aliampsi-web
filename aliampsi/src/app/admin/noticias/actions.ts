@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
+import { invalidarContenido } from '@/lib/cache';
 import { requireAdmin } from '@/lib/auth';
 import { slugify } from '@/lib/utils';
 
@@ -27,6 +28,7 @@ async function resolverSlug(formData: FormData, title: string, ignoreId?: string
 }
 
 function revalidate() {
+  invalidarContenido();
   revalidatePath('/');
   revalidatePath('/noticias');
   revalidatePath('/admin/noticias');

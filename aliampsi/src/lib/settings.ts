@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db';
+import { cachear } from '@/lib/cache';
 
 export const DEFAULT_SETTINGS = {
   id: 'singleton',
@@ -46,7 +47,8 @@ export type SiteSettings = typeof DEFAULT_SETTINGS;
 
 export async function getSettings(): Promise<SiteSettings> {
   try {
-    const s = await prisma.settings.findFirst();
+    // Se leen en cada página del sitio: conviene reutilizar el resultado.
+    const s = await cachear(['settings'], () => prisma.settings.findFirst());
     if (!s) return DEFAULT_SETTINGS;
     const pick = (v: string | null | undefined, def: string) => (v && v.trim() ? v : def);
     return {

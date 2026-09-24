@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db';
 import { AsociacionCard } from '@/components/content';
+import { cachear } from '@/lib/cache';
 
 export const metadata = {
   title: 'Asociaciones',
@@ -10,10 +11,12 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AsociacionesPage() {
-  const asociaciones = await prisma.asociacion.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
+  const asociaciones = await cachear(['asociaciones-publicas'], () =>
+    prisma.asociacion.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+    })
+  );
 
   return (
     <section className="wrap py-16 lg:py-20">

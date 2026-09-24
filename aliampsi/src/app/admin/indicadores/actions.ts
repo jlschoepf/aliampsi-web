@@ -3,9 +3,11 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
+import { invalidarContenido } from '@/lib/cache';
 import { requireAdmin } from '@/lib/auth';
 
 function revalidate() {
+  invalidarContenido();
   revalidatePath('/');
   revalidatePath('/admin/indicadores');
 }

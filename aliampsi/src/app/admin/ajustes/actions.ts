@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
+import { invalidarContenido } from '@/lib/cache';
 import { requireAdmin } from '@/lib/auth';
 import { notificarEnvio } from '@/lib/notify';
 import { getSettings } from '@/lib/settings';
@@ -25,6 +26,7 @@ export async function updateSettings(formData: FormData) {
     update: data,
     create: { id: 'singleton', ...data },
   });
+  invalidarContenido();
   revalidatePath('/');
   revalidatePath('/contacto');
   revalidatePath('/quienes-somos');

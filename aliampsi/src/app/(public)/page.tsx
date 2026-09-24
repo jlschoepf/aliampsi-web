@@ -12,33 +12,40 @@ import { CartaPresidente } from '@/components/CartaPresidente';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, SITE_NAME, SITE_LONG_NAME, SITE_DESCRIPTION, absUrl } from '@/lib/site';
 import { visibleNowWhere } from '@/lib/content';
+import { cachear } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [noticias, congresos, asociaciones, counts] = await Promise.all([
-    prisma.noticia.findMany({
-      where: visibleNowWhere(),
-      orderBy: { publishedAt: 'desc' },
-      take: 3,
-    }),
-    prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 3 }),
-    prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 10 }),
-    Promise.all([
-      prisma.asociacion.count({ where: { published: true } }),
-      prisma.congreso.count({ where: { published: true } }),
-    ]),
+  // La portada es la página más visitada: todo su contenido se lee una vez
+  // y se reutiliza hasta que se publique algo nuevo.
+  const [noticias, congresos, asociaciones, counts, banners, indicadores] = await Promise.all([
+    cachear(['home-noticias'], () =>
+      prisma.noticia.findMany({
+        where: visibleNowWhere(),
+        orderBy: { publishedAt: 'desc' },
+        take: 3,
+      })
+    ),
+    cachear(['home-congresos'], () =>
+      prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 3 })
+    ),
+    cachear(['home-asociaciones'], () =>
+      prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 10 })
+    ),
+    cachear(['home-conteos'], () =>
+      Promise.all([
+        prisma.asociacion.count({ where: { published: true } }),
+        prisma.congreso.count({ where: { published: true } }),
+      ])
+    ),
+    cachear(['home-banners'], () =>
+      prisma.banner.findMany({ where: { published: true }, orderBy: { order: 'asc' } })
+    ),
+    cachear(['home-indicadores'], () =>
+      prisma.indicador.findMany({ where: { published: true }, orderBy: { order: 'asc' } })
+    ),
   ]);
-
-  const banners = await prisma.banner.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
-
-  const indicadores = await prisma.indicador.findMany({
-    where: { published: true },
-    orderBy: { order: 'asc' },
-  });
 
   const [asocCount, congCount] = counts;
   const stats =

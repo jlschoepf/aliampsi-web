@@ -3,6 +3,7 @@ import { SiteHeader } from '@/components/SiteHeader';
 import { SiteFooter } from '@/components/SiteFooter';
 import { prisma } from '@/lib/db';
 import { getSettings } from '@/lib/settings';
+import { cachear } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,10 +23,13 @@ const FALLBACK = [
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   let items = FALLBACK;
   try {
-    const rows = await prisma.menuItem.findMany({
-      where: { published: true },
-      orderBy: { order: 'asc' },
-    });
+    // El menú es igual para todos y cambia poco: se lee una vez y se reutiliza.
+    const rows = await cachear(['menu-publico'], () =>
+      prisma.menuItem.findMany({
+        where: { published: true },
+        orderBy: { order: 'asc' },
+      })
+    );
     if (rows.length > 0) {
       items = rows.map((r) => ({ id: r.id, label: r.label, href: r.href, newTab: r.newTab, cta: r.cta, parentId: r.parentId }));
     }
