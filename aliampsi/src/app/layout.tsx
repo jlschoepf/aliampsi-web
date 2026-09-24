@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Inter, Newsreader } from 'next/font/google';
 import './globals.css';
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, OG_IMAGE } from '@/lib/site';
 import { getSettings } from '@/lib/settings';
+import { Analytics } from '@vercel/analytics/next';
 
 const display = Bricolage_Grotesque({
   subsets: ['latin'],
@@ -65,7 +66,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${display.variable} ${body.variable} ${serif.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Medición de visitas: no toca la base de datos. */}
+        <Analytics />
+      </body>
     </html>
   );
 }

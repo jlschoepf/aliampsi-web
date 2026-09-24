@@ -25,6 +25,7 @@
     "@tiptap/pm": "^2.27.2",
     "@tiptap/react": "^2.27.2",
     "@tiptap/starter-kit": "^2.27.2",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^0.23.4",
     "bcryptjs": "2.4.3",
     "jose": "5.6.3",
