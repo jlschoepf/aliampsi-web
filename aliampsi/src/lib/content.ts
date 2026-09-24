@@ -22,20 +22,9 @@ export function parseTags(tags?: string | null): string[] {
 }
 
 // Ordena: destacados primero, luego por fecha (publicación o creación) descendente.
-/** Posición fijada a mano; 0 o ausente significa "ordenar por fecha". */
-function posicionFijada(x: unknown): number {
-  const n = (x as { order?: number }).order;
-  return typeof n === 'number' && n > 0 ? n : Number.MAX_SAFE_INTEGER;
-}
-
 export function sortForList<T extends { featured: boolean; publishedAt: Date | null; createdAt: Date }>(items: T[]): T[] {
   return [...items].sort((a, b) => {
     if (a.featured !== b.featured) return a.featured ? -1 : 1;
-    // Los que tienen posición fija van primero, en el orden elegido.
-    // Los que no quedan después, de más nuevo a más viejo.
-    const oa = posicionFijada(a);
-    const ob = posicionFijada(b);
-    if (oa !== ob) return oa - ob;
     const da = (a.publishedAt ?? a.createdAt).getTime();
     const db = (b.publishedAt ?? b.createdAt).getTime();
     return db - da;
