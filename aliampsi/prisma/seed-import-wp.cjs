@@ -56,7 +56,8 @@ function decodificar(s) {
 async function traer(url, intentos = 3) {
   for (let i = 1; i <= intentos; i++) {
     try {
-      const r = await fetch(url);
+      // Con límite de tiempo: si el origen no responde, no puede colgar el build.
+      const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
       if (r.ok) return r;
       if (i === intentos) throw new Error('HTTP ' + r.status);
     } catch (e) {
