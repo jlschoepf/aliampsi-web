@@ -12,7 +12,7 @@ export function visibleNowWhere() {
 
 // ¿Es visible al público en este momento?
 export function isVisibleNow(item: Publishable): boolean {
-  return item.published && (!item.publishedAt || item.publishedAt <= new Date());
+  return item.published && (!item.publishedAt || new Date(item.publishedAt) <= new Date());
 }
 
 // Convierte "a, b , c" en ['a','b','c'] (sin vacíos, sin duplicados).
@@ -25,8 +25,8 @@ export function parseTags(tags?: string | null): string[] {
 export function sortForList<T extends { featured: boolean; publishedAt: Date | null; createdAt: Date }>(items: T[]): T[] {
   return [...items].sort((a, b) => {
     if (a.featured !== b.featured) return a.featured ? -1 : 1;
-    const da = (a.publishedAt ?? a.createdAt).getTime();
-    const db = (b.publishedAt ?? b.createdAt).getTime();
+    const da = new Date(a.publishedAt ?? a.createdAt).getTime();
+    const db = new Date(b.publishedAt ?? b.createdAt).getTime();
     return db - da;
   });
 }

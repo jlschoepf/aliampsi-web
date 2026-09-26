@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
+import { HISTORIAL } from '@/lib/version';
 
 export const dynamic = 'force-dynamic';
 
@@ -228,6 +229,22 @@ export default async function AdminDashboard() {
             Búsquedas en Google ↗
           </a>
         </div>
+      </div>
+
+      <div className="mt-8 card p-6">
+        <h2 className="font-display text-lg font-bold">Novedades del sitio</h2>
+        <ul className="mt-4 space-y-4">
+          {HISTORIAL.slice(0, 4).map((e) => (
+            <li key={e.version} className="text-sm">
+              <div className="text-xs text-ink-muted">
+                {e.fecha} · {e.version}
+              </div>
+              {e.cambios.map((c, i) => (
+                <p key={i} className="mt-1 text-ink">{c}</p>
+              ))}
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="mt-8 card p-6">
