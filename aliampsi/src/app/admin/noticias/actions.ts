@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { invalidarContenido } from '@/lib/cache';
+import { sortForList } from '@/lib/content';
 import { requireAdmin } from '@/lib/auth';
 import { slugify } from '@/lib/utils';
 
@@ -98,5 +99,32 @@ export async function updateNoticia(formData: FormData) {
 export async function deleteNoticia(formData: FormData) {
   await requireAdmin();
   await prisma.noticia.delete({ where: { id: String(formData.get('id')) } });
+  revalidate();
+}
+
+/**
+ * Sube o baja una noticia en el listado.
+ * Al mover una, se numeran todas de arriba abajo: el orden elegido queda fijo
+ * y ya no depende de la fecha. Usa el mismo criterio que el sitio público.
+ */
+export async function moveNoticia(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const dir = String(formData.get('dir'));
+  const ordenadas = sortForList(await prisma.noticia.findMany());
+  const idx = ordenadas.findIndex((x) => x.id === id);
+  if (idx === -1) return;
+  const destino = dir === 'up' ? idx - 1 : idx + 1;
+  if (destino < 0 || destino >= ordenadas.length) return;
+  const arr = [...ordenadas];
+  [arr[idx], arr[destino]] = [arr[destino], arr[idx]];
+  await prisma.$transaction(arr.map((it, i) => prisma.noticia.update({ where: { id: it.id }, data: { order: i + 1 } })));
+  revalidate();
+}
+
+/** Vuelve al orden por fecha: borra las posiciones fijadas a mano. */
+export async function resetOrdenNoticias() {
+  await requireAdmin();
+  await prisma.noticia.updateMany({ data: { order: 0 } });
   revalidate();
 }

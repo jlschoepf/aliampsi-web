@@ -11,7 +11,7 @@ import { StatsCounter } from '@/components/StatsCounter';
 import { CartaPresidente } from '@/components/CartaPresidente';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, SITE_NAME, SITE_LONG_NAME, SITE_DESCRIPTION, absUrl } from '@/lib/site';
-import { visibleNowWhere } from '@/lib/content';
+import { visibleNowWhere, sortForList } from '@/lib/content';
 import { cachear } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
@@ -20,12 +20,9 @@ export default async function HomePage() {
   // La portada es la página más visitada: todo su contenido se lee una vez
   // y se reutiliza hasta que se publique algo nuevo.
   const [noticias, congresos, asociaciones, counts, banners, indicadores] = await Promise.all([
-    cachear(['home-noticias'], () =>
-      prisma.noticia.findMany({
-        where: visibleNowWhere(),
-        orderBy: { publishedAt: 'desc' },
-        take: 3,
-      })
+    // Mismo orden que el listado de noticias (incluye el orden manual del panel).
+    cachear(['home-noticias'], async () =>
+      sortForList(await prisma.noticia.findMany({ where: visibleNowWhere(), orderBy: { publishedAt: 'desc' }, take: 60 })).slice(0, 3)
     ),
     cachear(['home-congresos'], () =>
       prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 3 })

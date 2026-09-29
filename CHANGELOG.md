@@ -3,6 +3,12 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.09.27-91 — 27/9/2026
+- **Restaurado el orden manual** de publicaciones (revierte `eb136e2`, que lo había quitado durante el incidente de la base) y **agregado a noticias**: campo `order Int @default(0)` en `Noticia`, acciones `moveNoticia` / `resetOrdenNoticias`, flechas en el panel.
+- `sortForList`: destacados primero, luego posición fijada (>0) ascendente, luego fecha descendente. El panel y las acciones usan la misma función, así lo que se ve al mover coincide con el sitio.
+- La portada toma las 3 primeras noticias con ese mismo orden.
+- Nota de base: al revertir el 14/9, `prisma db push` no pudo borrar `Publicacion.order` (tenía datos y el build no usa `--accept-data-loss`), así que la columna siguió en Neon y el push fallaba en cada build. Con el campo de vuelta en el esquema, esquema y base coinciden otra vez.
+
 ## v2026.09.26-90 — 26/9/2026
 - **Arreglo:** `unstable_cache` serializa a JSON, así que en cada acierto de caché los campos `DateTime` llegaban como strings. `sortForList` llamaba `.getTime()` sobre ellos y rompía `/noticias`, `/publicaciones` y `/congresos` de forma intermitente (fallaba en cada lectura cacheada dentro de la ventana de 60 s; la primera lectura, fresca, funcionaba).
 - `cachear()` ahora revive las fechas ISO a `Date` en un solo lugar (`lib/cache.ts`), para todas las consultas cacheadas.
