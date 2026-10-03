@@ -4,7 +4,7 @@ import { prisma } from '@/lib/db';
 import { AdminHeader, Field, TextArea, Select, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { ESTADOS, normalizarPreguntas } from '@/lib/encuestas';
 import { SITE_URL } from '@/lib/site';
-import { cargarPlantilla, guardarEncuesta } from '../actions';
+import { cambiarEstado, cargarPlantilla, guardarEncuesta } from '../actions';
 import { PLANTILLAS } from '@/lib/encuestas';
 import { BotonConfirmar } from './BotonConfirmar';
 import { EditorPreguntas } from './EditorPreguntas';
@@ -26,10 +26,18 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
 
       <div className="card mb-6 flex flex-wrap items-center justify-between gap-3 p-4">
         <div className="min-w-0 text-sm">
+          <span className={`mr-2 rounded-full px-2.5 py-1 text-xs font-semibold ${enc.estado === 'abierta' ? 'bg-teal-600/10 text-teal-700' : 'bg-ink/5 text-ink-muted'}`}>{enc.estado === 'abierta' ? 'Publicada' : enc.estado === 'cerrada' ? 'Cerrada' : 'Borrador'}</span>
           <span className="text-ink-muted">Enlace para compartir: </span>
           <a href={url} target="_blank" className="break-all font-medium text-teal-700 hover:underline">{url}</a>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <form action={cambiarEstado}>
+            <input type="hidden" name="id" value={enc.id} />
+            <input type="hidden" name="estado" value={enc.estado === 'abierta' ? 'cerrada' : 'abierta'} />
+            <button type="submit" className={enc.estado === 'abierta' ? 'btn-ghost text-sm' : 'btn-coral text-sm'}>
+              {enc.estado === 'abierta' ? 'Cerrar encuesta' : enc.estado === 'cerrada' ? 'Reabrir' : 'Publicar'}
+            </button>
+          </form>
           <CopiarEnlace url={url} />
           <Link href={`/encuestas/${enc.slug}`} target="_blank" className="btn-ghost text-sm">Vista previa</Link>
           <Link href={`/admin/encuestas/${enc.id}/resultados`} className="btn-ghost text-sm">Resultados ({enc._count.respuestas})</Link>

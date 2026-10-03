@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-98 — 3/10/2026
+- Botón Publicar/Cerrar/Reabrir en el listado y el editor de encuestas. El estado «abierta» se muestra como «Publicada». Al publicar sin respuestas, si la dirección termina en -N y la limpia está libre, se usa la limpia.
+
 ## v2026.10.03-97 — 3/10/2026
 - Formulario público rehecho: un paso por sección (`pasos()` en `lib/encuestas.ts`), barra de progreso fija bajo el encabezado (segmentos por paso, % respondido), tilde por pregunta respondida, validación por paso, borrador en `localStorage` (clave por encuesta, se borra al enviar), transición `paso-entra` respetando `prefers-reduced-motion`, duración estimada en la página.
 - `Pregunta.otroEtiqueta`: texto configurable de la opción con campo libre; se usa en el formulario y en los resultados.

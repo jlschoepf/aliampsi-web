@@ -65,8 +65,18 @@ export async function cambiarEstado(formData: FormData) {
   const id = String(formData.get('id'));
   const estado = String(formData.get('estado'));
   if (!(estado in ESTADOS)) return;
-  await prisma.encuesta.update({ where: { id }, data: { estado } });
+  const enc = await prisma.encuesta.findUnique({ where: { id }, include: { _count: { select: { respuestas: true } } } });
+  if (!enc) return;
+  let slug = enc.slug;
+  // Al publicar: si la dirección quedó con un sufijo (-2, -3…) y la limpia está libre, se usa la limpia.
+  const limpia = slug.replace(/-\d+$/, '');
+  if (estado === 'abierta' && limpia !== slug && enc._count.respuestas === 0) {
+    const ocupada = await prisma.encuesta.findUnique({ where: { slug: limpia }, select: { id: true } });
+    if (!ocupada) slug = limpia;
+  }
+  await prisma.encuesta.update({ where: { id }, data: { estado, slug } });
   revalidar(id);
+  revalidatePath(`/admin/encuestas/${id}/resultados`);
 }
 
 export async function eliminarEncuesta(formData: FormData) {

@@ -30,7 +30,7 @@ export const TIPOS: { tipo: TipoPregunta; nombre: string; ayuda: string }[] = [
   { tipo: 'parrafo', nombre: 'Párrafo', ayuda: 'Texto libre, para opiniones.' },
 ];
 
-export const ESTADOS: Record<string, string> = { borrador: 'Borrador', abierta: 'Abierta', cerrada: 'Cerrada' };
+export const ESTADOS: Record<string, string> = { borrador: 'Borrador', abierta: 'Publicada', cerrada: 'Cerrada' };
 export const OTRO = '__otro__';
 
 export function nuevoId() {
