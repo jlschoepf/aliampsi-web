@@ -47,8 +47,7 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={enc.portada} alt="" className="mb-10 w-full rounded-2xl border border-line object-cover shadow-sm" />
       )}
-      <p className="eyebrow"><span className="text-coral">·</span> Encuesta{enc.anonima ? ' anónima' : ''}</p>
-      <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">{enc.titulo}</h1>
+      <h1 className="text-3xl font-extrabold sm:text-4xl">{enc.titulo}</h1>
       <div className="mt-5 space-y-3 text-lg text-ink-muted">
         {parrafos.map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
       </div>

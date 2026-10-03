@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-96 — 3/10/2026
+- Página pública de la encuesta: se quita el rótulo «Encuesta anónima» sobre el título.
+
 ## v2026.10.03-95 — 3/10/2026
 - Portada de la encuesta del webinar: medallón de Melián recortado con el radio y el centro reales (145 px; antes 142, que cortaba el borde derecho).
 
