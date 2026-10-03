@@ -6,8 +6,9 @@ import { ESTADOS, normalizarPreguntas } from '@/lib/encuestas';
 import { SITE_URL } from '@/lib/site';
 import { cambiarEstado, cargarPlantilla, crearNoticiaConEncuesta, enviarPrueba, guardarEncuesta } from '../actions';
 import { configEnvio } from '@/lib/correo';
-import { PLANTILLAS, codigoInsercion } from '@/lib/encuestas';
+import { PLANTILLAS, codigoInsercion, preguntasQueSeResponden } from '@/lib/encuestas';
 import { BotonConfirmar } from './BotonConfirmar';
+import { CampoCodigo } from './CampoCodigo';
 import { EditorPreguntas } from './EditorPreguntas';
 import { CopiarEnlace } from './CopiarEnlace';
 import { ImageField } from '@/components/ImageField';
@@ -20,6 +21,10 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
   if (!enc) notFound();
   const url = `${SITE_URL}/encuestas/${enc.slug}`;
   const correo = await configEnvio();
+  const minutos = Math.max(1, Math.round((preguntasQueSeResponden(normalizarPreguntas(enc.preguntas)).length * 12) / 60));
+  const textoCorreo = enc.codigoAcceso
+    ? `Estimado/a colega:\n\nMuchas gracias por participar en ${enc.certActividad || 'nuestra actividad'}.\n\nLe invitamos a completar la encuesta de satisfacción: lleva unos ${minutos} minutos${enc.certificado ? ' y, al finalizar, puede solicitar su certificado de asistencia' : ''}.\n\nEnlace: ${url}\nCódigo de acceso: ${enc.codigoAcceso}\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines`
+    : '';
   return (
     <>
       <AdminHeader title={enc.titulo} subtitle="Editá los textos y las preguntas. Para recibir respuestas, poné la encuesta en «Abierta» y compartí el enlace." />
@@ -62,6 +67,15 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
         </div>
       </div>
 
+      {textoCorreo && (
+        <div className="card mb-6 p-5">
+          <h2 className="font-display text-lg font-bold">Correo para los asistentes</h2>
+          <p className="mt-1 text-sm text-ink-muted">Texto listo para mandar desde la cuenta de la Alianza, con el enlace y el código de acceso <strong className="tracking-[0.15em] text-ink">{enc.codigoAcceso}</strong>. Si vas a compartir la noticia en lugar de la encuesta, cambiá el enlace por el de la noticia.</p>
+          <textarea readOnly value={textoCorreo} rows={10} className="field mt-3 text-sm" aria-label="Texto del correo" />
+          <div className="mt-2"><CopiarEnlace url={textoCorreo} etiqueta="Copiar texto del correo" /></div>
+        </div>
+      )}
+
       <form id="form-plantilla" action={cargarPlantilla.bind(null, enc.id)} />
       <form id="form-prueba" action={enviarPrueba.bind(null, enc.id)} />
       <form action={guardarEncuesta.bind(null, enc.id)} className="space-y-8">
@@ -69,6 +83,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <div className="md:col-span-2"><Field label="Título" name="titulo" defaultValue={enc.titulo} required /></div>
           <Field label="Dirección" name="slug" defaultValue={enc.slug} hint={`Queda como aliampsi.com/encuestas/${enc.slug}`} />
           <Select label="Estado" name="estado" defaultValue={enc.estado} options={Object.entries(ESTADOS).map(([value, label]) => ({ value, label }))} />
+          <div className="md:col-span-2"><CampoCodigo defaultValue={enc.codigoAcceso} /></div>
           <div className="md:col-span-2"><TextArea label="Presentación" name="descripcion" defaultValue={enc.descripcion} rows={5} hint="Se muestra arriba de las preguntas. Dejá una línea en blanco entre párrafos." /></div>
           <div className="md:col-span-2"><TextArea label="Mensaje de agradecimiento" name="gracias" defaultValue={enc.gracias} rows={2} /></div>
           <div className="md:col-span-2"><Checkbox label="Encuesta anónima (no se pide ni se guarda ningún dato personal)" name="anonima" defaultChecked={enc.anonima} /></div>

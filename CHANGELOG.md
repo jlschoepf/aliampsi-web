@@ -3,6 +3,10 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-101 — 3/10/2026
+- `Encuesta.codigoAcceso`: código común (vacío = abierta). Pantalla de ingreso (`CodigoAcceso`, `useFormState`) en la página de la encuesta y en la insertada en noticias; `verificarCodigo` compara normalizado (sin mayúsculas, espacios ni guiones), frena intentos fallidos y guarda en una cookie httpOnly una firma SHA-256 (no el código), que se invalida si el código cambia. `enviarRespuesta` rechaza envíos sin la firma válida.
+- Editor: campo con generador (6 caracteres sin ambiguos) y texto de correo para los asistentes. `crearNoticiaConEncuesta` menciona el código si existe.
+
 ## v2026.10.03-100 — 3/10/2026
 - Encuestas insertadas en noticias: `partirContenido()` corta el texto en cada `[encuesta:slug]` (suelto o dentro de `<p>`), y la página de la noticia muestra `EncuestaEmbebida` en ese lugar (oculta al público si está en borrador, vista previa para administradores, aviso si está cerrada o el código no existe). `maxDuration` en la página de la noticia por el envío de certificados.
 - Editor de encuesta: código para copiar y acción `crearNoticiaConEncuesta` (noticia en borrador con intro, código insertado y portada de la encuesta).

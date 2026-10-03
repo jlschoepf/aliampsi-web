@@ -4,7 +4,9 @@ import { prisma } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { normalizarPreguntas, preguntasQueSeResponden } from '@/lib/encuestas';
 import { EncuestaForm } from './EncuestaForm';
-import { enviarRespuesta } from './actions';
+import { enviarRespuesta, verificarCodigo } from './actions';
+import { CodigoAcceso } from './CodigoAcceso';
+import { cookieAcceso, firmaAcceso } from '@/lib/acceso';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30; // generar y enviar el certificado puede llevar unos segundos
@@ -35,6 +37,7 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
     );
   }
   const yaRespondio = !previa && cookies().get(`enc_${enc.id}`)?.value === '1';
+  const pideCodigo = !previa && !!enc.codigoAcceso && cookies().get(cookieAcceso(enc.id))?.value !== firmaAcceso(enc.id, enc.codigoAcceso);
   const parrafos = enc.descripcion.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
   const preguntas = normalizarPreguntas(enc.preguntas);
   const cantidad = preguntasQueSeResponden(preguntas).length;
@@ -69,7 +72,9 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
         </p>
       )}
 
-      {yaRespondio ? (
+      {!yaRespondio && pideCodigo ? (
+        <CodigoAcceso action={verificarCodigo.bind(null, enc.slug, `/encuestas/${enc.slug}`)} />
+      ) : yaRespondio ? (
         <div className="card mt-10 p-8 text-center">
           <p className="text-lg font-semibold">Ya respondió esta encuesta desde este dispositivo.</p>
           <p className="mt-2 text-ink-muted">¡Muchas gracias por su participación!</p>

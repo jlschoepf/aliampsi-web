@@ -108,7 +108,7 @@ export default async function NoticiaDetail({
       <img src={cover} alt={n.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
 
       {partirContenido(n.content).map((t, i) =>
-        t.tipo === 'texto' ? <NoticiaBody key={i} content={t.valor} /> : <EncuestaEmbebida key={i} slug={t.slug} />
+        t.tipo === 'texto' ? <NoticiaBody key={i} content={t.valor} /> : <EncuestaEmbebida key={i} slug={t.slug} volver={`/noticias/${n.slug}`} />
       )}
       <GalleryView gallery={n.gallery} />
 

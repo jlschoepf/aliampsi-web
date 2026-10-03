@@ -300,6 +300,8 @@ model Encuesta {
   certDetalle   String            @default("")
   /// Si está activo, el certificado se envía por correo apenas se completa la encuesta (sin validación previa).
   certAuto      Boolean           @default(false)
+  /// Código de acceso común (se manda por correo a los asistentes). Vacío = encuesta abierta.
+  codigoAcceso  String            @default("")
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   respuestas  RespuestaEncuesta[]

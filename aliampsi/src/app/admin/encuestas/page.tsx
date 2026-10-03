@@ -35,7 +35,7 @@ export default async function AdminEncuestas() {
                   <Link href={`/admin/encuestas/${e.id}`} className="truncate font-medium text-ink hover:text-teal-700">{e.titulo}</Link>
                 </div>
                 <p className="mt-1 text-xs text-ink-muted">
-                  {preguntasQueSeResponden(normalizarPreguntas(e.preguntas)).length} preguntas · {e._count.respuestas} respuestas · creada el {formatDate(e.createdAt)} · /encuestas/{e.slug}
+                  {preguntasQueSeResponden(normalizarPreguntas(e.preguntas)).length} preguntas · {e._count.respuestas} respuestas{e.codigoAcceso ? ' · con código de acceso' : ''} · creada el {formatDate(e.createdAt)} · /encuestas/{e.slug}
                 </p>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-4 text-sm">

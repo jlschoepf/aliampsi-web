@@ -3,13 +3,15 @@ import { prisma } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { normalizarPreguntas, preguntasQueSeResponden } from '@/lib/encuestas';
 import { EncuestaForm } from '@/app/(public)/encuestas/[slug]/EncuestaForm';
-import { enviarRespuesta } from '@/app/(public)/encuestas/[slug]/actions';
+import { enviarRespuesta, verificarCodigo } from '@/app/(public)/encuestas/[slug]/actions';
+import { CodigoAcceso } from '@/app/(public)/encuestas/[slug]/CodigoAcceso';
+import { cookieAcceso, firmaAcceso } from '@/lib/acceso';
 
 /**
  * Encuesta insertada dentro de una noticia con el código [encuesta:direccion].
  * El público solo la ve si está publicada; quien administra la ve también en borrador, como vista previa.
  */
-export async function EncuestaEmbebida({ slug }: { slug: string }) {
+export async function EncuestaEmbebida({ slug, volver }: { slug: string; volver: string }) {
   const enc = await prisma.encuesta.findUnique({ where: { slug } });
   const admin = !!(await getSession());
   const aviso = (t: string) => (
@@ -30,6 +32,7 @@ export async function EncuestaEmbebida({ slug }: { slug: string }) {
   const cantidad = preguntasQueSeResponden(preguntas).length;
   const minutos = Math.max(1, Math.round((cantidad * 12) / 60));
   const yaRespondio = !previa && cookies().get(`enc_${enc.id}`)?.value === '1';
+  const pideCodigo = !previa && !!enc.codigoAcceso && cookies().get(cookieAcceso(enc.id))?.value !== firmaAcceso(enc.id, enc.codigoAcceso);
   const parrafos = enc.descripcion.split(/\n{2,}/).map((t) => t.trim()).filter(Boolean);
 
   return (
@@ -44,7 +47,9 @@ export async function EncuestaEmbebida({ slug }: { slug: string }) {
       <div className="mt-4 space-y-3 text-ink-muted">
         {parrafos.map((t, i) => <p key={i} className="whitespace-pre-line leading-relaxed">{t}</p>)}
       </div>
-      {yaRespondio ? (
+      {!yaRespondio && pideCodigo ? (
+        <CodigoAcceso action={verificarCodigo.bind(null, enc.slug, `${volver}#encuesta-${enc.slug}`)} />
+      ) : yaRespondio ? (
         <div className="mt-8 rounded-xl bg-sand/40 p-6 text-center">
           <p className="font-semibold text-ink">Ya respondió esta encuesta desde este dispositivo.</p>
           <p className="mt-1 text-ink-muted">¡Muchas gracias por su participación!</p>

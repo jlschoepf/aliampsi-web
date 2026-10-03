@@ -55,6 +55,7 @@ export async function guardarEncuesta(id: string, formData: FormData) {
       certActividad: String(formData.get('certActividad') || '').trim().slice(0, 400),
       certDetalle: String(formData.get('certDetalle') || '').trim().slice(0, 400),
       certAuto: formData.get('certAuto') === 'on',
+      codigoAcceso: String(formData.get('codigoAcceso') || '').trim().toUpperCase().slice(0, 40),
       preguntas: normalizarPreguntas(preguntas) as unknown as Prisma.InputJsonValue,
     },
   });
@@ -165,7 +166,7 @@ export async function crearNoticiaConEncuesta(id: string) {
   const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const titulo = enc.titulo.replace(/^Encuesta an[oó]nima de satisfacci[oó]n/i, 'Encuesta de satisfacción');
   const actividad = enc.certActividad || 'nuestra última actividad';
-  const intro = `Le invitamos a completar la encuesta de satisfacción de ${actividad}. Su opinión nos ayuda a mejorar las próximas actividades de la Alianza.${enc.certificado ? ' Al finalizar, puede solicitar su certificado de asistencia.' : ''}`;
+  const intro = `Le invitamos a completar la encuesta de satisfacción de ${actividad}. Su opinión nos ayuda a mejorar las próximas actividades de la Alianza.${enc.codigoAcceso ? ' Para responderla, necesitará el código de acceso que le enviamos por correo.' : ''}${enc.certificado ? ' Al finalizar, puede solicitar su certificado de asistencia.' : ''}`;
   const base = slugify(titulo).slice(0, 80) || 'encuesta';
   let slug = base;
   for (let i = 2; await prisma.noticia.findUnique({ where: { slug }, select: { id: true } }); i++) slug = `${base}-${i}`;
