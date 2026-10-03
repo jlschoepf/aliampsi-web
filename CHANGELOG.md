@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-95 — 3/10/2026
+- Portada de la encuesta del webinar: medallón de Melián recortado con el radio y el centro reales (145 px; antes 142, que cortaba el borde derecho).
+
 ## v2026.10.03-94 — 3/10/2026
 - Encuesta: campo `portada` (ImageField en el editor; imagen arriba de la encuesta y en `og:image`). Plantilla del webinar con `/encuestas/portada-webinar-violencia-escolar.jpg`.
 - **Certificados de asistencia.** `Encuesta.certificado`, `certActividad`, `certDetalle`; modelo `SolicitudCertificado` (nombre, correo, estado pendiente/validada/rechazada/enviada, fecha solo con el día) **sin relación con `RespuestaEncuesta`**, para no romper el anonimato.
