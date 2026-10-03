@@ -1,12 +1,21 @@
 // Fuente única de la versión de la app.
 // Subir este valor en cada cambio de código dispara el aviso de "versión nueva".
-export const APP_VERSION = 'v2026.10.03-93';
+export const APP_VERSION = 'v2026.10.03-94';
 
 export type EntradaHistorial = { version: string; fecha: string; cambios: string[] };
 
 // Lo que cambió, escrito para quien administra el sitio. La más nueva, arriba.
 // El detalle técnico de cada versión está en CHANGELOG.md.
 export const HISTORIAL: EntradaHistorial[] = [
+  {
+    version: 'v2026.10.03-94',
+    fecha: '3/10/2026',
+    cambios: [
+      'Las encuestas pueden tener imagen de portada; la del webinar ya trae la suya.',
+      'Certificados de asistencia: quien completa la encuesta puede pedir el suyo. Los pedidos se validan en el panel —uno por uno o contra la lista de asistentes— y el PDF sale con la firma del presidente.',
+      'Los datos del certificado se guardan aparte de las respuestas: la encuesta sigue siendo anónima.',
+    ],
+  },
   {
     version: 'v2026.10.03-93',
     fecha: '3/10/2026',

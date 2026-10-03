@@ -88,6 +88,7 @@ export default async function Resultados({ params, searchParams }: { params: { i
         </form>
         <a href={`/admin/encuestas/${enc.id}/csv`} className="btn-ghost text-sm">Descargar CSV</a>
         <Link href={`/admin/encuestas/${enc.id}`} className="btn-ghost text-sm">Editar</Link>
+        {enc.certificado && <Link href={`/admin/encuestas/${enc.id}/certificados`} className="btn-ghost text-sm">Certificados</Link>}
         <Link href={`/encuestas/${enc.slug}`} target="_blank" className="btn-ghost text-sm">Ver encuesta</Link>
       </div>
 

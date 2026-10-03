@@ -183,7 +183,9 @@ export function resultadosEnTexto(titulo: string, total: number, resumen: Resume
 const q = (tipo: TipoPregunta, texto: string, extra: Partial<Pregunta> = {}): Pregunta => ({ ...preguntaVacia(tipo), texto, ...extra });
 const PAISES = ['Argentina', 'Bolivia', 'Chile', 'Colombia', 'Ecuador', 'España', 'Guatemala', 'México', 'Perú', 'Uruguay'];
 
-export type Plantilla = { clave: string; nombre: string; descripcion: string; crear: () => { titulo: string; slug: string; descripcion: string; gracias: string; preguntas: Pregunta[] } };
+export type Plantilla = { clave: string; nombre: string; descripcion: string; crear: () => { titulo: string; slug: string; descripcion: string; gracias: string; preguntas: Pregunta[]; portada?: string; certificado?: boolean; certActividad?: string; certDetalle?: string } };
+
+export const ESTADOS_CERT: Record<string, string> = { pendiente: 'Pendiente', validada: 'Validada', rechazada: 'Rechazada', enviada: 'Enviada' };
 
 export const PLANTILLAS: Plantilla[] = [
   {
@@ -200,6 +202,10 @@ export const PLANTILLAS: Plantilla[] = [
         descripcion:
           'Webinar Internacional «Salud Mental y violencia escolar. Intersecciones entre entorno escolar, clínica y terapéutica»\nAL·IAM·PSI, SUPIA y AAPI · 30 de setiembre de 2026\n\nEstimado/a colega:\n\nLe agradecemos su participación en esta actividad. Su opinión es fundamental para nosotros y nos permitirá mejorar la calidad de futuras actividades.\n\nEsta encuesta es completamente anónima y sus respuestas serán tratadas de forma confidencial.',
         gracias: '¡Muchas gracias por su tiempo! Sus respuestas nos ayudan a mejorar las actividades de la Alianza.',
+        portada: '/encuestas/portada-webinar-violencia-escolar.jpg',
+        certificado: true,
+        certActividad: 'el Webinar Internacional «Salud Mental y violencia escolar. Intersecciones entre entorno escolar, clínica y terapéutica»',
+        certDetalle: 'Actividad organizada por AL·IAM·PSI, SUPIA y AAPI, realizada en modalidad virtual el 30 de setiembre de 2026.',
         preguntas: [
           q('seccion', 'Sección 1: Perfil del asistente', { ayuda: 'Esta sección nos ayuda a comprender mejor a nuestra audiencia.' }),
           q('unica', '¿Cómo se enteró de esta actividad?', { opciones: ['Correo electrónico de AL·IAM·PSI, SUPIA o AAPI', 'Redes sociales (Instagram, LinkedIn, etc.)', 'A través de un colega o conocido', 'Publicidad en otra sociedad científica'], otro: true }),

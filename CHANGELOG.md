@@ -3,6 +3,13 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-94 — 3/10/2026
+- Encuesta: campo `portada` (ImageField en el editor; imagen arriba de la encuesta y en `og:image`). Plantilla del webinar con `/encuestas/portada-webinar-violencia-escolar.jpg`.
+- **Certificados de asistencia.** `Encuesta.certificado`, `certActividad`, `certDetalle`; modelo `SolicitudCertificado` (nombre, correo, estado pendiente/validada/rechazada/enviada, fecha solo con el día) **sin relación con `RespuestaEncuesta`**, para no romper el anonimato.
+- Público: bloque opcional al final de la encuesta (nombre como figura en el certificado + correo), validado en cliente y servidor.
+- Panel `/admin/encuestas/[id]/certificados`: contadores por estado, validación manual o masiva pegando la lista de asistentes (Zoom/Luma; se extraen los correos), corrección del nombre, PDF individual o de todos los validados, correo redactado para Gmail, marcar enviado.
+- `src/lib/certificado.ts` (pdf-lib + @pdf-lib/fontkit): mismo diseño que el certificado de expositores. Firma, logos y tipografías en `certificados-assets/` (no público), incluidos en la función con `outputFileTracingIncludes`.
+
 ## v2026.10.03-93 — 3/10/2026
 - Escalas con rango configurable (`minimo` 0/1, `maximo` 2–10) en `Pregunta`; formulario, editor, resultados y texto para Claude usan el rango real. El NPS queda fijo en 0–10.
 - Plantilla del webinar rehecha con la estructura de la «Encuesta Anónima de Satisfacción - SUPIA» (planilla de respuestas compartida por Diego): perfil, contenido y expositores (claridad/didáctica y dominio del tema por cada uno), organización, valoración general 1–10, abiertas y NPS. Opciones de las preguntas 11 y 12 supuestas (la planilla no tenía respuestas).

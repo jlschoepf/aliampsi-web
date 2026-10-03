@@ -9,8 +9,12 @@ import { enviarRespuesta } from './actions';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const enc = await prisma.encuesta.findUnique({ where: { slug: params.slug }, select: { titulo: true } });
-  return { title: enc?.titulo ?? 'Encuesta', robots: { index: false, follow: false } };
+  const enc = await prisma.encuesta.findUnique({ where: { slug: params.slug }, select: { titulo: true, portada: true } });
+  return {
+    title: enc?.titulo ?? 'Encuesta',
+    robots: { index: false, follow: false },
+    openGraph: enc?.portada ? { images: [enc.portada] } : undefined,
+  };
 }
 
 export default async function EncuestaPage({ params, searchParams }: { params: { slug: string }; searchParams: { error?: string } }) {
@@ -39,6 +43,10 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
           Vista previa para administradores: la encuesta está en «{enc.estado}» y no recibe respuestas.
         </p>
       )}
+      {enc.portada && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={enc.portada} alt="" className="mb-10 w-full rounded-2xl border border-line object-cover shadow-sm" />
+      )}
       <p className="eyebrow"><span className="text-coral">·</span> Encuesta{enc.anonima ? ' anónima' : ''}</p>
       <h1 className="mt-4 text-3xl font-extrabold sm:text-4xl">{enc.titulo}</h1>
       <div className="mt-5 space-y-3 text-lg text-ink-muted">
@@ -47,7 +55,9 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
 
       {searchParams?.error && (
         <p className="mt-6 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">
-          Faltaron respuestas obligatorias. Revise las preguntas marcadas con *.
+          {searchParams.error === 'cert'
+            ? 'Para el certificado necesitamos su nombre completo y un correo electrónico válido.'
+            : 'Faltaron respuestas obligatorias. Revise las preguntas marcadas con *.'}
         </p>
       )}
 
@@ -57,7 +67,7 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
           <p className="mt-2 text-ink-muted">¡Muchas gracias por su participación!</p>
         </div>
       ) : (
-        <EncuestaForm preguntas={normalizarPreguntas(enc.preguntas)} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} />
+        <EncuestaForm preguntas={normalizarPreguntas(enc.preguntas)} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} />
       )}
     </section>
   );

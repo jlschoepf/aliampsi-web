@@ -49,6 +49,10 @@ export async function guardarEncuesta(id: string, formData: FormData) {
       gracias: String(formData.get('gracias') || '').trim().slice(0, 1000),
       estado: estado in ESTADOS ? estado : 'borrador',
       anonima: formData.get('anonima') === 'on',
+      portada: String(formData.get('portada') || '').trim().slice(0, 500),
+      certificado: formData.get('certificado') === 'on',
+      certActividad: String(formData.get('certActividad') || '').trim().slice(0, 400),
+      certDetalle: String(formData.get('certDetalle') || '').trim().slice(0, 400),
       preguntas: normalizarPreguntas(preguntas) as unknown as Prisma.InputJsonValue,
     },
   });

@@ -15,7 +15,7 @@ const COLOR: Record<string, string> = {
 };
 
 export default async function AdminEncuestas() {
-  const encuestas = await prisma.encuesta.findMany({ orderBy: { createdAt: 'desc' }, include: { _count: { select: { respuestas: true } } } });
+  const encuestas = await prisma.encuesta.findMany({ orderBy: { createdAt: 'desc' }, include: { _count: { select: { respuestas: true, solicitudes: true } } } });
   return (
     <>
       <AdminHeader
@@ -40,6 +40,7 @@ export default async function AdminEncuestas() {
               </div>
               <div className="flex shrink-0 items-center gap-4 text-sm">
                 <Link href={`/admin/encuestas/${e.id}/resultados`} className="font-medium text-teal-700 hover:underline">Resultados</Link>
+                {e.certificado && <Link href={`/admin/encuestas/${e.id}/certificados`} className="font-medium text-teal-700 hover:underline">Certificados ({e._count.solicitudes})</Link>}
                 <Link href={`/admin/encuestas/${e.id}`} className="font-medium text-ink-muted hover:text-ink">Editar</Link>
                 <Link href={`/encuestas/${e.slug}`} target="_blank" className="font-medium text-ink-muted hover:text-ink">Ver</Link>
                 <DeleteButton action={eliminarEncuesta} id={e.id} confirmText={`¿Eliminar «${e.titulo}» y sus ${e._count.respuestas} respuestas? No se puede deshacer.`} />

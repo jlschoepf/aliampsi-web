@@ -293,9 +293,15 @@ model Encuesta {
   preguntas   Json                @default("[]")
   analisis    String              @default("")
   analisisEn  DateTime?
+  portada     String              @default("")
+  /// Certificado de asistencia: si está activo, la encuesta ofrece pedirlo al final.
+  certificado   Boolean           @default(false)
+  certActividad String            @default("")
+  certDetalle   String            @default("")
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   respuestas  RespuestaEncuesta[]
+  solicitudes SolicitudCertificado[]
 }
 
 model RespuestaEncuesta {
@@ -304,6 +310,20 @@ model RespuestaEncuesta {
   encuesta   Encuesta @relation(fields: [encuestaId], references: [id], onDelete: Cascade)
   datos      Json
   createdAt  DateTime @default(now())
+
+  @@index([encuestaId])
+}
+
+/// Pedido de certificado. Se guarda APARTE de las respuestas y sin vínculo con ellas:
+/// así la encuesta sigue siendo anónima. Solo se registra el día, no la hora.
+model SolicitudCertificado {
+  id         String   @id @default(cuid())
+  encuestaId String
+  encuesta   Encuesta @relation(fields: [encuestaId], references: [id], onDelete: Cascade)
+  nombre     String
+  correo     String
+  estado     String   @default("pendiente") // pendiente | validada | rechazada | enviada
+  fecha      DateTime @default(now())
 
   @@index([encuestaId])
 }

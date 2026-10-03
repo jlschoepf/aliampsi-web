@@ -7,11 +7,13 @@ const OTRO = '__otro__';
 // Clases fijas para que Tailwind las incluya: columnas según cuántos valores tiene la escala.
 const COLS: Record<number, string> = { 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-4', 5: 'grid-cols-5', 6: 'grid-cols-6', 7: 'grid-cols-4 sm:grid-cols-7', 8: 'grid-cols-4 sm:grid-cols-8', 9: 'grid-cols-5 sm:grid-cols-9', 10: 'grid-cols-5 sm:grid-cols-10', 11: 'grid-cols-6 sm:grid-cols-11' };
 
-export function EncuestaForm({ preguntas, action, previa }: { preguntas: Pregunta[]; action: (fd: FormData) => void; previa: boolean }) {
+export function EncuestaForm({ preguntas, action, previa, certificado = false }: { preguntas: Pregunta[]; action: (fd: FormData) => void; previa: boolean; certificado?: boolean }) {
   const formRef = useRef<HTMLFormElement>(null);
   const [errores, setErrores] = useState<Set<string>>(new Set());
   const [otros, setOtros] = useState<Record<string, boolean>>({});
   const [enviando, setEnviando] = useState(false);
+  const [quiereCert, setQuiereCert] = useState(false);
+  const [errCert, setErrCert] = useState('');
 
   function falta(p: Pregunta, f: HTMLFormElement): boolean {
     const k = `p_${p.id}`;
@@ -31,6 +33,15 @@ export function EncuestaForm({ preguntas, action, previa }: { preguntas: Pregunt
     const f = e.currentTarget;
     const faltan = new Set(preguntas.filter((p) => p.obligatoria && p.tipo !== 'seccion' && falta(p, f)).map((p) => p.id));
     setErrores(faltan);
+    let ec = '';
+    if (certificado && quiereCert) {
+      const nom = (f.querySelector<HTMLInputElement>('[name="cert_nombre"]')?.value || '').trim();
+      const cor = (f.querySelector<HTMLInputElement>('[name="cert_correo"]')?.value || '').trim();
+      if (nom.length < 3) ec = 'Escriba su nombre completo, tal como quiere que figure en el certificado.';
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cor)) ec = 'Revise el correo electrónico: ahí le enviaremos el certificado.';
+    }
+    setErrCert(ec);
+    if (ec && !faltan.size) { e.preventDefault(); f.querySelector('#bloque-cert')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     if (faltan.size) {
       e.preventDefault();
       const primero = f.querySelector(`#preg-${[...faltan][0]}`);
@@ -116,6 +127,36 @@ export function EncuestaForm({ preguntas, action, previa }: { preguntas: Pregunt
           </fieldset>
         );
       })}
+
+      {certificado && (
+        <div id="bloque-cert" className={`card border-teal-600/30 bg-sand/30 p-5 sm:p-6 ${errCert ? 'ring-2 ring-coral' : ''}`}>
+          <label className="flex min-h-[44px] cursor-pointer items-start gap-3">
+            <input type="checkbox" name="cert_quiero" checked={quiereCert} onChange={(e) => setQuiereCert(e.target.checked)} className="mt-1 h-5 w-5 accent-[#2E7D74]" />
+            <span>
+              <span className="font-semibold text-ink">Quiero recibir mi certificado de asistencia</span>
+              <span className="mt-1 block text-sm text-ink-muted">Lo enviaremos por correo electrónico una vez validada su asistencia.</span>
+            </span>
+          </label>
+          {quiereCert && (
+            <div className="mt-4 grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="field-label" htmlFor="cert_nombre">Nombre y apellido <span className="text-coral">*</span></label>
+                <input id="cert_nombre" name="cert_nombre" type="text" maxLength={120} autoComplete="name" className="field" placeholder="Ej.: Dra. Ana López" />
+                <p className="mt-1 text-xs text-ink-muted">Tal como quiere que figure en el certificado.</p>
+              </div>
+              <div>
+                <label className="field-label" htmlFor="cert_correo">Correo electrónico <span className="text-coral">*</span></label>
+                <input id="cert_correo" name="cert_correo" type="email" maxLength={160} autoComplete="email" className="field" placeholder="nombre@correo.com" />
+                <p className="mt-1 text-xs text-ink-muted">Use el mismo con el que se inscribió.</p>
+              </div>
+              <p className="text-xs text-ink-muted sm:col-span-2">
+                Estos datos se guardan por separado y no quedan vinculados a sus respuestas: la encuesta sigue siendo anónima. Solo los usamos para validar su asistencia y enviarle el certificado.
+              </p>
+            </div>
+          )}
+          {errCert && <p role="alert" className="mt-3 text-sm font-medium text-coral-dark">{errCert}</p>}
+        </div>
+      )}
 
       <div className="flex flex-col items-start gap-3 pt-2">
         {errores.size > 0 && <p role="alert" className="text-sm font-medium text-coral-dark">Faltan {errores.size === 1 ? 'una respuesta obligatoria' : `${errores.size} respuestas obligatorias`}. Están marcadas arriba.</p>}

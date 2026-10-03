@@ -7,11 +7,12 @@ import { SITE_URL } from '@/lib/site';
 import { guardarEncuesta } from '../actions';
 import { EditorPreguntas } from './EditorPreguntas';
 import { CopiarEnlace } from './CopiarEnlace';
+import { ImageField } from '@/components/ImageField';
 
 export const dynamic = 'force-dynamic';
 
 export default async function EditarEncuesta({ params, searchParams }: { params: { id: string }; searchParams: { ok?: string; nueva?: string } }) {
-  const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { _count: { select: { respuestas: true } } } });
+  const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { _count: { select: { respuestas: true, solicitudes: true } } } });
   if (!enc) notFound();
   const url = `${SITE_URL}/encuestas/${enc.slug}`;
   return (
@@ -29,6 +30,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <CopiarEnlace url={url} />
           <Link href={`/encuestas/${enc.slug}`} target="_blank" className="btn-ghost text-sm">Vista previa</Link>
           <Link href={`/admin/encuestas/${enc.id}/resultados`} className="btn-ghost text-sm">Resultados ({enc._count.respuestas})</Link>
+          {enc.certificado && <Link href={`/admin/encuestas/${enc.id}/certificados`} className="btn-ghost text-sm">Certificados ({enc._count.solicitudes})</Link>}
         </div>
       </div>
 
@@ -40,6 +42,17 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <div className="md:col-span-2"><TextArea label="Presentación" name="descripcion" defaultValue={enc.descripcion} rows={5} hint="Se muestra arriba de las preguntas. Dejá una línea en blanco entre párrafos." /></div>
           <div className="md:col-span-2"><TextArea label="Mensaje de agradecimiento" name="gracias" defaultValue={enc.gracias} rows={2} /></div>
           <div className="md:col-span-2"><Checkbox label="Encuesta anónima (no se pide ni se guarda ningún dato personal)" name="anonima" defaultChecked={enc.anonima} /></div>
+          <div className="md:col-span-2"><ImageField label="Imagen de portada" name="portada" defaultValue={enc.portada} hint="Opcional. Se muestra arriba de la encuesta y al compartir el enlace. Ideal: horizontal, 1600 × 640 px." /></div>
+        </div>
+
+        <div className="card space-y-5 p-6">
+          <div>
+            <h2 className="font-display text-xl font-bold">Certificado de asistencia</h2>
+            <p className="mt-1 text-sm text-ink-muted">Al final de la encuesta, quien quiera puede pedir su certificado con nombre y correo. Esos datos se guardan aparte de las respuestas, que siguen siendo anónimas. Los pedidos se validan y se descargan en «Certificados».</p>
+          </div>
+          <Checkbox label="Ofrecer certificado de asistencia en esta encuesta" name="certificado" defaultChecked={enc.certificado} />
+          <TextArea label="Actividad" name="certActividad" defaultValue={enc.certActividad} rows={2} hint="Completa la frase «por su participación como asistente en…». Ej.: el Webinar Internacional «…»" />
+          <TextArea label="Detalle" name="certDetalle" defaultValue={enc.certDetalle} rows={2} hint="Organizadores, modalidad y fecha. Va debajo, en letra más chica." />
         </div>
 
         <div>

@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    // Firma, logos y tipografías del certificado: no son públicos, se incluyen solo en la función del PDF.
+    outputFileTracingIncludes: { '/admin/encuestas/[id]/certificados/pdf': ['./certificados-assets/**/*'] },
+  },
   images: {
     remotePatterns: [{ protocol: 'https', hostname: '**' }],
   },
