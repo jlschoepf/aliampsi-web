@@ -278,3 +278,32 @@ model PasswordReset {
   notified      Boolean   @default(false)
   createdAt     DateTime  @default(now())
 }
+
+/// Encuestas (de satisfacción u otras) que se responden en /encuestas/[slug].
+/// Las preguntas viven en un JSON: así se editan juntas y las respuestas guardan
+/// el id de cada pregunta, que no cambia aunque se reescriba el texto.
+model Encuesta {
+  id          String              @id @default(cuid())
+  slug        String              @unique
+  titulo      String
+  descripcion String              @default("")
+  gracias     String              @default("")
+  estado      String              @default("borrador") // borrador | abierta | cerrada
+  anonima     Boolean             @default(true)
+  preguntas   Json                @default("[]")
+  analisis    String              @default("")
+  analisisEn  DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  respuestas  RespuestaEncuesta[]
+}
+
+model RespuestaEncuesta {
+  id         String   @id @default(cuid())
+  encuestaId String
+  encuesta   Encuesta @relation(fields: [encuestaId], references: [id], onDelete: Cascade)
+  datos      Json
+  createdAt  DateTime @default(now())
+
+  @@index([encuestaId])
+}

@@ -28,6 +28,7 @@ const GROUPS: { title: string | null; links: { href: string; label: string; exac
       { href: '/admin/portadas', label: 'Portadas' },
       { href: '/admin/envios', label: 'Recepción de envíos' },
       { href: '/admin/colaboradores', label: 'Colaboradores' },
+      { href: '/admin/encuestas', label: 'Encuestas' },
     ],
   },
   {
