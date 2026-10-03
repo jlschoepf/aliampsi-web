@@ -274,3 +274,27 @@ export const PLANTILLAS: Plantilla[] = [
     crear: () => ({ titulo: 'Nueva encuesta', slug: `encuesta-${nuevoId()}`, descripcion: '', gracias: '¡Muchas gracias por responder!', preguntas: [] }),
   },
 ];
+
+// ---------- encuestas insertadas en noticias ----------
+
+/** Código para insertar una encuesta en el texto de una noticia: [encuesta:direccion]. */
+export const codigoInsercion = (slug: string) => `[encuesta:${slug}]`;
+
+// Admite el código suelto (Markdown) o dentro de un párrafo del editor (<p>[encuesta:…]</p>).
+const MARCA = /(?:<p[^>]*>\s*)?\[encuesta:\s*([a-z0-9-]+)\s*\](?:\s*<\/p>)?/gi;
+
+export type Tramo = { tipo: 'texto'; valor: string } | { tipo: 'encuesta'; slug: string };
+
+/** Corta el texto de una noticia en tramos de texto y encuestas insertadas, en orden. */
+export function partirContenido(contenido: string): Tramo[] {
+  const out: Tramo[] = [];
+  let desde = 0;
+  for (const m of contenido.matchAll(MARCA)) {
+    const i = m.index ?? 0;
+    if (i > desde) out.push({ tipo: 'texto', valor: contenido.slice(desde, i) });
+    out.push({ tipo: 'encuesta', slug: m[1].toLowerCase() });
+    desde = i + m[0].length;
+  }
+  if (desde < contenido.length) out.push({ tipo: 'texto', valor: contenido.slice(desde) });
+  return out;
+}

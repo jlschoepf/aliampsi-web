@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
 import { NoticiaBody } from '@/components/NoticiaBody';
+import { EncuestaEmbebida } from '@/components/EncuestaEmbebida';
+import { partirContenido } from '@/lib/encuestas';
 import { GalleryView } from '@/components/GalleryView';
 import { getSession } from '@/lib/auth';
 import { NoticiaCard, SectionHeading } from '@/components/content';
@@ -11,6 +13,8 @@ import { JsonLd } from '@/components/JsonLd';
 import { SITE_NAME, absUrl } from '@/lib/site';
 
 export const dynamic = 'force-dynamic';
+
+export const maxDuration = 30;
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const n = await prisma.noticia.findUnique({ where: { slug: params.slug } });
@@ -103,7 +107,9 @@ export default async function NoticiaDetail({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={cover} alt={n.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
 
-      <NoticiaBody content={n.content} />
+      {partirContenido(n.content).map((t, i) =>
+        t.tipo === 'texto' ? <NoticiaBody key={i} content={t.valor} /> : <EncuestaEmbebida key={i} slug={t.slug} />
+      )}
       <GalleryView gallery={n.gallery} />
 
       {n.document && (

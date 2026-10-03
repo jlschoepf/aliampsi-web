@@ -4,9 +4,9 @@ import { prisma } from '@/lib/db';
 import { AdminHeader, Field, TextArea, Select, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { ESTADOS, normalizarPreguntas } from '@/lib/encuestas';
 import { SITE_URL } from '@/lib/site';
-import { cambiarEstado, cargarPlantilla, enviarPrueba, guardarEncuesta } from '../actions';
+import { cambiarEstado, cargarPlantilla, crearNoticiaConEncuesta, enviarPrueba, guardarEncuesta } from '../actions';
 import { configEnvio } from '@/lib/correo';
-import { PLANTILLAS } from '@/lib/encuestas';
+import { PLANTILLAS, codigoInsercion } from '@/lib/encuestas';
 import { BotonConfirmar } from './BotonConfirmar';
 import { EditorPreguntas } from './EditorPreguntas';
 import { CopiarEnlace } from './CopiarEnlace';
@@ -47,6 +47,18 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <Link href={`/encuestas/${enc.slug}`} target="_blank" className="btn-ghost text-sm">Vista previa</Link>
           <Link href={`/admin/encuestas/${enc.id}/resultados`} className="btn-ghost text-sm">Resultados ({enc._count.respuestas})</Link>
           {enc.certificado && <Link href={`/admin/encuestas/${enc.id}/certificados`} className="btn-ghost text-sm">Certificados ({enc._count.solicitudes})</Link>}
+        </div>
+      </div>
+
+      <div className="card mb-6 p-5">
+        <h2 className="font-display text-lg font-bold">Insertar en una noticia</h2>
+        <p className="mt-1 text-sm text-ink-muted">Pegá este código en un párrafo del texto de cualquier noticia: en ese lugar aparece la encuesta, para responderla sin salir de la noticia. Mientras la encuesta esté en borrador, el público no la ve.</p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <code className="rounded-lg border border-line bg-sand/40 px-3 py-2 text-sm text-ink">{codigoInsercion(enc.slug)}</code>
+          <CopiarEnlace url={codigoInsercion(enc.slug)} etiqueta="Copiar código" />
+          <form action={crearNoticiaConEncuesta.bind(null, enc.id)}>
+            <button type="submit" className="btn-primary text-sm">Crear noticia con esta encuesta</button>
+          </form>
         </div>
       </div>
 

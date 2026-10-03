@@ -7,7 +7,7 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { mandarCertificado } from '@/lib/certificados-envio';
 import { slugify } from '@/lib/utils';
-import { ESTADOS, PLANTILLAS, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
+import { ESTADOS, PLANTILLAS, codigoInsercion, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
 
 async function slugLibre(base: string, excepto?: string) {
   const raiz = slugify(base).slice(0, 70) || 'encuesta';
@@ -155,4 +155,29 @@ export async function enviarPrueba(id: string) {
   if (!enc) redirect('/admin/encuestas');
   const r = await mandarCertificado(enc, yo.name || 'Nombre de prueba', yo.email);
   redirect(`/admin/encuestas/${id}?prueba=${r.ok ? 'ok' : 'error'}&detalle=${encodeURIComponent(r.ok ? yo.email : r.detalle)}`);
+}
+
+/** Crea una noticia en borrador con la encuesta ya insertada, y abre su editor. */
+export async function crearNoticiaConEncuesta(id: string) {
+  await requireAdmin();
+  const enc = await prisma.encuesta.findUnique({ where: { id } });
+  if (!enc) redirect('/admin/encuestas');
+  const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const titulo = enc.titulo.replace(/^Encuesta an[oó]nima de satisfacci[oó]n/i, 'Encuesta de satisfacción');
+  const actividad = enc.certActividad || 'nuestra última actividad';
+  const intro = `Le invitamos a completar la encuesta de satisfacción de ${actividad}. Su opinión nos ayuda a mejorar las próximas actividades de la Alianza.${enc.certificado ? ' Al finalizar, puede solicitar su certificado de asistencia.' : ''}`;
+  const base = slugify(titulo).slice(0, 80) || 'encuesta';
+  let slug = base;
+  for (let i = 2; await prisma.noticia.findUnique({ where: { slug }, select: { id: true } }); i++) slug = `${base}-${i}`;
+  const n = await prisma.noticia.create({
+    data: {
+      title: titulo, slug,
+      excerpt: enc.certificado ? 'Complete la encuesta y, si lo desea, solicite su certificado de asistencia.' : 'Su opinión nos ayuda a mejorar las próximas actividades.',
+      content: `<p>${esc(intro)}</p><p>${codigoInsercion(enc.slug)}</p>`,
+      coverImage: enc.portada || null,
+      published: false,
+    },
+  });
+  revalidatePath('/admin/noticias');
+  redirect(`/admin/noticias/${n.id}`);
 }

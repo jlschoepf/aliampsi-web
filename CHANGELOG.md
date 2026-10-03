@@ -3,6 +3,10 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-100 — 3/10/2026
+- Encuestas insertadas en noticias: `partirContenido()` corta el texto en cada `[encuesta:slug]` (suelto o dentro de `<p>`), y la página de la noticia muestra `EncuestaEmbebida` en ese lugar (oculta al público si está en borrador, vista previa para administradores, aviso si está cerrada o el código no existe). `maxDuration` en la página de la noticia por el envío de certificados.
+- Editor de encuesta: código para copiar y acción `crearNoticiaConEncuesta` (noticia en borrador con intro, código insertado y portada de la encuesta).
+
 ## v2026.10.03-99 — 3/10/2026
 - Envío de certificados por correo con Resend (`lib/correo.ts`: adjunto PDF, toma la config de Ajustes o `RESEND_API_KEY`/`RESEND_FROM`). `lib/certificados-envio.ts` genera y envía, y registra resultado.
 - `Encuesta.certAuto`: envío automático al completar la encuesta (sin validación). Sin duplicados: si el correo ya recibió el certificado de esa encuesta, no se reenvía.
