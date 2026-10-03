@@ -45,10 +45,10 @@ function Tarjeta({ r, i }: { r: Resumen; i: number }) {
         {(r.tipo === 'escala' || r.tipo === 'nps') && (
           <>
             <div className="mb-3 flex flex-wrap items-baseline gap-x-6 gap-y-1">
-              <p><span className="font-display text-3xl font-extrabold text-ink">{r.respondieron ? r.promedio.toFixed(1) : '—'}</span> <span className="text-sm text-ink-muted">promedio sobre {r.tipo === 'escala' ? 5 : 10}</span></p>
+              <p><span className="font-display text-3xl font-extrabold text-ink">{r.respondieron ? r.promedio.toFixed(1) : '—'}</span> <span className="text-sm text-ink-muted">promedio sobre {r.maximo}</span></p>
               {r.nps && <p><span className={`font-display text-3xl font-extrabold ${r.nps.indice >= 50 ? 'text-teal-700' : r.nps.indice >= 0 ? 'text-ink' : 'text-coral-dark'}`}>{r.nps.indice > 0 ? '+' : ''}{r.nps.indice}</span> <span className="text-sm text-ink-muted">NPS · {r.nps.promotores} promotores, {r.nps.pasivos} pasivos, {r.nps.detractores} detractores</span></p>}
             </div>
-            {[...r.distribucion].reverse().map((d) => <Barra key={d.valor} etiqueta={`${d.valor}${d.valor === (r.tipo === 'escala' ? 5 : 10) && r.etiquetaMax ? ` · ${r.etiquetaMax}` : d.valor === (r.tipo === 'escala' ? 1 : 0) && r.etiquetaMin ? ` · ${r.etiquetaMin}` : ''}`} n={d.n} total={r.respondieron} destacada={r.tipo === 'nps' && d.valor <= 6} />)}
+            {[...r.distribucion].reverse().map((d) => <Barra key={d.valor} etiqueta={`${d.valor}${d.valor === r.maximo && r.etiquetaMax ? ` · ${r.etiquetaMax}` : d.valor === r.minimo && r.etiquetaMin ? ` · ${r.etiquetaMin}` : ''}`} n={d.n} total={r.respondieron} destacada={r.tipo === 'nps' && d.valor <= 6} />)}
           </>
         )}
         {(r.tipo === 'texto' || r.tipo === 'parrafo') && (
@@ -70,7 +70,9 @@ export default async function Resultados({ params, searchParams }: { params: { i
   const total = enc.respuestas.length;
   const resumen = resumir(preguntas, enc.respuestas.map((r) => r.datos as Datos));
   const nps = resumen.find((r) => r.tipo === 'nps' && r.nps) as Extract<Resumen, { tipo: 'escala' | 'nps' }> | undefined;
-  const general = resumen.find((r) => r.tipo === 'escala') as Extract<Resumen, { tipo: 'escala' | 'nps' }> | undefined;
+  const escalas = resumen.filter((r) => r.tipo === 'escala') as Extract<Resumen, { tipo: 'escala' | 'nps' }>[];
+  // «Satisfacción general»: la escala más amplia (por ejemplo, la del 1 al 10); si no hay, la primera.
+  const general = [...escalas].sort((a, b) => b.maximo - a.maximo)[0];
   const hayClave = !!process.env.ANTHROPIC_API_KEY;
   const texto = resultadosEnTexto(enc.titulo, total, resumen);
 
@@ -91,7 +93,7 @@ export default async function Resultados({ params, searchParams }: { params: { i
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Respuestas</p><p className="mt-1 font-display text-4xl font-extrabold">{total}</p></div>
-        <div className="card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Valoración general</p><p className="mt-1 font-display text-4xl font-extrabold">{general && general.respondieron ? general.promedio.toFixed(1) : '—'}<span className="text-lg text-ink-muted"> / 5</span></p></div>
+        <div className="card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Satisfacción general</p><p className="mt-1 font-display text-4xl font-extrabold">{general && general.respondieron ? general.promedio.toFixed(1) : '—'}<span className="text-lg text-ink-muted"> / {general ? general.maximo : 5}</span></p></div>
         <div className="card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Recomendación (NPS)</p><p className="mt-1 font-display text-4xl font-extrabold">{nps?.nps ? `${nps.nps.indice > 0 ? '+' : ''}${nps.nps.indice}` : '—'}</p></div>
         <div className="card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Período</p><p className="mt-2 text-sm text-ink">{total ? `${formatDate(enc.respuestas[0].createdAt)} – ${formatDate(enc.respuestas[total - 1].createdAt)}` : 'Sin respuestas todavía'}</p></div>
       </div>

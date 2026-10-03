@@ -4,6 +4,8 @@ import { useRef, useState } from 'react';
 import type { Pregunta } from '@/lib/encuestas';
 
 const OTRO = '__otro__';
+// Clases fijas para que Tailwind las incluya: columnas según cuántos valores tiene la escala.
+const COLS: Record<number, string> = { 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-4', 5: 'grid-cols-5', 6: 'grid-cols-6', 7: 'grid-cols-4 sm:grid-cols-7', 8: 'grid-cols-4 sm:grid-cols-8', 9: 'grid-cols-5 sm:grid-cols-9', 10: 'grid-cols-5 sm:grid-cols-10', 11: 'grid-cols-6 sm:grid-cols-11' };
 
 export function EncuestaForm({ preguntas, action, previa }: { preguntas: Pregunta[]; action: (fd: FormData) => void; previa: boolean }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -89,8 +91,8 @@ export function EncuestaForm({ preguntas, action, previa }: { preguntas: Pregunt
 
               {(p.tipo === 'escala' || p.tipo === 'nps') && (
                 <div>
-                  <div className={`grid gap-2 ${p.tipo === 'escala' ? 'grid-cols-5' : 'grid-cols-6 sm:grid-cols-11'}`}>
-                    {Array.from({ length: p.tipo === 'escala' ? 5 : 11 }, (_, i) => (p.tipo === 'escala' ? i + 1 : i)).map((n) => (
+                  <div className={`grid gap-2 ${COLS[p.maximo - p.minimo + 1] ?? 'grid-cols-5'}`}>
+                    {Array.from({ length: p.maximo - p.minimo + 1 }, (_, i) => p.minimo + i).map((n) => (
                       <label key={n} className="flex min-h-[48px] cursor-pointer items-center justify-center rounded-lg border border-line bg-white text-lg font-semibold text-ink hover:border-teal-600 has-[:checked]:border-ink has-[:checked]:bg-ink has-[:checked]:text-paper has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-coral">
                         <input type="radio" name={k} value={n} className="sr-only" aria-label={`${n}`} />
                         {n}
@@ -99,8 +101,8 @@ export function EncuestaForm({ preguntas, action, previa }: { preguntas: Pregunt
                   </div>
                   {(p.etiquetaMin || p.etiquetaMax) && (
                     <div className="mt-2 flex justify-between text-xs text-ink-muted">
-                      <span>{p.tipo === 'escala' ? '1' : '0'} = {p.etiquetaMin}</span>
-                      <span>{p.tipo === 'escala' ? '5' : '10'} = {p.etiquetaMax}</span>
+                      <span>{p.minimo} = {p.etiquetaMin}</span>
+                      <span>{p.maximo} = {p.etiquetaMax}</span>
                     </div>
                   )}
                 </div>

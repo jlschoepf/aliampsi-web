@@ -3,6 +3,11 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-93 — 3/10/2026
+- Escalas con rango configurable (`minimo` 0/1, `maximo` 2–10) en `Pregunta`; formulario, editor, resultados y texto para Claude usan el rango real. El NPS queda fijo en 0–10.
+- Plantilla del webinar rehecha con la estructura de la «Encuesta Anónima de Satisfacción - SUPIA» (planilla de respuestas compartida por Diego): perfil, contenido y expositores (claridad/didáctica y dominio del tema por cada uno), organización, valoración general 1–10, abiertas y NPS. Opciones de las preguntas 11 y 12 supuestas (la planilla no tenía respuestas).
+- Resultados: la tarjeta «Satisfacción general» toma la escala más amplia.
+
 ## v2026.10.03-92 — 3/10/2026
 - **Módulo de encuestas.** Modelos `Encuesta` (preguntas en JSON, estado borrador/abierta/cerrada, análisis guardado) y `RespuestaEncuesta` (datos en JSON por id de pregunta).
 - Público: `/encuestas/[slug]` con validación en el cliente y en el servidor, trampa anti-robots, cookie suave para no repetir en el mismo dispositivo, vista previa para administradores y página de gracias.

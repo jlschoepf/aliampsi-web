@@ -57,9 +57,23 @@ export function EditorPreguntas({ inicial, conRespuestas }: { inicial: Pregunta[
                 </div>
               )}
               {(p.tipo === 'escala' || p.tipo === 'nps') && (
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <div><label className="field-label">Qué significa el {p.tipo === 'escala' ? '1' : '0'}</label><input value={p.etiquetaMin} onChange={(e) => cambiar(i, { etiquetaMin: e.target.value })} className="field text-sm" /></div>
-                  <div><label className="field-label">Qué significa el {p.tipo === 'escala' ? '5' : '10'}</label><input value={p.etiquetaMax} onChange={(e) => cambiar(i, { etiquetaMax: e.target.value })} className="field text-sm" /></div>
+                <div className="mt-3 space-y-2">
+                  {p.tipo === 'escala' && (
+                    <div className="flex flex-wrap items-center gap-2 text-sm">
+                      <span className="text-ink-muted">Escala del</span>
+                      <select value={p.minimo} onChange={(e) => cambiar(i, { minimo: Number(e.target.value) })} className="rounded-md border border-line bg-white px-2 py-1" aria-label="Desde">
+                        {[0, 1].map((v) => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                      <span className="text-ink-muted">al</span>
+                      <select value={p.maximo} onChange={(e) => cambiar(i, { maximo: Number(e.target.value) })} className="rounded-md border border-line bg-white px-2 py-1" aria-label="Hasta">
+                        {[2, 3, 4, 5, 6, 7, 8, 9, 10].filter((v) => v > p.minimo).map((v) => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                    </div>
+                  )}
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <div><label className="field-label">Qué significa el {p.minimo}</label><input value={p.etiquetaMin} onChange={(e) => cambiar(i, { etiquetaMin: e.target.value })} className="field text-sm" /></div>
+                    <div><label className="field-label">Qué significa el {p.maximo}</label><input value={p.etiquetaMax} onChange={(e) => cambiar(i, { etiquetaMax: e.target.value })} className="field text-sm" /></div>
+                  </div>
                 </div>
               )}
               {!esSeccion && (
