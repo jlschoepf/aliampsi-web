@@ -196,7 +196,16 @@ export function resultadosEnTexto(titulo: string, total: number, resumen: Resume
 const q = (tipo: TipoPregunta, texto: string, extra: Partial<Pregunta> = {}): Pregunta => ({ ...preguntaVacia(tipo), texto, ...extra });
 const PAISES = ['Argentina', 'Bolivia', 'Chile', 'Colombia', 'Ecuador', 'España', 'Guatemala', 'México', 'Perú', 'Uruguay'];
 
-export type Plantilla = { clave: string; nombre: string; descripcion: string; crear: () => { titulo: string; slug: string; descripcion: string; gracias: string; preguntas: Pregunta[]; portada?: string; certificado?: boolean; certActividad?: string; certDetalle?: string } };
+export type Plantilla = { clave: string; nombre: string; descripcion: string; crear: () => { titulo: string; slug: string; descripcion: string; gracias: string; preguntas: Pregunta[]; portada?: string; certificado?: boolean; certActividad?: string; certDetalle?: string; certModo?: string } };
+
+export const MODOS_CERT: Record<string, string> = {
+  inscriptos: 'Automático si el nombre o el correo coinciden con la lista de inscriptos (los demás, a validar a mano)',
+  manual: 'Manual: todos los pedidos quedan pendientes hasta validarlos',
+  todos: 'Automático para todos, sin validación',
+};
+/** Modo efectivo (las encuestas anteriores usaban un sí/no de envío automático). */
+export const modoCert = (e: { certModo?: string | null; certAuto?: boolean | null }) =>
+  e.certModo && e.certModo !== 'manual' ? e.certModo : e.certAuto ? 'todos' : 'manual';
 
 export const ESTADOS_CERT: Record<string, string> = { pendiente: 'Pendiente', validada: 'Validada', rechazada: 'Rechazada', enviada: 'Enviada' };
 
@@ -217,6 +226,7 @@ export const PLANTILLAS: Plantilla[] = [
         gracias: '¡Muchas gracias por su tiempo! Sus respuestas nos ayudan a mejorar las actividades de la Alianza.',
         portada: '/encuestas/portada-webinar-violencia-escolar.jpg',
         certificado: true,
+        certModo: 'inscriptos',
         certActividad: 'el Webinar Internacional «Salud Mental y violencia escolar. Intersecciones entre entorno escolar, clínica y terapéutica»',
         certDetalle: 'Actividad organizada por AL·IAM·PSI, SUPIA y AAPI, realizada en modalidad virtual el 30 de setiembre de 2026.',
         preguntas: [

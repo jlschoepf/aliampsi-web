@@ -17,6 +17,8 @@ export default async function Gracias({ params, searchParams }: { params: { slug
             ? 'Le enviamos su certificado de asistencia por correo electrónico. Si no lo ve en unos minutos, revise la carpeta de correo no deseado.'
             : searchParams.cert === 'ya'
             ? 'Su certificado de asistencia ya le fue enviado a ese correo.'
+            : searchParams.cert === 'revision'
+            ? 'Recibimos su pedido de certificado. Su nombre y su correo no coinciden con los de la inscripción, así que lo revisaremos y se lo enviaremos por correo en los próximos días.'
             : 'Recibimos su pedido de certificado. Se lo enviaremos por correo en los próximos días.'}
         </p>
       )}

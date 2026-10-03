@@ -302,6 +302,11 @@ model Encuesta {
   certAuto      Boolean           @default(false)
   /// Código de acceso común (se manda por correo a los asistentes). Vacío = encuesta abierta.
   codigoAcceso  String            @default("")
+  /// Cómo se envía el certificado: manual (se valida todo a mano), inscriptos (automático si el
+  /// nombre o el correo coinciden con la lista de inscriptos) o todos (automático para cualquiera).
+  certModo      String            @default("manual")
+  /// Lista de inscriptos a la actividad: [{ nombre, correo }].
+  inscriptos    Json              @default("[]")
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   respuestas  RespuestaEncuesta[]

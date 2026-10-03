@@ -4,7 +4,8 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
-import { leerRespuestas, normalizarPreguntas } from '@/lib/encuestas';
+import { leerRespuestas, modoCert, normalizarPreguntas } from '@/lib/encuestas';
+import { coincide, normalizarInscriptos } from '@/lib/inscriptos';
 import { enviarSolicitud } from '@/lib/certificados-envio';
 import { cookieAcceso, firmaAcceso, normalizarCodigo } from '@/lib/acceso';
 
@@ -35,10 +36,19 @@ export async function enviarRespuesta(slug: string, formData: FormData) {
     else {
       // Sin vínculo con la respuesta y solo con el día: no permite saber qué contestó cada persona.
       const hoy = new Date(); hoy.setUTCHours(0, 0, 0, 0);
-      const sol = await prisma.solicitudCertificado.create({ data: { encuestaId: enc.id, nombre, correo, fecha: hoy } });
-      resultado = '1';
-      if (enc.certAuto) {
-        try { resultado = (await enviarSolicitud(sol.id)).ok ? 'enviado' : '1'; } catch { resultado = '1'; }
+      const modo = modoCert(enc);
+      const match = modo === 'inscriptos' ? coincide(nombre, correo, normalizarInscriptos(enc.inscriptos)) : null;
+      const automatico = modo === 'todos' || !!match;
+      const sol = await prisma.solicitudCertificado.create({
+        data: {
+          encuestaId: enc.id, nombre, correo, fecha: hoy,
+          estado: automatico ? 'validada' : 'pendiente',
+          detalle: match ? `Coincide con la inscripción (por ${match})` : modo === 'inscriptos' ? 'No coincide con la lista de inscriptos: validar a mano' : '',
+        },
+      });
+      resultado = modo === 'inscriptos' && !match ? 'revision' : '1';
+      if (automatico) {
+        try { if ((await enviarSolicitud(sol.id)).ok) resultado = 'enviado'; } catch { /* queda validado para reenviar desde el panel */ }
       }
     }
   }

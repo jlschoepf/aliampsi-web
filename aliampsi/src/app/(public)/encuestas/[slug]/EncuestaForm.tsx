@@ -8,9 +8,9 @@ const OTRO = '__otro__';
 const COLS: Record<number, string> = { 2: 'grid-cols-2', 3: 'grid-cols-3', 4: 'grid-cols-4', 5: 'grid-cols-5', 6: 'grid-cols-6', 7: 'grid-cols-4 sm:grid-cols-7', 8: 'grid-cols-4 sm:grid-cols-8', 9: 'grid-cols-5 sm:grid-cols-9', 10: 'grid-cols-5 sm:grid-cols-10', 11: 'grid-cols-6 sm:grid-cols-11' };
 const CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-type Props = { preguntas: Pregunta[]; action: (fd: FormData) => void; previa: boolean; certificado?: boolean; clave: string };
+type Props = { preguntas: Pregunta[]; action: (fd: FormData) => void; previa: boolean; certificado?: boolean; clave: string; conInscripcion?: boolean };
 
-export function EncuestaForm({ preguntas, action, previa, certificado = false, clave }: Props) {
+export function EncuestaForm({ preguntas, action, previa, certificado = false, clave, conInscripcion = false }: Props) {
   const pasos = useMemo(() => armarPasos(preguntas), [preguntas]);
   const todas = useMemo(() => pasos.flatMap((p) => p.preguntas), [pasos]);
   const total = todas.length;
@@ -248,7 +248,11 @@ export function EncuestaForm({ preguntas, action, previa, certificado = false, c
                   <input type="checkbox" name="cert_quiero" checked={quiereCert} onChange={(e) => setQuiereCert(e.target.checked)} className="mt-1 h-5 w-5 accent-[#2E7D74]" />
                   <span>
                     <span className="font-semibold text-ink">Quiero recibir mi certificado de asistencia</span>
-                    <span className="mt-1 block text-sm text-ink-muted">Lo enviaremos por correo electrónico una vez validada su asistencia.</span>
+                    <span className="mt-1 block text-sm text-ink-muted">
+                      {conInscripcion
+                        ? 'Use el mismo nombre y correo con los que se inscribió: así le llega el certificado por correo en el momento.'
+                        : 'Lo enviaremos por correo electrónico una vez validada su asistencia.'}
+                    </span>
                   </span>
                 </label>
                 <div className={`mt-4 grid gap-4 sm:grid-cols-2 ${quiereCert ? '' : 'hidden'}`}>

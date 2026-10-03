@@ -7,7 +7,8 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { mandarCertificado } from '@/lib/certificados-envio';
 import { slugify } from '@/lib/utils';
-import { ESTADOS, PLANTILLAS, codigoInsercion, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
+import { ESTADOS, MODOS_CERT, PLANTILLAS, codigoInsercion, modoCert, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
+import { leerInscriptos } from '@/lib/inscriptos';
 
 async function slugLibre(base: string, excepto?: string) {
   const raiz = slugify(base).slice(0, 70) || 'encuesta';
@@ -54,7 +55,9 @@ export async function guardarEncuesta(id: string, formData: FormData) {
       certificado: formData.get('certificado') === 'on',
       certActividad: String(formData.get('certActividad') || '').trim().slice(0, 400),
       certDetalle: String(formData.get('certDetalle') || '').trim().slice(0, 400),
-      certAuto: formData.get('certAuto') === 'on',
+      certModo: String(formData.get('certModo')) in MODOS_CERT ? String(formData.get('certModo')) : 'manual',
+      certAuto: formData.get('certModo') === 'todos',
+      ...(formData.has('inscriptos') ? { inscriptos: leerInscriptos(String(formData.get('inscriptos') || '')) as unknown as Prisma.InputJsonValue } : {}),
       codigoAcceso: String(formData.get('codigoAcceso') || '').trim().toUpperCase().slice(0, 40),
       preguntas: normalizarPreguntas(preguntas) as unknown as Prisma.InputJsonValue,
     },
@@ -166,7 +169,7 @@ export async function crearNoticiaConEncuesta(id: string) {
   const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const titulo = enc.titulo.replace(/^Encuesta an[oó]nima de satisfacci[oó]n/i, 'Encuesta de satisfacción');
   const actividad = enc.certActividad || 'nuestra última actividad';
-  const intro = `Le invitamos a completar la encuesta de satisfacción de ${actividad}. Su opinión nos ayuda a mejorar las próximas actividades de la Alianza.${enc.codigoAcceso ? ' Para responderla, necesitará el código de acceso que le enviamos por correo.' : ''}${enc.certificado ? ' Al finalizar, puede solicitar su certificado de asistencia.' : ''}`;
+  const intro = `Le invitamos a completar la encuesta de satisfacción de ${actividad}. Su opinión nos ayuda a mejorar las próximas actividades de la Alianza.${enc.codigoAcceso ? ' Para responderla, necesitará el código de acceso que le enviamos por correo.' : ''}${enc.certificado ? (modoCert(enc) === 'inscriptos' ? ' Al finalizar, puede solicitar su certificado de asistencia: si usa el mismo nombre y correo con los que se inscribió, le llegará automáticamente por correo.' : ' Al finalizar, puede solicitar su certificado de asistencia.') : ''}`;
   const base = slugify(titulo).slice(0, 80) || 'encuesta';
   let slug = base;
   for (let i = 2; await prisma.noticia.findUnique({ where: { slug }, select: { id: true } }); i++) slug = `${base}-${i}`;

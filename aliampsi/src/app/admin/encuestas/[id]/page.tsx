@@ -6,7 +6,8 @@ import { ESTADOS, normalizarPreguntas } from '@/lib/encuestas';
 import { SITE_URL } from '@/lib/site';
 import { cambiarEstado, cargarPlantilla, crearNoticiaConEncuesta, enviarPrueba, guardarEncuesta } from '../actions';
 import { configEnvio } from '@/lib/correo';
-import { PLANTILLAS, codigoInsercion, preguntasQueSeResponden } from '@/lib/encuestas';
+import { MODOS_CERT, PLANTILLAS, codigoInsercion, modoCert, preguntasQueSeResponden } from '@/lib/encuestas';
+import { inscriptosATexto, normalizarInscriptos } from '@/lib/inscriptos';
 import { BotonConfirmar } from './BotonConfirmar';
 import { CampoCodigo } from './CampoCodigo';
 import { EditorPreguntas } from './EditorPreguntas';
@@ -22,8 +23,13 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
   const url = `${SITE_URL}/encuestas/${enc.slug}`;
   const correo = await configEnvio();
   const minutos = Math.max(1, Math.round((preguntasQueSeResponden(normalizarPreguntas(enc.preguntas)).length * 12) / 60));
-  const textoCorreo = enc.codigoAcceso
-    ? `Estimado/a colega:\n\nMuchas gracias por participar en ${enc.certActividad || 'nuestra actividad'}.\n\nLe invitamos a completar la encuesta de satisfacción: lleva unos ${minutos} minutos${enc.certificado ? ' y, al finalizar, puede solicitar su certificado de asistencia' : ''}.\n\nEnlace: ${url}\nCódigo de acceso: ${enc.codigoAcceso}\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines`
+  const inscriptos = normalizarInscriptos(enc.inscriptos);
+  const modo = modoCert(enc);
+  // Si ya hay una noticia con la encuesta insertada, el correo lleva a la noticia (donde está también el video).
+  const noticia = await prisma.noticia.findFirst({ where: { content: { contains: codigoInsercion(enc.slug) } }, select: { slug: true, published: true } });
+  const enlace = noticia ? `${SITE_URL}/noticias/${noticia.slug}` : url;
+  const textoCorreo = enc.certificado
+    ? `Estimado/a colega:\n\nMuchas gracias por participar en ${enc.certActividad || 'nuestra actividad'}.\n\n${noticia ? 'Ya están disponibles en nuestro sitio la grabación y la encuesta de satisfacción' : 'Ya está disponible en nuestro sitio la encuesta de satisfacción'}: lleva unos ${minutos} minutos.\n\n${enlace}${enc.codigoAcceso ? `\nCódigo de acceso: ${enc.codigoAcceso}` : ''}\n\nAl completar la encuesta puede solicitar su certificado de asistencia.${modo === 'inscriptos' ? ' Si utiliza el mismo nombre y el mismo correo electrónico con los que se inscribió, le llegará automáticamente por correo.' : ''}\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines`
     : '';
   return (
     <>
@@ -69,8 +75,8 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
 
       {textoCorreo && (
         <div className="card mb-6 p-5">
-          <h2 className="font-display text-lg font-bold">Correo para los asistentes</h2>
-          <p className="mt-1 text-sm text-ink-muted">Texto listo para mandar desde la cuenta de la Alianza, con el enlace y el código de acceso <strong className="tracking-[0.15em] text-ink">{enc.codigoAcceso}</strong>. Si vas a compartir la noticia en lugar de la encuesta, cambiá el enlace por el de la noticia.</p>
+          <h2 className="font-display text-lg font-bold">Correo para avisar a los inscriptos</h2>
+          <p className="mt-1 text-sm text-ink-muted">Texto listo para avisar a los inscriptos desde la cuenta de la Alianza. {noticia ? `Lleva a la noticia donde está insertada la encuesta${noticia.published ? '' : ' (todavía en borrador: publicala antes de enviar)'}.` : 'Lleva a la página de la encuesta; si la insertás en una noticia, el enlace pasa a ser el de la noticia.'}</p>
           <textarea readOnly value={textoCorreo} rows={10} className="field mt-3 text-sm" aria-label="Texto del correo" />
           <div className="mt-2"><CopiarEnlace url={textoCorreo} etiqueta="Copiar texto del correo" /></div>
         </div>
@@ -98,9 +104,22 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <Checkbox label="Ofrecer certificado de asistencia en esta encuesta" name="certificado" defaultChecked={enc.certificado} />
           <TextArea label="Actividad" name="certActividad" defaultValue={enc.certActividad} rows={2} hint="Completa la frase «por su participación como asistente en…». Ej.: el Webinar Internacional «…»" />
           <TextArea label="Detalle" name="certDetalle" defaultValue={enc.certDetalle} rows={2} hint="Organizadores, modalidad y fecha. Va debajo, en letra más chica." />
+          <fieldset className="rounded-lg border border-line bg-white p-4">
+            <legend className="px-1 text-sm font-semibold text-ink">Envío del certificado</legend>
+            <div className="space-y-2">
+              {Object.entries(MODOS_CERT).map(([valor, texto]) => (
+                <label key={valor} className="flex cursor-pointer items-start gap-2 text-sm">
+                  <input type="radio" name="certModo" value={valor} defaultChecked={modo === valor} className="mt-1 accent-[#2E7D74]" />
+                  <span>{texto}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <div>
+            <TextArea label={`Lista de inscriptos · ${inscriptos.length} cargados${inscriptos.length ? ` (${inscriptos.filter((i) => !i.correo).length} sin correo)` : ''}`} name="inscriptos" defaultValue={inscriptosATexto(inscriptos)} rows={8}
+              hint="Pegá el archivo de inscriptos de Luma (CSV) tal cual, o una persona por línea: «Nombre Apellido, correo». Se compara por correo y, si no, por nombre (sin importar tildes, títulos ni el orden). Al guardar se ordena y se quitan los repetidos." />
+          </div>
           <div className="rounded-lg border border-line bg-white p-4">
-            <Checkbox label="Enviar el certificado automáticamente apenas se completa la encuesta" name="certAuto" defaultChecked={enc.certAuto} />
-            <p className="mt-2 text-xs text-ink-muted">Con esta opción, cada persona que pide su certificado lo recibe por correo en el momento, sin validación previa. Sin ella, los pedidos quedan pendientes hasta que los valides en «Certificados».</p>
             <p className={`mt-3 text-xs font-medium ${correo.aviso ? 'text-coral-dark' : 'text-teal-700'}`}>
               {correo.aviso ? `Correo: ${correo.aviso}` : `Correo listo · se envía desde ${correo.remitente}`}
             </p>

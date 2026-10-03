@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { AdminHeader } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
-import { ESTADOS_CERT } from '@/lib/encuestas';
+import { ESTADOS_CERT, modoCert } from '@/lib/encuestas';
+import { normalizarInscriptos } from '@/lib/inscriptos';
 import { formatDate } from '@/lib/utils';
 import { cambiarEstadoSolicitud, corregirNombre, eliminarSolicitud, enviarPorCorreo, enviarValidados, validarConLista } from '../../certificados-actions';
 
@@ -63,7 +64,12 @@ export default async function Certificados({ params, searchParams }: { params: {
           Envié {searchParams.enviados} de {searchParams.intentados} certificados. {Number(searchParams.enviados) < Number(searchParams.intentados) ? 'Los que fallaron muestran el motivo en su fila.' : ''}
         </p>
       )}
-      {enc.certAuto && <p className="mb-6 rounded-lg bg-sand/50 px-4 py-3 text-sm text-ink">Envío automático activado: los certificados se mandan solos al completar la encuesta. Acá quedan registrados como «Enviados».</p>}
+      {modoCert(enc) === 'todos' && <p className="mb-6 rounded-lg bg-sand/50 px-4 py-3 text-sm text-ink">Envío automático para todos: los certificados se mandan solos al completar la encuesta, sin validación.</p>}
+      {modoCert(enc) === 'inscriptos' && (
+        <p className="mb-6 rounded-lg bg-sand/50 px-4 py-3 text-sm text-ink">
+          Envío automático para inscriptos ({normalizarInscriptos(enc.inscriptos).length} en la lista): quien coincide por nombre o correo recibe el certificado en el momento. Los que no coinciden quedan <strong>pendientes</strong> acá, para validarlos a mano. La lista se carga en «Editar encuesta».
+        </p>
+      )}
       {searchParams.validadas !== undefined && (
         <p className="mb-6 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">
           Leí {searchParams.leidos} correos en la lista y validé {searchParams.validadas} {searchParams.validadas === '1' ? 'pedido' : 'pedidos'} pendientes que coincidían. Los que no coinciden siguen pendientes, para revisarlos a mano.
@@ -100,7 +106,7 @@ export default async function Certificados({ params, searchParams }: { params: {
                   <span className="text-sm text-ink-muted">{s.correo}</span>
                   <span className="text-xs text-ink-muted">· {formatDate(s.fecha)}</span>
                 </div>
-                {s.detalle && <p className="mt-1 text-xs font-medium text-coral-dark">Último intento de envío: {s.detalle}</p>}
+                {s.detalle && <p className={`mt-1 text-xs font-medium ${s.detalle.startsWith('Coincide') ? 'text-teal-700' : 'text-coral-dark'}`}>{s.detalle}</p>}
                 <form action={corregirNombre} className="mt-2 flex max-w-lg items-center gap-2">
                   <input type="hidden" name="id" value={s.id} />
                   <input name="nombre" defaultValue={s.nombre} aria-label="Nombre en el certificado" className="field py-1.5 font-semibold" />

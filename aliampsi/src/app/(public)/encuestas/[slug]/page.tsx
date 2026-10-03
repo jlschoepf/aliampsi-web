@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { normalizarPreguntas, preguntasQueSeResponden } from '@/lib/encuestas';
+import { modoCert } from '@/lib/encuestas';
 import { EncuestaForm } from './EncuestaForm';
 import { enviarRespuesta, verificarCodigo } from './actions';
 import { CodigoAcceso } from './CodigoAcceso';
@@ -80,7 +81,7 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
           <p className="mt-2 text-ink-muted">¡Muchas gracias por su participación!</p>
         </div>
       ) : (
-        <EncuestaForm preguntas={preguntas} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} clave={enc.id} />
+        <EncuestaForm preguntas={preguntas} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} clave={enc.id} conInscripcion={modoCert(enc) === 'inscriptos'} />
       )}
     </section>
   );

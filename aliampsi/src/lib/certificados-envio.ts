@@ -29,7 +29,7 @@ export async function enviarSolicitud(id: string): Promise<{ ok: boolean; detall
   const hoy = new Date(); hoy.setUTCHours(0, 0, 0, 0);
   await prisma.solicitudCertificado.update({
     where: { id },
-    data: r.ok ? { estado: 'enviada', enviadoEn: hoy, detalle: '' } : { detalle: r.detalle },
+    data: r.ok ? { estado: 'enviada', enviadoEn: hoy, detalle: s.detalle.startsWith('Coincide') ? s.detalle : '' } : { detalle: `Error al enviar: ${r.detalle}` },
   });
   return r;
 }

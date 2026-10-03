@@ -3,6 +3,12 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-102 — 3/10/2026
+- `Encuesta.certModo` (manual | inscriptos | todos; `modoCert()` respeta el `certAuto` anterior) y `Encuesta.inscriptos` (JSON `{nombre, correo}`).
+- `lib/inscriptos.ts`: lectura del CSV de Luma/Zoom (por encabezados) o de una persona por línea, sin repetidos; `coincide()` por correo exacto o por nombre (sin tildes, títulos ni conectores, en cualquier orden, exige al menos dos palabras; subconjunto admitido).
+- Al completar la encuesta: si coincide, el pedido nace «validada» con el motivo y se envía en el momento; si no, queda «pendiente» con «No coincide con la lista de inscriptos». Gracias con mensaje propio para ese caso.
+- Editor: modo de envío, lista de inscriptos con conteo, texto del correo de aviso que enlaza a la noticia que contiene la encuesta (si existe).
+
 ## v2026.10.03-101 — 3/10/2026
 - `Encuesta.codigoAcceso`: código común (vacío = abierta). Pantalla de ingreso (`CodigoAcceso`, `useFormState`) en la página de la encuesta y en la insertada en noticias; `verificarCodigo` compara normalizado (sin mayúsculas, espacios ni guiones), frena intentos fallidos y guarda en una cookie httpOnly una firma SHA-256 (no el código), que se invalida si el código cambia. `enviarRespuesta` rechaza envíos sin la firma válida.
 - Editor: campo con generador (6 caracteres sin ambiguos) y texto de correo para los asistentes. `crearNoticiaConEncuesta` menciona el código si existe.

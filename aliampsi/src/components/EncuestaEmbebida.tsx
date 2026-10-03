@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { prisma } from '@/lib/db';
 import { getSession } from '@/lib/auth';
 import { normalizarPreguntas, preguntasQueSeResponden } from '@/lib/encuestas';
+import { modoCert } from '@/lib/encuestas';
 import { EncuestaForm } from '@/app/(public)/encuestas/[slug]/EncuestaForm';
 import { enviarRespuesta, verificarCodigo } from '@/app/(public)/encuestas/[slug]/actions';
 import { CodigoAcceso } from '@/app/(public)/encuestas/[slug]/CodigoAcceso';
@@ -55,7 +56,7 @@ export async function EncuestaEmbebida({ slug, volver }: { slug: string; volver:
           <p className="mt-1 text-ink-muted">¡Muchas gracias por su participación!</p>
         </div>
       ) : (
-        <EncuestaForm preguntas={preguntas} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} clave={enc.id} />
+        <EncuestaForm preguntas={preguntas} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} clave={enc.id} conInscripcion={modoCert(enc) === 'inscriptos'} />
       )}
     </section>
   );
