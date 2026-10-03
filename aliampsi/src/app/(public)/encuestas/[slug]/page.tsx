@@ -7,6 +7,7 @@ import { EncuestaForm } from './EncuestaForm';
 import { enviarRespuesta } from './actions';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 30; // generar y enviar el certificado puede llevar unos segundos
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { slug: params.slug }, select: { titulo: true, portada: true } });

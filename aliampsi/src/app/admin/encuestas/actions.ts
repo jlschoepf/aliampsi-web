@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { mandarCertificado } from '@/lib/certificados-envio';
 import { slugify } from '@/lib/utils';
 import { ESTADOS, PLANTILLAS, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
 
@@ -53,6 +54,7 @@ export async function guardarEncuesta(id: string, formData: FormData) {
       certificado: formData.get('certificado') === 'on',
       certActividad: String(formData.get('certActividad') || '').trim().slice(0, 400),
       certDetalle: String(formData.get('certDetalle') || '').trim().slice(0, 400),
+      certAuto: formData.get('certAuto') === 'on',
       preguntas: normalizarPreguntas(preguntas) as unknown as Prisma.InputJsonValue,
     },
   });
@@ -144,4 +146,13 @@ export async function cargarPlantilla(id: string, formData: FormData) {
   await prisma.encuesta.update({ where: { id }, data: { preguntas: p.crear().preguntas as unknown as Prisma.InputJsonValue } });
   revalidar(id);
   redirect(`/admin/encuestas/${id}?plantilla=1`);
+}
+
+/** Manda un certificado de muestra al correo de quien está en el panel, para comprobar que el envío funciona. */
+export async function enviarPrueba(id: string) {
+  const yo = await requireAdmin();
+  const enc = await prisma.encuesta.findUnique({ where: { id } });
+  if (!enc) redirect('/admin/encuestas');
+  const r = await mandarCertificado(enc, yo.name || 'Nombre de prueba', yo.email);
+  redirect(`/admin/encuestas/${id}?prueba=${r.ok ? 'ok' : 'error'}&detalle=${encodeURIComponent(r.ok ? yo.email : r.detalle)}`);
 }

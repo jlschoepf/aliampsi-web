@@ -5,9 +5,10 @@ import { AdminHeader } from '@/components/admin-ui';
 import { DeleteButton } from '@/components/DeleteButton';
 import { ESTADOS_CERT } from '@/lib/encuestas';
 import { formatDate } from '@/lib/utils';
-import { cambiarEstadoSolicitud, corregirNombre, eliminarSolicitud, validarConLista } from '../../certificados-actions';
+import { cambiarEstadoSolicitud, corregirNombre, eliminarSolicitud, enviarPorCorreo, enviarValidados, validarConLista } from '../../certificados-actions';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const COLOR: Record<string, string> = {
   pendiente: 'bg-ink/5 text-ink-muted', validada: 'bg-teal-600/10 text-teal-700',
@@ -24,7 +25,7 @@ function Boton({ id, estado, children, tono = 'ghost' }: { id: string; estado: s
   );
 }
 
-export default async function Certificados({ params, searchParams }: { params: { id: string }; searchParams: { estado?: string; validadas?: string; leidos?: string } }) {
+export default async function Certificados({ params, searchParams }: { params: { id: string }; searchParams: { estado?: string; validadas?: string; leidos?: string; enviados?: string; intentados?: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { solicitudes: { orderBy: { nombre: 'asc' } } } });
   if (!enc) notFound();
   const filtro = searchParams.estado && searchParams.estado in ESTADOS_CERT ? searchParams.estado : '';
@@ -44,7 +45,12 @@ export default async function Certificados({ params, searchParams }: { params: {
       <div className="mb-6 flex flex-wrap gap-2 text-sm">
         <Link href={`/admin/encuestas/${enc.id}`} className="btn-ghost text-sm">Editar encuesta</Link>
         <Link href={`/admin/encuestas/${enc.id}/resultados`} className="btn-ghost text-sm">Resultados</Link>
-        {conteo.validada > 0 && <a href={`${base}/pdf?estado=validada`} className="btn-primary text-sm">Descargar los {conteo.validada} validados (un PDF)</a>}
+        {conteo.validada > 0 && <a href={`${base}/pdf?estado=validada`} className="btn-ghost text-sm">Descargar los {conteo.validada} validados (un PDF)</a>}
+        {conteo.validada > 0 && (
+          <form action={enviarValidados.bind(null, enc.id)}>
+            <button type="submit" className="btn-primary text-sm">Enviar por correo a los validados{conteo.validada > 15 ? ' (de a 15)' : ''}</button>
+          </form>
+        )}
       </div>
 
       {!enc.certificado && (
@@ -52,6 +58,12 @@ export default async function Certificados({ params, searchParams }: { params: {
           Esta encuesta no ofrece certificado. Activalo en «Editar encuesta» para que aparezca el pedido al final.
         </p>
       )}
+      {searchParams.enviados !== undefined && (
+        <p className="mb-6 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">
+          Envié {searchParams.enviados} de {searchParams.intentados} certificados. {Number(searchParams.enviados) < Number(searchParams.intentados) ? 'Los que fallaron muestran el motivo en su fila.' : ''}
+        </p>
+      )}
+      {enc.certAuto && <p className="mb-6 rounded-lg bg-sand/50 px-4 py-3 text-sm text-ink">Envío automático activado: los certificados se mandan solos al completar la encuesta. Acá quedan registrados como «Enviados».</p>}
       {searchParams.validadas !== undefined && (
         <p className="mb-6 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">
           Leí {searchParams.leidos} correos en la lista y validé {searchParams.validadas} {searchParams.validadas === '1' ? 'pedido' : 'pedidos'} pendientes que coincidían. Los que no coinciden siguen pendientes, para revisarlos a mano.
@@ -88,6 +100,7 @@ export default async function Certificados({ params, searchParams }: { params: {
                   <span className="text-sm text-ink-muted">{s.correo}</span>
                   <span className="text-xs text-ink-muted">· {formatDate(s.fecha)}</span>
                 </div>
+                {s.detalle && <p className="mt-1 text-xs font-medium text-coral-dark">Último intento de envío: {s.detalle}</p>}
                 <form action={corregirNombre} className="mt-2 flex max-w-lg items-center gap-2">
                   <input type="hidden" name="id" value={s.id} />
                   <input name="nombre" defaultValue={s.nombre} aria-label="Nombre en el certificado" className="field py-1.5 font-semibold" />
@@ -98,6 +111,10 @@ export default async function Certificados({ params, searchParams }: { params: {
                 {s.estado === 'pendiente' && (<><Boton id={s.id} estado="validada" tono="coral">Validar</Boton><Boton id={s.id} estado="rechazada">Rechazar</Boton></>)}
                 {(s.estado === 'validada' || s.estado === 'enviada') && (
                   <>
+                    <form action={enviarPorCorreo}>
+                      <input type="hidden" name="id" value={s.id} />
+                      <button type="submit" className={`${s.estado === 'validada' ? 'btn-coral' : 'btn-ghost'} px-3 py-1.5 text-xs`}>{s.estado === 'enviada' ? 'Reenviar' : 'Enviar por correo'}</button>
+                    </form>
                     <a href={`${base}/pdf?sid=${s.id}`} className="btn-ghost px-3 py-1.5 text-xs">Descargar PDF</a>
                     <a href={gmail(s.correo, s.nombre)} target="_blank" rel="noopener" className="btn-ghost px-3 py-1.5 text-xs">Escribir en Gmail</a>
                   </>
@@ -111,7 +128,7 @@ export default async function Certificados({ params, searchParams }: { params: {
         </div>
       )}
       <p className="mt-4 text-xs text-ink-muted">
-        «Escribir en Gmail» abre un correo ya redactado para esa persona. Adjuntá el PDF descargado antes de enviarlo, y entrá con la cuenta de la Alianza. Cuando lo mandes, marcalo como enviado.
+        «Enviar por correo» manda el certificado desde el sitio, con el PDF adjunto. Si preferís mandarlo desde la cuenta de la Alianza, usá «Escribir en Gmail»: abre el correo ya redactado; adjuntá el PDF descargado y, al enviarlo, marcalo como enviado.
       </p>
     </>
   );

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { ESTADOS_CERT } from '@/lib/encuestas';
+import { enviarSolicitud } from '@/lib/certificados-envio';
 
 const ruta = (encuestaId: string) => `/admin/encuestas/${encuestaId}/certificados`;
 
@@ -43,4 +44,23 @@ export async function validarConLista(encuestaId: string, formData: FormData) {
     : { count: 0 };
   revalidatePath(ruta(encuestaId));
   redirect(`${ruta(encuestaId)}?validadas=${r.count}&leidos=${correos.length}`);
+}
+
+export async function enviarPorCorreo(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const s = await prisma.solicitudCertificado.findUnique({ where: { id }, select: { encuestaId: true } });
+  if (!s) return;
+  await enviarSolicitud(id);
+  revalidatePath(ruta(s.encuestaId));
+}
+
+/** Envía de a tandas los certificados validados todavía no enviados (para no exceder el tiempo del servidor). */
+export async function enviarValidados(encuestaId: string) {
+  await requireAdmin();
+  const lote = await prisma.solicitudCertificado.findMany({ where: { encuestaId, estado: 'validada' }, select: { id: true }, take: 15 });
+  let ok = 0;
+  for (const s of lote) if ((await enviarSolicitud(s.id)).ok) ok++;
+  revalidatePath(ruta(encuestaId));
+  redirect(`${ruta(encuestaId)}?enviados=${ok}&intentados=${lote.length}`);
 }

@@ -298,6 +298,8 @@ model Encuesta {
   certificado   Boolean           @default(false)
   certActividad String            @default("")
   certDetalle   String            @default("")
+  /// Si está activo, el certificado se envía por correo apenas se completa la encuesta (sin validación previa).
+  certAuto      Boolean           @default(false)
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   respuestas  RespuestaEncuesta[]
@@ -324,6 +326,9 @@ model SolicitudCertificado {
   correo     String
   estado     String   @default("pendiente") // pendiente | validada | rechazada | enviada
   fecha      DateTime @default(now())
+  /// Día del último envío (sin hora, para no poder cruzarlo con las respuestas) y resultado del intento.
+  enviadoEn  DateTime?
+  detalle    String   @default("")
 
   @@index([encuestaId])
 }

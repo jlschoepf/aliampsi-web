@@ -4,7 +4,8 @@ import { prisma } from '@/lib/db';
 import { AdminHeader, Field, TextArea, Select, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { ESTADOS, normalizarPreguntas } from '@/lib/encuestas';
 import { SITE_URL } from '@/lib/site';
-import { cambiarEstado, cargarPlantilla, guardarEncuesta } from '../actions';
+import { cambiarEstado, cargarPlantilla, enviarPrueba, guardarEncuesta } from '../actions';
+import { configEnvio } from '@/lib/correo';
 import { PLANTILLAS } from '@/lib/encuestas';
 import { BotonConfirmar } from './BotonConfirmar';
 import { EditorPreguntas } from './EditorPreguntas';
@@ -12,15 +13,19 @@ import { CopiarEnlace } from './CopiarEnlace';
 import { ImageField } from '@/components/ImageField';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
 
-export default async function EditarEncuesta({ params, searchParams }: { params: { id: string }; searchParams: { ok?: string; nueva?: string; plantilla?: string } }) {
+export default async function EditarEncuesta({ params, searchParams }: { params: { id: string }; searchParams: { ok?: string; nueva?: string; plantilla?: string; prueba?: string; detalle?: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { _count: { select: { respuestas: true, solicitudes: true } } } });
   if (!enc) notFound();
   const url = `${SITE_URL}/encuestas/${enc.slug}`;
+  const correo = await configEnvio();
   return (
     <>
       <AdminHeader title={enc.titulo} subtitle="Editá los textos y las preguntas. Para recibir respuestas, poné la encuesta en «Abierta» y compartí el enlace." />
       {searchParams.ok && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Cambios guardados.</p>}
+      {searchParams.prueba === 'ok' && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Certificado de prueba enviado a {searchParams.detalle}. Revisá la bandeja de entrada (y la de correo no deseado).</p>}
+      {searchParams.prueba === 'error' && <p className="mb-4 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">No se pudo enviar la prueba: {searchParams.detalle}</p>}
       {searchParams.plantilla && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Preguntas reemplazadas por las de la plantilla. Revisalas abajo.</p>}
       {searchParams.nueva && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Encuesta creada en borrador. Revisala y, cuando esté lista, cambiá el estado a «Abierta».</p>}
 
@@ -46,6 +51,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
       </div>
 
       <form id="form-plantilla" action={cargarPlantilla.bind(null, enc.id)} />
+      <form id="form-prueba" action={enviarPrueba.bind(null, enc.id)} />
       <form action={guardarEncuesta.bind(null, enc.id)} className="space-y-8">
         <div className="card grid gap-5 p-6 md:grid-cols-2">
           <div className="md:col-span-2"><Field label="Título" name="titulo" defaultValue={enc.titulo} required /></div>
@@ -65,6 +71,14 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <Checkbox label="Ofrecer certificado de asistencia en esta encuesta" name="certificado" defaultChecked={enc.certificado} />
           <TextArea label="Actividad" name="certActividad" defaultValue={enc.certActividad} rows={2} hint="Completa la frase «por su participación como asistente en…». Ej.: el Webinar Internacional «…»" />
           <TextArea label="Detalle" name="certDetalle" defaultValue={enc.certDetalle} rows={2} hint="Organizadores, modalidad y fecha. Va debajo, en letra más chica." />
+          <div className="rounded-lg border border-line bg-white p-4">
+            <Checkbox label="Enviar el certificado automáticamente apenas se completa la encuesta" name="certAuto" defaultChecked={enc.certAuto} />
+            <p className="mt-2 text-xs text-ink-muted">Con esta opción, cada persona que pide su certificado lo recibe por correo en el momento, sin validación previa. Sin ella, los pedidos quedan pendientes hasta que los valides en «Certificados».</p>
+            <p className={`mt-3 text-xs font-medium ${correo.aviso ? 'text-coral-dark' : 'text-teal-700'}`}>
+              {correo.aviso ? `Correo: ${correo.aviso}` : `Correo listo · se envía desde ${correo.remitente}`}
+            </p>
+            <button type="submit" form="form-prueba" className="btn-ghost mt-3 text-sm">Enviarme un certificado de prueba</button>
+          </div>
         </div>
 
         <div>

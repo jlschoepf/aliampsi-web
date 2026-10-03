@@ -3,6 +3,13 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-99 — 3/10/2026
+- Envío de certificados por correo con Resend (`lib/correo.ts`: adjunto PDF, toma la config de Ajustes o `RESEND_API_KEY`/`RESEND_FROM`). `lib/certificados-envio.ts` genera y envía, y registra resultado.
+- `Encuesta.certAuto`: envío automático al completar la encuesta (sin validación). Sin duplicados: si el correo ya recibió el certificado de esa encuesta, no se reenvía.
+- `SolicitudCertificado.enviadoEn` (solo el día, para no cruzarlo con las respuestas) y `detalle` (último error).
+- Panel: estado de la configuración de correo, «Enviarme un certificado de prueba», «Enviar por correo»/«Reenviar» por fila y «Enviar a los validados» (de a 15 por vez).
+- `outputFileTracingIncludes` pasa a `'/**'` para que la firma y las tipografías estén en todas las funciones que generan certificados. `maxDuration` en las páginas que generan y envían.
+
 ## v2026.10.03-98 — 3/10/2026
 - Botón Publicar/Cerrar/Reabrir en el listado y el editor de encuestas. El estado «abierta» se muestra como «Publicada». Al publicar sin respuestas, si la dirección termina en -N y la limpia está libre, se usa la limpia.
 
