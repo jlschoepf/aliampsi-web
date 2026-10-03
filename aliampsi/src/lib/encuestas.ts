@@ -149,10 +149,10 @@ export function resultadosEnTexto(titulo: string, total: number, resumen: Resume
   const l: string[] = [`ENCUESTA: ${titulo}`, `Respuestas recibidas: ${total}`, ''];
   for (const r of resumen) {
     l.push(`PREGUNTA: ${r.texto} (respondieron ${r.respondieron})`);
-    if (r.tipo === 'unica' || r.tipo === 'multiple') {
+    if ('conteos' in r) {
       for (const c of r.conteos) l.push(`- ${c.opcion}: ${c.n}`);
       if (r.otros.length) l.push(`  Respuestas en "Otro": ${r.otros.join(' | ')}`);
-    } else if (r.tipo === 'escala' || r.tipo === 'nps') {
+    } else if ('distribucion' in r) {
       l.push(`- Promedio: ${r.promedio.toFixed(2)}`);
       l.push(`- Distribución: ${r.distribucion.map((d) => `${d.valor}→${d.n}`).join(', ')}`);
       if (r.nps) l.push(`- NPS: ${r.nps.indice} (promotores ${r.nps.promotores}, pasivos ${r.nps.pasivos}, detractores ${r.nps.detractores})`);
