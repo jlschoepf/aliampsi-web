@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { getSession } from '@/lib/auth';
-import { normalizarPreguntas } from '@/lib/encuestas';
+import { normalizarPreguntas, preguntasQueSeResponden } from '@/lib/encuestas';
 import { EncuestaForm } from './EncuestaForm';
 import { enviarRespuesta } from './actions';
 
@@ -35,6 +35,9 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
   }
   const yaRespondio = !previa && cookies().get(`enc_${enc.id}`)?.value === '1';
   const parrafos = enc.descripcion.split(/\n{2,}/).map((s) => s.trim()).filter(Boolean);
+  const preguntas = normalizarPreguntas(enc.preguntas);
+  const cantidad = preguntasQueSeResponden(preguntas).length;
+  const minutos = Math.max(1, Math.round((cantidad * 12) / 60)); // unos 12 segundos por pregunta
 
   return (
     <section className="wrap max-w-3xl py-14 lg:py-20">
@@ -48,6 +51,11 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
         <img src={enc.portada} alt="" className="mb-10 w-full rounded-2xl border border-line object-cover shadow-sm" />
       )}
       <h1 className="text-3xl font-extrabold sm:text-4xl">{enc.titulo}</h1>
+      {cantidad > 0 && (
+        <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-sand/60 px-3 py-1 text-sm font-medium text-ink-muted">
+          <span aria-hidden="true">⏱</span> {cantidad} preguntas · unos {minutos} {minutos === 1 ? 'minuto' : 'minutos'}
+        </p>
+      )}
       <div className="mt-5 space-y-3 text-lg text-ink-muted">
         {parrafos.map((p, i) => <p key={i} className="whitespace-pre-line">{p}</p>)}
       </div>
@@ -66,7 +74,7 @@ export default async function EncuestaPage({ params, searchParams }: { params: {
           <p className="mt-2 text-ink-muted">¡Muchas gracias por su participación!</p>
         </div>
       ) : (
-        <EncuestaForm preguntas={normalizarPreguntas(enc.preguntas)} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} />
+        <EncuestaForm preguntas={preguntas} action={enviarRespuesta.bind(null, enc.slug)} previa={previa} certificado={enc.certificado} clave={enc.id} />
       )}
     </section>
   );

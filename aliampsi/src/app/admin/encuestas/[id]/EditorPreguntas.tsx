@@ -53,7 +53,10 @@ export function EditorPreguntas({ inicial, conRespuestas }: { inicial: Pregunta[
                 <div className="mt-3">
                   <label className="field-label">Opciones, una por línea</label>
                   <textarea value={p.opciones.join('\n')} onChange={(e) => cambiar(i, { opciones: e.target.value.split('\n') })} onBlur={() => cambiar(i, { opciones: p.opciones.map((o) => o.trim()).filter(Boolean) })} rows={Math.max(3, p.opciones.length + 1)} className="field text-sm" />
-                  <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" checked={p.otro} onChange={(e) => cambiar(i, { otro: e.target.checked })} /> Agregar «Otro» con campo para escribir</label>
+                  <label className="mt-2 flex items-center gap-2 text-sm"><input type="checkbox" checked={p.otro} onChange={(e) => cambiar(i, { otro: e.target.checked })} /> Agregar una opción con campo para escribir</label>
+                  {p.otro && (
+                    <input value={p.otroEtiqueta} onChange={(e) => cambiar(i, { otroEtiqueta: e.target.value })} placeholder="Texto de esa opción (por ejemplo: Otro, u Otra sociedad científica)" aria-label="Texto de la opción con campo" className="field mt-2 text-sm" />
+                  )}
                 </div>
               )}
               {(p.tipo === 'escala' || p.tipo === 'nps') && (

@@ -1,12 +1,22 @@
 // Fuente única de la versión de la app.
 // Subir este valor en cada cambio de código dispara el aviso de "versión nueva".
-export const APP_VERSION = 'v2026.10.03-96';
+export const APP_VERSION = 'v2026.10.03-97';
 
 export type EntradaHistorial = { version: string; fecha: string; cambios: string[] };
 
 // Lo que cambió, escrito para quien administra el sitio. La más nueva, arriba.
 // El detalle técnico de cada versión está en CHANGELOG.md.
 export const HISTORIAL: EntradaHistorial[] = [
+  {
+    version: 'v2026.10.03-97',
+    fecha: '3/10/2026',
+    cambios: [
+      'Las encuestas ahora se responden de a una sección por pantalla, con una barra de progreso que se va llenando, una tilde en cada pregunta respondida y la duración estimada arriba.',
+      'Si alguien cierra la página sin enviar, al volver sus respuestas siguen ahí.',
+      'La opción «Otro» puede tener su propio texto, y el editor permite cargar las preguntas desde una plantilla.',
+      'Encuesta del webinar: sale la SPU, se agrega «Otra sociedad científica» (con campo para indicar cuál) y «Maestro/a o docente».',
+    ],
+  },
   {
     version: 'v2026.10.03-96',
     fecha: '3/10/2026',

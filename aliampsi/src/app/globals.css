@@ -96,3 +96,8 @@
   pointer-events: none;
   color: #9AA5A5;
 }
+
+/* Encuestas: entrada suave de cada paso. Sin movimiento para quien lo pide en su sistema. */
+@keyframes pasoEntra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.paso-entra { animation: pasoEntra 0.38s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .paso-entra { animation: none; } }

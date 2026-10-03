@@ -4,14 +4,16 @@ import { prisma } from '@/lib/db';
 import { AdminHeader, Field, TextArea, Select, Checkbox, SubmitButton } from '@/components/admin-ui';
 import { ESTADOS, normalizarPreguntas } from '@/lib/encuestas';
 import { SITE_URL } from '@/lib/site';
-import { guardarEncuesta } from '../actions';
+import { cargarPlantilla, guardarEncuesta } from '../actions';
+import { PLANTILLAS } from '@/lib/encuestas';
+import { BotonConfirmar } from './BotonConfirmar';
 import { EditorPreguntas } from './EditorPreguntas';
 import { CopiarEnlace } from './CopiarEnlace';
 import { ImageField } from '@/components/ImageField';
 
 export const dynamic = 'force-dynamic';
 
-export default async function EditarEncuesta({ params, searchParams }: { params: { id: string }; searchParams: { ok?: string; nueva?: string } }) {
+export default async function EditarEncuesta({ params, searchParams }: { params: { id: string }; searchParams: { ok?: string; nueva?: string; plantilla?: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { _count: { select: { respuestas: true, solicitudes: true } } } });
   if (!enc) notFound();
   const url = `${SITE_URL}/encuestas/${enc.slug}`;
@@ -19,6 +21,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
     <>
       <AdminHeader title={enc.titulo} subtitle="Editá los textos y las preguntas. Para recibir respuestas, poné la encuesta en «Abierta» y compartí el enlace." />
       {searchParams.ok && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Cambios guardados.</p>}
+      {searchParams.plantilla && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Preguntas reemplazadas por las de la plantilla. Revisalas abajo.</p>}
       {searchParams.nueva && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Encuesta creada en borrador. Revisala y, cuando esté lista, cambiá el estado a «Abierta».</p>}
 
       <div className="card mb-6 flex flex-wrap items-center justify-between gap-3 p-4">
@@ -34,6 +37,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
         </div>
       </div>
 
+      <form id="form-plantilla" action={cargarPlantilla.bind(null, enc.id)} />
       <form action={guardarEncuesta.bind(null, enc.id)} className="space-y-8">
         <div className="card grid gap-5 p-6 md:grid-cols-2">
           <div className="md:col-span-2"><Field label="Título" name="titulo" defaultValue={enc.titulo} required /></div>
@@ -59,6 +63,17 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <h2 className="mb-3 font-display text-xl font-bold">Preguntas</h2>
           <EditorPreguntas inicial={normalizarPreguntas(enc.preguntas)} conRespuestas={enc._count.respuestas} />
         </div>
+
+        <details className="card p-6">
+          <summary className="cursor-pointer font-display text-lg font-bold">Cargar preguntas desde una plantilla</summary>
+          <p className="mt-2 text-sm text-ink-muted">Reemplaza todas las preguntas de esta encuesta por las de la plantilla elegida, en su versión más reciente. Los textos, la portada y el certificado no cambian.{enc._count.respuestas > 0 ? ` Atención: esta encuesta ya tiene ${enc._count.respuestas} respuestas y dejarían de coincidir con las preguntas nuevas.` : ''}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <select name="plantilla" form="form-plantilla" className="field max-w-md" aria-label="Plantilla" defaultValue={PLANTILLAS[0].clave}>
+              {PLANTILLAS.filter((p) => p.clave !== 'en-blanco').map((p) => <option key={p.clave} value={p.clave}>{p.nombre}</option>)}
+            </select>
+            <BotonConfirmar form="form-plantilla" texto="Cargar preguntas" aviso="¿Reemplazar todas las preguntas por las de la plantilla? Los cambios sin guardar de esta página se pierden." />
+          </div>
+        </details>
 
         <div className="sticky bottom-0 -mx-2 flex items-center gap-3 border-t border-line bg-paper/95 px-2 py-4 backdrop-blur">
           <SubmitButton>Guardar cambios</SubmitButton>

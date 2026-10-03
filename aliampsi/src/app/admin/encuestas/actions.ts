@@ -125,3 +125,13 @@ ${datos}`;
   revalidatePath(`/admin/encuestas/${id}/resultados`);
   redirect(`/admin/encuestas/${id}/resultados?ia=ok#analisis`);
 }
+
+/** Reemplaza las preguntas de una encuesta por las de una plantilla (los demás datos no cambian). */
+export async function cargarPlantilla(id: string, formData: FormData) {
+  await requireAdmin();
+  const p = PLANTILLAS.find((x) => x.clave === String(formData.get('plantilla')));
+  if (!p) redirect(`/admin/encuestas/${id}`);
+  await prisma.encuesta.update({ where: { id }, data: { preguntas: p.crear().preguntas as unknown as Prisma.InputJsonValue } });
+  revalidar(id);
+  redirect(`/admin/encuestas/${id}?plantilla=1`);
+}

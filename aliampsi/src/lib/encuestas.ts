@@ -10,6 +10,7 @@ export type Pregunta = {
   obligatoria: boolean;
   opciones: string[];
   otro: boolean; // agrega la opción "Otro" con campo libre (única y múltiple)
+  otroEtiqueta: string; // texto de esa opción, por ejemplo «Otra sociedad científica»
   etiquetaMin: string;
   etiquetaMax: string;
   minimo: number; // solo escala: desde (0 o 1)
@@ -39,7 +40,7 @@ export function nuevoId() {
 export function preguntaVacia(tipo: TipoPregunta = 'unica'): Pregunta {
   return {
     id: nuevoId(), tipo, texto: '', ayuda: '', obligatoria: tipo !== 'seccion' && tipo !== 'parrafo',
-    opciones: tipo === 'unica' || tipo === 'multiple' ? ['Opción 1', 'Opción 2'] : [], otro: false,
+    opciones: tipo === 'unica' || tipo === 'multiple' ? ['Opción 1', 'Opción 2'] : [], otro: false, otroEtiqueta: 'Otro',
     etiquetaMin: tipo === 'escala' ? 'Muy malo' : tipo === 'nps' ? 'Nada probable' : '',
     etiquetaMax: tipo === 'escala' ? 'Excelente' : tipo === 'nps' ? 'Muy probable' : '',
     minimo: tipo === 'nps' ? 0 : 1,
@@ -69,6 +70,7 @@ export function normalizarPreguntas(v: unknown): Pregunta[] {
         obligatoria: tipo === 'seccion' ? false : !!p.obligatoria,
         opciones: tipo === 'unica' || tipo === 'multiple' ? opciones : [],
         otro: (tipo === 'unica' || tipo === 'multiple') && !!p.otro,
+        otroEtiqueta: String(p.otroEtiqueta || '').trim().slice(0, 80) || 'Otro',
         etiquetaMin: String(p.etiquetaMin || '').trim().slice(0, 40),
         etiquetaMax: String(p.etiquetaMax || '').trim().slice(0, 40),
         ...rango(tipo, p.minimo, p.maximo),
@@ -83,6 +85,17 @@ export function rango(tipo: TipoPregunta, min?: unknown, max?: unknown): { minim
   const mi = Number(min) === 0 ? 0 : 1;
   const ma = Math.min(10, Math.max(mi + 1, Math.round(Number(max)) || 5));
   return { minimo: mi, maximo: ma };
+}
+
+export type Paso = { titulo: string; ayuda: string; preguntas: Pregunta[] };
+/** Divide la encuesta en pasos: uno por cada título de sección. Sin secciones, es un solo paso. */
+export function pasos(ps: Pregunta[]): Paso[] {
+  const out: Paso[] = [];
+  for (const p of ps) {
+    if (p.tipo === 'seccion') out.push({ titulo: p.texto, ayuda: p.ayuda, preguntas: [] });
+    else { if (!out.length) out.push({ titulo: '', ayuda: '', preguntas: [] }); out[out.length - 1].preguntas.push(p); }
+  }
+  return out.filter((x) => x.preguntas.length);
 }
 
 export const preguntasQueSeResponden = (ps: Pregunta[]) => ps.filter((p) => p.tipo !== 'seccion');
@@ -139,7 +152,7 @@ export function resumir(preguntas: Pregunta[], respuestas: Datos[]): Resumen[] {
         }
       }
       const conteos = [...conteo.entries()].map(([opcion, n]) => ({ opcion, n }));
-      if (p.otro || otros.length) conteos.push({ opcion: 'Otro', n: otros.length });
+      if (p.otro || otros.length) conteos.push({ opcion: p.otroEtiqueta || 'Otro', n: otros.length });
       return { id: p.id, tipo: p.tipo, texto: p.texto, respondieron: valores.length, conteos, otros };
     }
     if (p.tipo === 'escala' || p.tipo === 'nps') {
@@ -209,8 +222,8 @@ export const PLANTILLAS: Plantilla[] = [
         preguntas: [
           q('seccion', 'Sección 1: Perfil del asistente', { ayuda: 'Esta sección nos ayuda a comprender mejor a nuestra audiencia.' }),
           q('unica', '¿Cómo se enteró de esta actividad?', { opciones: ['Correo electrónico de AL·IAM·PSI, SUPIA o AAPI', 'Redes sociales (Instagram, LinkedIn, etc.)', 'A través de un colega o conocido', 'Publicidad en otra sociedad científica'], otro: true }),
-          q('multiple', '¿Es usted socio/a de alguna de las siguientes sociedades?', { ayuda: 'Puede marcar más de una opción.', opciones: ['Sociedad Uruguaya de Psiquiatría de la Infancia y la Adolescencia (SUPIA)', 'Asociación Argentina de Psiquiatría Infantojuvenil (AAPI)', 'Sociedad de Psiquiatría del Uruguay (SPU)', 'No soy socio/a de ninguna sociedad científica'], otro: true }),
-          q('unica', '¿Cuál es su formación de grado?', { opciones: ['Doctor/a en Medicina', 'Licenciado/a en Psicología', 'Licenciado/a en Enfermería', 'Licenciado/a en Trabajo Social'], otro: true }),
+          q('multiple', '¿Es usted socio/a de alguna de las siguientes sociedades?', { ayuda: 'Puede marcar más de una opción. Si es socio/a de otra sociedad científica, indique cuál.', opciones: ['Sociedad Uruguaya de Psiquiatría de la Infancia y la Adolescencia (SUPIA)', 'Asociación Argentina de Psiquiatría Infantojuvenil (AAPI)', 'No soy socio/a de ninguna sociedad científica'], otro: true, otroEtiqueta: 'Otra sociedad científica' }),
+          q('unica', '¿Cuál es su formación de grado?', { opciones: ['Doctor/a en Medicina', 'Licenciado/a en Psicología', 'Licenciado/a en Enfermería', 'Licenciado/a en Trabajo Social', 'Maestro/a o docente'], otro: true }),
           q('unica', '¿Cuál es su principal formación de posgrado o especialidad?', { opciones: ['Psiquiatría de Niños y Adolescentes', 'Psiquiatría de Adultos', 'Pediatría', 'Residente de Psiquiatría / Psiquiatría Pediátrica / Pediatría', 'Psicología Clínica'], otro: true }),
           q('seccion', 'Sección 2: Contenido y expositores'),
           q('escala', '¿Cómo calificaría la relevancia del tema general para su práctica profesional?', { etiquetaMin: 'Nada relevante', etiquetaMax: 'Muy relevante' }),
