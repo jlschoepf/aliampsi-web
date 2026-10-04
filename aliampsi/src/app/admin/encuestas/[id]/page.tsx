@@ -64,14 +64,19 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
 
       <div className="card mb-6 p-5">
         <h2 className="font-display text-lg font-bold">Insertar en una noticia</h2>
-        <p className="mt-1 text-sm text-ink-muted">Pegá este código en un párrafo del texto de cualquier noticia: en ese lugar aparece la encuesta, para responderla sin salir de la noticia. Mientras la encuesta esté en borrador, el público no la ve.</p>
+        <p className="mt-1 text-sm text-ink-muted">En el editor de cualquier noticia, tocá el botón <strong className="text-ink">📋 Encuesta</strong> de la barra de herramientas y elegila de la lista. Aparece como una tarjeta en el texto y, en la noticia publicada, se muestra la encuesta completa. Mientras esté en borrador, el público no la ve.</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <code className="rounded-lg border border-line bg-sand/40 px-3 py-2 text-sm text-ink">{codigoInsercion(enc.slug)}</code>
-          <CopiarEnlace url={codigoInsercion(enc.slug)} etiqueta="Copiar código" />
           <form action={crearNoticiaConEncuesta.bind(null, enc.id)}>
             <button type="submit" className="btn-primary text-sm">Crear noticia con esta encuesta</button>
           </form>
         </div>
+        <details className="mt-3 text-sm">
+          <summary className="cursor-pointer text-ink-muted">Opción avanzada: código para pegar a mano</summary>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <code className="rounded-lg border border-line bg-sand/40 px-3 py-2 text-sm text-ink">{codigoInsercion(enc.slug)}</code>
+            <CopiarEnlace url={codigoInsercion(enc.slug)} etiqueta="Copiar código" />
+          </div>
+        </details>
       </div>
 
       {textoCorreo && (

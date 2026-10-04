@@ -9,6 +9,7 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Video, aEmbed, prepararHtml } from './editor/video';
+import { EncuestaBloque, listarEncuestas, type EncuestaItem } from './editor/encuesta';
 import { upload } from '@vercel/blob/client';
 
 /** Botón de la barra de herramientas. */
@@ -49,6 +50,15 @@ function Divider() {
 }
 
 function Toolbar({ editor }: { editor: Editor }) {
+  const [selector, setSelector] = useState<EncuestaItem[] | null>(null);
+  const abrirEncuestas = useCallback(async () => {
+    setSelector([]);
+    setSelector(await listarEncuestas(true));
+  }, []);
+  const insertarEncuesta = useCallback((e: EncuestaItem) => {
+    editor.chain().focus().insertContent([{ type: 'encuesta', attrs: { slug: e.slug, titulo: e.titulo } }, { type: 'paragraph' }]).run();
+    setSelector(null);
+  }, [editor]);
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -223,6 +233,32 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Tool title="Insertar evento de Luma (con inscripción)" onClick={addEvento}>
         🎟️
       </Tool>
+      <span className="relative">
+        <button type="button" title="Insertar una encuesta" onClick={() => (selector ? setSelector(null) : abrirEncuestas())}
+          className="inline-flex h-8 items-center gap-1 rounded px-2 text-sm text-ink transition hover:bg-sand">
+          📋 <span className="text-xs font-medium">Encuesta</span>
+        </button>
+        {selector && (
+          <div className="absolute left-0 top-9 z-20 w-80 rounded-xl border border-line bg-white p-2 shadow-lg">
+            <p className="px-2 pb-1 pt-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">Elegí la encuesta para insertar</p>
+            {selector.length === 0 ? (
+              <p className="px-2 py-3 text-sm text-ink-muted">Cargando… Si no aparece ninguna, creala primero en «Encuestas».</p>
+            ) : (
+              <ul className="max-h-72 overflow-y-auto">
+                {selector.map((e) => (
+                  <li key={e.slug}>
+                    <button type="button" onClick={() => insertarEncuesta(e)} className="w-full rounded-lg px-2 py-2 text-left hover:bg-sand">
+                      <span className="block text-sm font-medium text-ink">{e.titulo}</span>
+                      <span className="block text-xs text-ink-muted">{e.estado === 'abierta' ? 'Publicada' : e.estado === 'cerrada' ? 'Cerrada' : 'Borrador (el público no la ve hasta publicarla)'}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <button type="button" onClick={() => setSelector(null)} className="mt-1 w-full rounded-lg px-2 py-1.5 text-xs text-ink-muted hover:bg-sand">Cancelar</button>
+          </div>
+        )}
+      </span>
 
       <Divider />
 
@@ -261,6 +297,7 @@ export function RichTextEditor({
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Placeholder.configure({ placeholder: 'Escribí acá el contenido…' }),
       Video,
+      EncuestaBloque,
     ],
     content: prepararHtml(initial),
     editorProps: {
