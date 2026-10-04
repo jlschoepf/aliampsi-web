@@ -10,6 +10,7 @@ import { MODOS_CERT, PLANTILLAS, codigoInsercion, modoCert, preguntasQueSeRespon
 import { inscriptosATexto, normalizarInscriptos } from '@/lib/inscriptos';
 import { BotonConfirmar } from './BotonConfirmar';
 import { CampoCodigo } from './CampoCodigo';
+import { CampoInscriptos } from './CampoInscriptos';
 import { EditorPreguntas } from './EditorPreguntas';
 import { CopiarEnlace } from './CopiarEnlace';
 import { ImageField } from '@/components/ImageField';
@@ -116,8 +117,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
             </div>
           </fieldset>
           <div>
-            <TextArea label={`Lista de inscriptos · ${inscriptos.length} cargados${inscriptos.length ? ` (${inscriptos.filter((i) => !i.correo).length} sin correo)` : ''}`} name="inscriptos" defaultValue={inscriptosATexto(inscriptos)} rows={8}
-              hint="Pegá el archivo de inscriptos de Luma (CSV) tal cual, o una persona por línea: «Nombre Apellido, correo». Se compara por correo y, si no, por nombre (sin importar tildes, títulos ni el orden). Al guardar se ordena y se quitan los repetidos." />
+            <CampoInscriptos defaultValue={inscriptosATexto(inscriptos)} />
           </div>
           <div className="rounded-lg border border-line bg-white p-4">
             <p className={`mt-3 text-xs font-medium ${correo.aviso ? 'text-coral-dark' : 'text-teal-700'}`}>

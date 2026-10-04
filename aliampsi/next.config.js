@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
+    // Archivos de inscriptos (Excel, PDF) que se suben desde el panel.
+    serverActions: { bodySizeLimit: '10mb' },
     // Firma, logos y tipografías del certificado: no son públicos, se incluyen solo en la función del PDF.
     outputFileTracingIncludes: { '/**': ['./certificados-assets/**/*'] },
   },

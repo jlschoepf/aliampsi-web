@@ -35,14 +35,22 @@ export function leerInscriptos(texto: string): Inscripto[] {
     const iApe = col('last_name', 'last name', 'apellido', 'apellidos');
     for (const l of lineas.slice(1)) {
       const c = celdas(l, sep);
-      const nombre = (iNom >= 0 && c[iNom]) || [iPri >= 0 ? c[iPri] : '', iApe >= 0 ? c[iApe] : ''].join(' ').trim();
+      let nombre = (iNom >= 0 && c[iNom]) || [iPri >= 0 ? c[iPri] : '', iApe >= 0 ? c[iApe] : ''].join(' ').trim();
+      // nombre y apellido en columnas separadas: se unen (si el nombre ya trae el apellido, no se repite)
+      const ape = iApe >= 0 ? (c[iApe] || '').trim() : '';
+      if (ape && !claveNombre(nombre).join(' ').includes(claveNombre(ape).join(' '))) nombre = `${nombre} ${ape}`;
       lista.push({ nombre: nombre.replace(/\s+/g, ' ').trim(), correo: (c[iCorreo] || '').toLowerCase().trim() });
     }
   } else {
+    // si la mayoría de las líneas trae correo, las que no lo traen son títulos o encabezados: se descartan
+    const conCorreo = lineas.filter((l) => CORREO.test(l)).length;
+    const exigirCorreo = conCorreo >= lineas.length / 2;
     for (const l of lineas) {
       const m = l.match(CORREO);
+      if (!m && exigirCorreo) continue;
       const correo = m ? m[0].toLowerCase() : '';
-      const nombre = (m ? l.replace(m[0], ' ') : l).replace(/[,;\t"<>()|]+/g, ' ').replace(/\s+/g, ' ').trim();
+      const nombre = (m ? l.replace(m[0], ' ') : l).replace(/[,;\t"<>()|]+/g, ' ').replace(/\s+/g, ' ')
+        .replace(/^[\s\-–—:·.]+|[\s\-–—:·.]+$/g, '').trim();
       lista.push({ nombre, correo });
     }
   }

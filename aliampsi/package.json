@@ -40,6 +40,8 @@
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
+    "unpdf": "^0.12.1",
+    "xlsx": "^0.18.5",
     "zod": "3.23.8"
   },
   "devDependencies": {

@@ -3,6 +3,10 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-114 — 4/10/2026
+- Carga de inscriptos por archivo (`archivo-actions.ts`, `CampoInscriptos`): CSV/texto, Excel (xlsx, todas las hojas) y PDF (unpdf), reemplazar o agregar. `serverActions.bodySizeLimit` 10 MB.
+- `leerInscriptos`: une nombre y apellido en columnas separadas sin duplicar; en texto libre descarta líneas sin correo cuando la mayoría lo tiene y limpia signos sueltos.
+
 ## v2026.10.04-113 — 4/10/2026
 - Correo del certificado (automático y el de Gmail): invitación a compartirlo en redes y mencionar a AL·IAM·PSI en LinkedIn.
 
