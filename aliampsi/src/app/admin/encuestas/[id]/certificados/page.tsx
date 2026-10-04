@@ -35,7 +35,7 @@ export default async function Certificados({ params, searchParams }: { params: {
   const actividad = enc.certActividad || enc.titulo;
   const asunto = `Certificado de asistencia · AL·IAM·PSI`;
   const cuerpo = (nombre: string) =>
-    `Estimado/a ${nombre}:\n\nLe hacemos llegar adjunto su certificado de asistencia a ${actividad}.\n\nMuchas gracias por participar y por completar la encuesta de satisfacción.\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines\naliampsi.com`;
+    `Estimado/a ${nombre}:\n\nLe hacemos llegar adjunto su certificado de asistencia a ${actividad}.\n\nMuchas gracias por participar y por completar la encuesta de satisfacción.\n\nSi lo desea, puede compartir su certificado en sus redes sociales. Si lo publica en LinkedIn, puede mencionar a AL·IAM·PSI (linkedin.com/company/aliampsi).\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines\naliampsi.com`;
   const gmail = (correo: string, nombre: string) =>
     `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(correo)}&su=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo(nombre))}`;
   const base = `/admin/encuestas/${enc.id}/certificados`;

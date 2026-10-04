@@ -8,7 +8,7 @@ import type { Encuesta } from '@prisma/client';
 const html = (t: string) => t.split('\n\n').map((p) => `<p style="margin:0 0 14px;font:15px/1.55 Arial,sans-serif;color:#123B3C">${p.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>')}</p>`).join('');
 
 export function textoCorreo(nombre: string, actividad: string) {
-  return `Estimado/a ${nombre}:\n\nMuchas gracias por participar en ${actividad} y por completar la encuesta de satisfacción.\n\nAdjuntamos su certificado de asistencia en PDF.\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines\nhttps://aliampsi.com`;
+  return `Estimado/a ${nombre}:\n\nMuchas gracias por participar en ${actividad} y por completar la encuesta de satisfacción.\n\nAdjuntamos su certificado de asistencia en PDF.\n\nSi lo desea, puede compartir su certificado en sus redes sociales. Si lo publica en LinkedIn, puede mencionar a AL·IAM·PSI (linkedin.com/company/aliampsi).\n\nSaludos cordiales,\n\nAL·IAM·PSI\nAlianza Iberoamericana de Psiquiatría Infantojuvenil y Profesiones Afines\nhttps://aliampsi.com`;
 }
 
 export async function mandarCertificado(enc: Encuesta, nombre: string, correo: string): Promise<{ ok: boolean; detalle: string }> {

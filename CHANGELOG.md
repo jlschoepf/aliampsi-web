@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-113 — 4/10/2026
+- Correo del certificado (automático y el de Gmail): invitación a compartirlo en redes y mencionar a AL·IAM·PSI en LinkedIn.
+
 ## v2026.10.04-112 — 4/10/2026
 - Encuestas: se quita «anónima» del aviso del certificado y de las plantillas; se dice que las respuestas se tratan de forma confidencial.
 
