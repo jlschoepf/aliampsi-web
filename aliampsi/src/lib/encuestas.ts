@@ -219,10 +219,10 @@ export const PLANTILLAS: Plantilla[] = [
       const ponencia = (quien: string, aspecto: string) =>
         q('escala', `Por favor, evalúe la ponencia ${quien} en cuanto a: ${aspecto}`, { etiquetaMin: 'Muy mala', etiquetaMax: 'Excelente' });
       return {
-        titulo: 'Encuesta anónima de satisfacción · Webinar «Salud Mental y violencia escolar»',
+        titulo: 'Encuesta de satisfacción · Webinar «Salud Mental y violencia escolar»',
         slug: 'webinar-violencia-escolar',
         descripcion:
-          'Webinar Internacional «Salud Mental y violencia escolar. Intersecciones entre entorno escolar, clínica y terapéutica»\nAL·IAM·PSI, SUPIA y AAPI · 30 de setiembre de 2026\n\nEstimado/a colega:\n\nLe agradecemos su participación en esta actividad. Su opinión es fundamental para nosotros y nos permitirá mejorar la calidad de futuras actividades.\n\nEsta encuesta es completamente anónima y sus respuestas serán tratadas de forma confidencial.',
+          'Webinar Internacional «Salud Mental y violencia escolar. Intersecciones entre entorno escolar, clínica y terapéutica»\nAL·IAM·PSI, SUPIA y AAPI · 30 de setiembre de 2026\n\nEstimado/a colega:\n\nLe agradecemos su participación en esta actividad. Su opinión es fundamental para nosotros y nos permitirá mejorar la calidad de futuras actividades.\n\nSus respuestas serán tratadas de forma confidencial.',
         gracias: '¡Muchas gracias por su tiempo! Sus respuestas nos ayudan a mejorar las actividades de la Alianza.',
         portada: '/encuestas/portada-webinar-violencia-escolar.jpg',
         certificado: true,
@@ -263,7 +263,7 @@ export const PLANTILLAS: Plantilla[] = [
     crear: () => ({
       titulo: 'Encuesta de satisfacción',
       slug: `encuesta-${nuevoId()}`,
-      descripcion: 'Estimado/a colega:\n\nLe agradecemos su participación. Su opinión nos permite mejorar las próximas actividades de AL·IAM·PSI. La encuesta es anónima.',
+      descripcion: 'Estimado/a colega:\n\nLe agradecemos su participación. Su opinión nos permite mejorar las próximas actividades de AL·IAM·PSI. Sus respuestas serán tratadas de forma confidencial.',
       gracias: '¡Muchas gracias por su tiempo!',
       preguntas: [
         q('unica', '¿Desde qué país participó?', { opciones: PAISES, otro: true }),

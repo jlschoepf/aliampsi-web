@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-112 — 4/10/2026
+- Encuestas: se quita «anónima» del aviso del certificado y de las plantillas; se dice que las respuestas se tratan de forma confidencial.
+
 ## v2026.10.04-111 — 4/10/2026
 - Piezas del webinar v4 (portada, redes) y banner v5: Johann con foto institucional en medallón, como Nora y Federico.
 

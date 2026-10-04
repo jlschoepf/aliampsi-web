@@ -266,7 +266,7 @@ export function EncuestaForm({ preguntas, action, previa, certificado = false, c
                     <input id="cert_correo" name="cert_correo" type="email" maxLength={160} autoComplete="email" className="field" placeholder="nombre@correo.com" />
                     <p className="mt-1 text-xs text-ink-muted">Use el mismo con el que se inscribió.</p>
                   </div>
-                  <p className="text-xs text-ink-muted sm:col-span-2">Estos datos se guardan por separado y no quedan vinculados a sus respuestas: la encuesta sigue siendo anónima. Solo los usamos para validar su asistencia y enviarle el certificado.</p>
+                  <p className="text-xs text-ink-muted sm:col-span-2">Sus datos se guardan por separado de sus respuestas y solo se usan para validar su inscripción y enviarle el certificado. Sus respuestas serán tratadas de forma confidencial.</p>
                 </div>
                 {errCert && <p role="alert" className="mt-3 text-sm font-medium text-coral-dark">{errCert}</p>}
               </div>
