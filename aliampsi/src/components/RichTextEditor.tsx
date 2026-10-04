@@ -8,6 +8,7 @@ import Image from '@tiptap/extension-image';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
+import { Video, aEmbed, prepararHtml } from './editor/video';
 import { upload } from '@vercel/blob/client';
 
 /** Botón de la barra de herramientas. */
@@ -80,17 +81,14 @@ function Toolbar({ editor }: { editor: Editor }) {
   }, [editor]);
 
   const addVideo = useCallback(() => {
-    const url = window.prompt('Pegá el enlace del video (YouTube o Vimeo):');
-    if (!url || !url.trim()) return;
-    const clean = url.trim();
-    editor
-      .chain()
-      .focus()
-      .insertContent([
-        { type: 'paragraph', content: [{ type: 'text', text: clean, marks: [{ type: 'link', attrs: { href: clean } }] }] },
-        { type: 'paragraph' },
-      ])
-      .run();
+    const entrada = window.prompt('Pegá el enlace del video (YouTube o Vimeo) o su código para insertar:');
+    if (!entrada || !entrada.trim()) return;
+    const src = aEmbed(entrada);
+    if (!src) {
+      window.alert('No pude reconocer ese video. Tiene que ser un enlace de YouTube o de Vimeo, por ejemplo:\nhttps://youtu.be/qVAkDfStdec');
+      return;
+    }
+    editor.chain().focus().insertContent([{ type: 'video', attrs: { src } }, { type: 'paragraph' }]).run();
   }, [editor]);
 
   const addEvento = useCallback(() => {
@@ -262,8 +260,9 @@ export function RichTextEditor({
       Image.configure({ HTMLAttributes: { class: 'rounded-lg' } }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Placeholder.configure({ placeholder: 'Escribí acá el contenido…' }),
+      Video,
     ],
-    content: initial,
+    content: prepararHtml(initial),
     editorProps: {
       attributes: {
         class:

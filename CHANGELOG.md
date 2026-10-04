@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-107 — 4/10/2026
+- Editor: nodo `video` (`src/components/editor/video.ts`) con vista de reproductor, pegado de enlaces o `<iframe>` de YouTube/Vimeo, botón 🎬 y conversión de los párrafos que solo tenían el enlace (`prepararHtml`). Se guarda como `<iframe>` con la dirección limpia (sin `?si=`), que `NoticiaBody` ya muestra.
+
 ## v2026.10.04-106 — 4/10/2026
 - `Congreso.order` (0 = por fecha), `moveCongreso` / `resetOrdenCongresos` con `sortForList`, flechas y aviso en el panel; la portada toma los 3 primeros con ese orden.
 - Portadas: `movePortada` y flechas en la galería (el orden en que se ofrecen al elegir portada).

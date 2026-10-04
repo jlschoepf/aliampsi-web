@@ -1,12 +1,20 @@
 // Fuente única de la versión de la app.
 // Subir este valor en cada cambio de código dispara el aviso de "versión nueva".
-export const APP_VERSION = 'v2026.10.04-106';
+export const APP_VERSION = 'v2026.10.04-107';
 
 export type EntradaHistorial = { version: string; fecha: string; cambios: string[] };
 
 // Lo que cambió, escrito para quien administra el sitio. La más nueva, arriba.
 // El detalle técnico de cada versión está en CHANGELOG.md.
 export const HISTORIAL: EntradaHistorial[] = [
+  {
+    version: 'v2026.10.04-107',
+    fecha: '4/10/2026',
+    cambios: [
+      'Los videos se ven como reproductor también dentro del editor: alcanza con pegar el enlace de YouTube o Vimeo (o su código para insertar) y aparece el video.',
+      'El botón 🎬 inserta el reproductor, y las noticias que tenían el video como enlace lo muestran así al abrirlas.',
+    ],
+  },
   {
     version: 'v2026.10.04-106',
     fecha: '4/10/2026',
