@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-111 — 4/10/2026
+- Piezas del webinar v4 (portada, redes) y banner v5: Johann con foto institucional en medallón, como Nora y Federico.
+
 ## v2026.10.04-110 — 4/10/2026
 - Fondo del banner v4: notebook más chica y a la derecha (desde ~62% del ancho), fuera de la zona del texto.
 
