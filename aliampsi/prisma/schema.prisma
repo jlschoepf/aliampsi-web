@@ -98,6 +98,8 @@ model Congreso {
   linkUrl     String    @default("")
   coverImage  String?
   featured    Boolean   @default(false)
+  /// Orden manual en el listado. 0 = sin fijar: se ordena por fecha.
+  order       Int       @default(0)
   tags        String    @default("")
   gallery     String    @default("")
   publishedAt DateTime?

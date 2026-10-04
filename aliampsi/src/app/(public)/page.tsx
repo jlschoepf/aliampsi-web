@@ -24,8 +24,9 @@ export default async function HomePage() {
     cachear(['home-noticias'], async () =>
       sortForList(await prisma.noticia.findMany({ where: visibleNowWhere(), orderBy: { publishedAt: 'desc' }, take: 60 })).slice(0, 3)
     ),
-    cachear(['home-congresos'], () =>
-      prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 3 })
+    // Mismo orden que el listado de congresos (incluye el orden manual del panel).
+    cachear(['home-congresos'], async () =>
+      sortForList(await prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 60 })).slice(0, 3)
     ),
     cachear(['home-asociaciones'], () =>
       prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 10 })

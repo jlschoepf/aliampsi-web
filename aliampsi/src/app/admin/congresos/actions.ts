@@ -6,6 +6,8 @@ import { prisma } from '@/lib/db';
 import { invalidarContenido } from '@/lib/cache';
 import { requireAdmin } from '@/lib/auth';
 import { parseDate } from '@/lib/utils';
+import { sortForList } from '@/lib/content';
+import type { Congreso } from '@prisma/client';
 
 function revalidate() {
   invalidarContenido();
@@ -59,5 +61,28 @@ export async function updateCongreso(formData: FormData) {
 export async function deleteCongreso(formData: FormData) {
   await requireAdmin();
   await prisma.congreso.delete({ where: { id: String(formData.get('id')) } });
+  revalidate();
+}
+
+/** Sube o baja un congreso. Al mover uno se numeran todos, con el mismo criterio que el sitio público. */
+export async function moveCongreso(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const dir = String(formData.get('dir'));
+  const ordenados = sortForList<Congreso>(await prisma.congreso.findMany());
+  const idx = ordenados.findIndex((x) => x.id === id);
+  if (idx === -1) return;
+  const destino = dir === 'up' ? idx - 1 : idx + 1;
+  if (destino < 0 || destino >= ordenados.length) return;
+  const arr = [...ordenados];
+  [arr[idx], arr[destino]] = [arr[destino], arr[idx]];
+  await prisma.$transaction(arr.map((it, i) => prisma.congreso.update({ where: { id: it.id }, data: { order: i + 1 } })));
+  revalidate();
+}
+
+/** Vuelve al orden por fecha: borra las posiciones fijadas a mano. */
+export async function resetOrdenCongresos() {
+  await requireAdmin();
+  await prisma.congreso.updateMany({ data: { order: 0 } });
   revalidate();
 }

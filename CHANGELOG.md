@@ -3,6 +3,10 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-106 — 4/10/2026
+- `Congreso.order` (0 = por fecha), `moveCongreso` / `resetOrdenCongresos` con `sortForList`, flechas y aviso en el panel; la portada toma los 3 primeros con ese orden.
+- Portadas: `movePortada` y flechas en la galería (el orden en que se ofrecen al elegir portada).
+
 ## v2026.10.04-105 — 4/10/2026
 - Portada y pieza de redes de la noticia del webinar rehechas: notebook con videollamada (interfaz genérica, sin marcas de terceros).
 
