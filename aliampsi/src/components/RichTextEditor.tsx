@@ -239,7 +239,7 @@ function Toolbar({ editor }: { editor: Editor }) {
           📋 <span className="text-xs font-medium">Encuesta</span>
         </button>
         {selector && (
-          <div className="absolute left-0 top-9 z-20 w-80 rounded-xl border border-line bg-white p-2 shadow-lg">
+          <div className="absolute right-0 top-9 z-20 w-80 max-w-[calc(100vw-2rem)] rounded-xl border border-line bg-white p-2 shadow-lg">
             <p className="px-2 pb-1 pt-1 text-xs font-semibold uppercase tracking-wide text-ink-muted">Elegí la encuesta para insertar</p>
             {selector.length === 0 ? (
               <p className="px-2 py-3 text-sm text-ink-muted">Cargando… Si no aparece ninguna, creala primero en «Encuestas».</p>

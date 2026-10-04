@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-116 — 4/10/2026
+- Selector de encuestas del editor alineado a la derecha del botón (no se corta).
+
 ## v2026.10.04-115 — 4/10/2026
 - Editor: nodo `encuesta` (`editor/encuesta.ts`) con vista de tarjeta (título y estado), selector desde la barra («📋 Encuesta») alimentado por `/api/admin/encuestas`. Se guarda como `<p data-encuesta>[encuesta:slug]</p>`, compatible con `partirContenido`. Los códigos viejos se ven como tarjeta.
 
