@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-105 — 4/10/2026
+- Portada y pieza de redes de la noticia del webinar rehechas: notebook con videollamada (interfaz genérica, sin marcas de terceros).
+
 ## v2026.10.03-104 — 3/10/2026
 - `CoverField`: se habilita el campo de dirección del `ImageField` (antes `showUrlInput={false}`).
 
