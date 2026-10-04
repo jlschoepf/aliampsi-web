@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-109 — 4/10/2026
+- Piezas del webinar v3: celdas de Nora y Federico con su retrato de la placa (medallón) y nombre en franja inferior; Johann con su cámara y franja.
+
 ## v2026.10.04-108 — 4/10/2026
 - `public/noticias/`: portada v2 (nombre nuevo para evitar la caché de imágenes optimizadas), fondo del banner y modelo del certificado (firma difuminada, cinta MODELO).
 
