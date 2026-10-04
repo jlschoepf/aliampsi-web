@@ -71,8 +71,7 @@ export function CoverField({
           name={name}
           value={value}
           onChange={setValue}
-          showUrlInput={false}
-          hint="Opcional. Se recorta a formato horizontal."
+          hint="Opcional. Subí un archivo (se recorta a formato horizontal) o pegá la dirección de una imagen ya publicada."
         />
       </Collapsible>
     </div>
