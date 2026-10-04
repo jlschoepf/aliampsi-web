@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-117 — 4/10/2026
+- Modelo `Video`, sección `/admin/videos` (alta por enlace con título automático vía oEmbed, edición, visibilidad, orden con flechas, baja) y `PanelVideos` en la portada (reproductor principal diferido + lista), después de «¿Qué es AL·IAM·PSI?».
+
 ## v2026.10.04-116 — 4/10/2026
 - Selector de encuestas del editor alineado a la derecha del botón (no se corta).
 

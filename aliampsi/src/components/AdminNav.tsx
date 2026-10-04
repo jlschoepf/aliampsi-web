@@ -17,6 +17,7 @@ const GROUPS: { title: string | null; links: { href: string; label: string; exac
     links: [
       { href: '/admin/banners', label: 'Banners' },
       { href: '/admin/indicadores', label: 'Indicadores' },
+      { href: '/admin/videos', label: 'Videos' },
     ],
   },
   {

@@ -8,6 +8,7 @@ import {
 } from '@/components/content';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { StatsCounter } from '@/components/StatsCounter';
+import { PanelVideos } from '@/components/PanelVideos';
 import { CartaPresidente } from '@/components/CartaPresidente';
 import { JsonLd } from '@/components/JsonLd';
 import { SITE_URL, SITE_NAME, SITE_LONG_NAME, SITE_DESCRIPTION, absUrl } from '@/lib/site';
@@ -19,7 +20,7 @@ export const dynamic = 'force-dynamic';
 export default async function HomePage() {
   // La portada es la página más visitada: todo su contenido se lee una vez
   // y se reutiliza hasta que se publique algo nuevo.
-  const [noticias, congresos, asociaciones, counts, banners, indicadores] = await Promise.all([
+  const [noticias, congresos, videos, asociaciones, counts, banners, indicadores] = await Promise.all([
     // Mismo orden que el listado de noticias (incluye el orden manual del panel).
     cachear(['home-noticias'], async () =>
       sortForList(await prisma.noticia.findMany({ where: visibleNowWhere(), orderBy: { publishedAt: 'desc' }, take: 60 })).slice(0, 3)
@@ -27,6 +28,9 @@ export default async function HomePage() {
     // Mismo orden que el listado de congresos (incluye el orden manual del panel).
     cachear(['home-congresos'], async () =>
       sortForList(await prisma.congreso.findMany({ where: visibleNowWhere(), orderBy: { createdAt: 'desc' }, take: 60 })).slice(0, 3)
+    ),
+    cachear(['home-videos'], () =>
+      prisma.video.findMany({ where: { published: true }, orderBy: [{ order: 'asc' }, { createdAt: 'desc' }], take: 8, select: { id: true, youtubeId: true, titulo: true } })
     ),
     cachear(['home-asociaciones'], () =>
       prisma.asociacion.findMany({ where: { published: true }, orderBy: { order: 'asc' }, take: 10 })
@@ -137,6 +141,9 @@ export default async function HomePage() {
       </section>
 
       {/* MENSAJE DEL PRESIDENTE */}
+      {/* Panel de videos de YouTube (se administra en Panel → Videos) */}
+      {videos.length > 0 && <PanelVideos videos={videos} />}
+
       <section className="border-y border-line bg-sand/40 py-16 lg:py-20">
         <div className="wrap max-w-3xl">
           <p className="eyebrow"><span className="text-coral">·</span> Mensaje del Presidente</p>
