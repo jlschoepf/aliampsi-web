@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.04-108 — 4/10/2026
+- `public/noticias/`: portada v2 (nombre nuevo para evitar la caché de imágenes optimizadas), fondo del banner y modelo del certificado (firma difuminada, cinta MODELO).
+
 ## v2026.10.04-107 — 4/10/2026
 - Editor: nodo `video` (`src/components/editor/video.ts`) con vista de reproductor, pegado de enlaces o `<iframe>` de YouTube/Vimeo, botón 🎬 y conversión de los párrafos que solo tenían el enlace (`prepararHtml`). Se guarda como `<iframe>` con la dirección limpia (sin `?si=`), que `NoticiaBody` ya muestra.
 
