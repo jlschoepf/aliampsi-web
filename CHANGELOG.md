@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.03-103 — 3/10/2026
+- `public/noticias/`: portada (1600×900) y pieza de redes (1080×1350) de la noticia del webinar.
+
 ## v2026.10.03-102 — 3/10/2026
 - `Encuesta.certModo` (manual | inscriptos | todos; `modoCert()` respeta el `certAuto` anterior) y `Encuesta.inscriptos` (JSON `{nombre, correo}`).
 - `lib/inscriptos.ts`: lectura del CSV de Luma/Zoom (por encabezados) o de una persona por línea, sin repetidos; `coincide()` por correo exacto o por nombre (sin tildes, títulos ni conectores, en cualquier orden, exige al menos dos palabras; subconjunto admitido).
