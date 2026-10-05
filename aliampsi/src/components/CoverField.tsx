@@ -71,7 +71,8 @@ export function CoverField({
           name={name}
           value={value}
           onChange={setValue}
-          hint="Opcional. Subí un archivo (se recorta a formato horizontal) o pegá la dirección de una imagen ya publicada."
+          aspectoInicial={4 / 3}
+          hint="Opcional. Subí un archivo (las portadas se recortan en 4:3; los flyers verticales se suben enteros) o pegá la dirección de una imagen ya publicada."
         />
       </Collapsible>
     </div>

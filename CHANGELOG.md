@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.05-121 — 5/10/2026
+- Tarjetas de noticias, congresos y publicaciones en `aspect-[4/3]`. `Portada` automático: llena entre 1,2 y 1,55; fuera de ese rango, entera con fondo desenfocado. `ImageField.aspectoInicial` (CoverField: 4:3).
+
 ## v2026.10.05-120 — 5/10/2026
 - `ImageField`: formato «Original (sin recortar)» (sube el archivo tal cual); se preselecciona cuando la imagen es vertical o cuadrada (<1.25).
 

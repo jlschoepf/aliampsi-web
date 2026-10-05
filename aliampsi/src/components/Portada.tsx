@@ -21,9 +21,11 @@ export function Portada({ src, alt, encuadre = 'auto', className = '', variante 
   useEffect(() => { if (ref.current?.complete) medir(); }, [src]);
 
   const modo = (encuadre || 'auto') as Encuadre;
-  const entera = modo === 'contain' || (modo === 'auto' && proporcion !== null && proporcion < 1.25);
+  // Las tarjetas son 4:3 (1,33). Llena el recuadro lo que está cerca de ese formato; lo vertical y lo muy
+  // apaisado (por ejemplo, un diseño 16:9 con texto en los bordes) se muestra entero para no cortarlo.
+  const entera = modo === 'contain' || (modo === 'auto' && proporcion !== null && (proporcion < 1.2 || proporcion > 1.55));
 
-  if (variante === 'detalle' && !entera) {
+  if (variante === 'detalle' && !(modo === 'contain' || (proporcion !== null && proporcion < 1.2))) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img ref={ref} onLoad={medir} src={src} alt={alt} className={`w-full rounded-xl2 border border-line ${className}`} />;
   }

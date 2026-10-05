@@ -23,8 +23,8 @@ const Cropper = dynamic(() => import('react-easy-crop'), { ssr: false }) as unkn
 // value 0 = sin recortar: se sube la imagen entera (lo que conviene para flyers verticales).
 const ASPECTS: { label: string; value: number }[] = [
   { label: 'Original (sin recortar)', value: 0 },
-  { label: 'Horizontal', value: 16 / 9 },
-  { label: 'Clásica', value: 4 / 3 },
+  { label: '4:3 (portadas)', value: 4 / 3 },
+  { label: 'Horizontal 16:9', value: 16 / 9 },
   { label: 'Cuadrada', value: 1 },
   { label: 'Vertical', value: 3 / 4 },
 ];
@@ -74,6 +74,7 @@ export function ImageField({
   onChange,
   showHiddenInput = true,
   showUrlInput = true,
+  aspectoInicial = 16 / 9,
 }: {
   label: string;
   name: string;
@@ -83,6 +84,8 @@ export function ImageField({
   onChange?: (v: string) => void;
   showHiddenInput?: boolean;
   showUrlInput?: boolean;
+  /** Formato con el que arranca el recorte para imágenes horizontales (por defecto 16:9). */
+  aspectoInicial?: number;
 }) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
   const controlled = controlledValue !== undefined;
@@ -99,7 +102,7 @@ export function ImageField({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [aspect, setAspect] = useState(16 / 9);
+  const [aspect, setAspect] = useState(aspectoInicial);
   const [archivoOriginal, setArchivoOriginal] = useState<File | null>(null);
   const [areaPixels, setAreaPixels] = useState<Area | null>(null);
 
@@ -140,7 +143,7 @@ export function ImageField({
     reader.onload = () => {
       const src = String(reader.result);
       const im = new Image();
-      im.onload = () => setAspect(im.naturalWidth / im.naturalHeight < 1.25 ? 0 : 16 / 9);
+      im.onload = () => setAspect(im.naturalWidth / im.naturalHeight < 1.25 ? 0 : aspectoInicial);
       im.src = src;
       setImageSrc(src);
       setCrop({ x: 0, y: 0 });

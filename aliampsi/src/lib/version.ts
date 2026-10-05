@@ -1,12 +1,20 @@
 // Fuente única de la versión de la app.
 // Subir este valor en cada cambio de código dispara el aviso de "versión nueva".
-export const APP_VERSION = 'v2026.10.05-120';
+export const APP_VERSION = 'v2026.10.05-121';
 
 export type EntradaHistorial = { version: string; fecha: string; cambios: string[] };
 
 // Lo que cambió, escrito para quien administra el sitio. La más nueva, arriba.
 // El detalle técnico de cada versión está en CHANGELOG.md.
 export const HISTORIAL: EntradaHistorial[] = [
+  {
+    version: 'v2026.10.05-121',
+    fecha: '5/10/2026',
+    cambios: [
+      'Las portadas de noticias, congresos y publicaciones pasan a formato 4:3, y al subirlas el recorte arranca en 4:3.',
+      'Las portadas verticales o muy apaisadas se ven enteras con fondo desenfocado, para no cortar su contenido.',
+    ],
+  },
   {
     version: 'v2026.10.05-120',
     fecha: '5/10/2026',
