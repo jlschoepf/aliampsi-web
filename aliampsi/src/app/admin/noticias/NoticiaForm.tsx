@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { toDateInput } from '@/lib/utils';
 import type { Noticia } from '@prisma/client';
-import { Field, TextArea, Checkbox, SubmitButton } from '@/components/admin-ui';
+import { Field, TextArea, Checkbox, SubmitButton, Select } from '@/components/admin-ui';
 import { CoverField } from '@/components/CoverField';
 import { Collapsible } from '@/components/Collapsible';
 import { FileField } from '@/components/FileField';
@@ -35,6 +35,18 @@ export function NoticiaForm({
       <BodyEditor name="content" defaultValue={noticia?.content} />
       <GalleryField name="gallery" defaultValue={noticia?.gallery} />
       <CoverField name="coverImage" defaultValue={noticia?.coverImage} covers={covers} />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Select label="Encuadre de la portada" name="coverFit" defaultValue={noticia?.coverFit ?? 'auto'} options={[
+          { value: 'auto', label: 'Automático (recomendado)' },
+          { value: 'top', label: 'Mostrar la parte de arriba' },
+          { value: 'center', label: 'Mostrar el centro' },
+          { value: 'bottom', label: 'Mostrar la parte de abajo' },
+          { value: 'contain', label: 'Mostrar la imagen entera' },
+        ]} />
+        <div className="flex items-end pb-2"><Checkbox label="Mostrar la portada también al comienzo del texto" name="coverEnCuerpo" defaultChecked={noticia?.coverEnCuerpo ?? true} /></div>
+      </div>
+      <p className="-mt-2 text-xs text-ink-muted">Automático: las imágenes verticales o cuadradas (flyers) se ven enteras, con la misma imagen desenfocada de fondo; las horizontales llenan el recuadro.</p>
+
       <div className="grid gap-5 sm:grid-cols-2">
         <Field label="Autor (opcional)" name="author" defaultValue={noticia?.author} placeholder="Ej: Comité de Comunicación" />
         <Field label="Enlace de fuente (opcional)" name="sourceUrl" defaultValue={noticia?.sourceUrl} placeholder="https://… (leer más / fuente)" />

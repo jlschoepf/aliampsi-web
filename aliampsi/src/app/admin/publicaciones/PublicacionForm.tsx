@@ -47,6 +47,18 @@ export function PublicacionForm({
       />
       <Field label="Enlace (URL)" name="linkUrl" defaultValue={publicacion?.linkUrl} placeholder="https://…" hint="Adónde lleva el botón “Acceder”." />
       <CoverField name="coverImage" defaultValue={publicacion?.coverImage} covers={covers} />
+      <div className="grid gap-4 md:grid-cols-2">
+        <Select label="Encuadre de la portada" name="coverFit" defaultValue={publicacion?.coverFit ?? 'auto'} options={[
+          { value: 'auto', label: 'Automático (recomendado)' },
+          { value: 'top', label: 'Mostrar la parte de arriba' },
+          { value: 'center', label: 'Mostrar el centro' },
+          { value: 'bottom', label: 'Mostrar la parte de abajo' },
+          { value: 'contain', label: 'Mostrar la imagen entera' },
+        ]} />
+        <div className="flex items-end pb-2"><Checkbox label="Mostrar la portada también al comienzo del texto" name="coverEnCuerpo" defaultChecked={publicacion?.coverEnCuerpo ?? true} /></div>
+      </div>
+      <p className="-mt-2 text-xs text-ink-muted">Automático: las imágenes verticales o cuadradas (flyers) se ven enteras, con la misma imagen desenfocada de fondo; las horizontales llenan el recuadro.</p>
+
       <Collapsible title="Opciones avanzadas — SEO, fecha de publicación y etiquetas">
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Fecha de publicación (opcional)" name="publishedAt" type="date" defaultValue={toDateInput(publicacion?.publishedAt)} hint="Vacía: se usa hoy al publicar. Fecha futura: se publica sola ese día." />

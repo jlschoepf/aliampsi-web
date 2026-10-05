@@ -1,3 +1,4 @@
+import { Portada } from '@/components/Portada';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
@@ -96,9 +97,8 @@ export default async function CongresoDetail({
       {c.description && <p className="mt-4 text-lg text-ink-muted">{c.description}</p>}
       {c.author && <p className="mt-2 text-sm text-ink-muted">Por {c.author}</p>}
 
-      {c.coverImage && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={c.coverImage} alt={c.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
+      {c.coverImage && c.coverEnCuerpo !== false && (
+        <Portada src={c.coverImage} alt={c.title} encuadre={c.coverFit} variante="detalle" className="mt-8" />
       )}
 
       {c.body && <NoticiaBody content={c.body} />}

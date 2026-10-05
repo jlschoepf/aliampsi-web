@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Portada } from './Portada';
 import { formatDate, formatDateRange } from '@/lib/utils';
 import type { Noticia, Congreso, Publicacion, Asociacion } from '@prisma/client';
 
@@ -36,7 +37,7 @@ export function NoticiaCard({ n }: { n: Noticia }) {
       className="group card flex flex-col overflow-hidden transition hover:-translate-y-0.5 hover:shadow-lg hover:shadow-ink/5"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={n.coverImage || '/noticia-default.png'} alt={n.title} className="h-44 w-full object-cover" />
+      <Portada src={n.coverImage || '/noticia-default.png'} alt={n.title} encuadre={n.coverFit} className="h-44" />
       <div className="flex flex-1 flex-col p-5">
         {n.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}
         <time className="text-xs font-medium uppercase tracking-wider text-teal-600">
@@ -56,7 +57,7 @@ export function CongresoCard({ c }: { c: Congreso }) {
     <article className="card flex flex-col overflow-hidden">
       {c.coverImage && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={c.coverImage} alt={c.title} className="h-40 w-full object-cover" />
+        <Portada src={c.coverImage} alt={c.title} encuadre={c.coverFit} className="h-40" />
       )}
       <div className="flex flex-1 flex-col p-6">
         {c.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}
@@ -88,7 +89,7 @@ export function PublicacionCard({ p }: { p: Publicacion }) {
     <article className="card flex flex-col overflow-hidden">
       {p.coverImage && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.coverImage} alt={p.title} className="h-40 w-full object-cover" />
+        <Portada src={p.coverImage} alt={p.title} encuadre={p.coverFit} className="h-40" />
       )}
       <div className="flex flex-1 flex-col p-6">
         {p.featured && <span className="mb-2 w-fit rounded-full bg-coral px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">Destacado</span>}

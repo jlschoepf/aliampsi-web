@@ -1,3 +1,4 @@
+import { Portada } from '@/components/Portada';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
@@ -104,9 +105,8 @@ export default async function PublicacionDetail({
       {p.description && <p className="mt-4 text-lg text-ink-muted">{p.description}</p>}
       {p.author && <p className="mt-2 text-sm text-ink-muted">Por {p.author}</p>}
 
-      {p.coverImage && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={p.coverImage} alt={p.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
+      {p.coverImage && p.coverEnCuerpo !== false && (
+        <Portada src={p.coverImage} alt={p.title} encuadre={p.coverFit} variante="detalle" className="mt-8" />
       )}
 
       {p.body && <NoticiaBody content={p.body} />}

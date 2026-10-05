@@ -28,6 +28,8 @@ function data(formData: FormData, current?: { publishedAt: Date | null } | null)
     kind: String(formData.get('kind') || 'revista'),
     linkUrl: String(formData.get('linkUrl') || ''),
     coverImage: String(formData.get('coverImage') || '') || null,
+    coverFit: ['auto', 'top', 'center', 'bottom', 'contain'].includes(String(formData.get('coverFit'))) ? String(formData.get('coverFit')) : 'auto',
+    coverEnCuerpo: formData.get('coverEnCuerpo') === 'on',
     featured: formData.get('featured') === 'on',
     tags: String(formData.get('tags') || '').trim(),
     gallery: String(formData.get('gallery') || ''),

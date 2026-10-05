@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Portada } from '@/components/Portada';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/db';
 import { formatDate } from '@/lib/utils';
@@ -105,7 +106,7 @@ export default async function NoticiaDetail({
       {n.excerpt && <p className="mt-4 text-lg text-ink-muted">{n.excerpt}</p>}
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={cover} alt={n.title} className="mt-8 w-full rounded-xl2 border border-line object-cover" />
+      {n.coverEnCuerpo !== false && <Portada src={cover} alt={n.title} encuadre={n.coverFit} variante="detalle" className="mt-8" />}
 
       {partirContenido(n.content).map((t, i) =>
         t.tipo === 'texto' ? <NoticiaBody key={i} content={t.valor} /> : <EncuestaEmbebida key={i} slug={t.slug} volver={`/noticias/${n.slug}`} />

@@ -3,6 +3,10 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.05-119 — 5/10/2026
+- `Portada` (client): detecta la proporción; verticales/cuadradas (<1.25) enteras sobre la misma imagen desenfocada; horizontales con `object-position` según el encuadre. Variante detalle: horizontal sin recorte, vertical en caja de alto máximo.
+- `coverFit` (auto|top|center|bottom|contain) y `coverEnCuerpo` en Noticia, Congreso y Publicacion; selector y casilla en los tres formularios.
+
 ## v2026.10.05-118 — 5/10/2026
 - `/admin/firma`: firma de correo de Johann (`lib/firma.ts`, HTML en tablas con estilos en línea), logo en `public/firma/`, copia con formato (ClipboardItem) o como código.
 

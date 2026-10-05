@@ -42,6 +42,10 @@ model Noticia {
   excerpt     String    @default("")
   content     String    @default("")
   coverImage  String?
+  /// Encuadre de la portada: auto (verticales enteras con fondo desenfocado) | top | center | bottom | contain
+  coverFit    String   @default("auto")
+  /// Si la portada se repite al comienzo de la página de detalle
+  coverEnCuerpo Boolean @default(true)
   author      String    @default("")
   document    String?
   sourceUrl   String    @default("")
@@ -71,6 +75,10 @@ model Publicacion {
   kind        String   @default("revista") // revista | documento | articulo
   linkUrl     String   @default("")
   coverImage  String?
+  /// Encuadre de la portada: auto (verticales enteras con fondo desenfocado) | top | center | bottom | contain
+  coverFit    String   @default("auto")
+  /// Si la portada se repite al comienzo de la página de detalle
+  coverEnCuerpo Boolean @default(true)
   featured    Boolean   @default(false)
   tags        String    @default("")
   gallery     String    @default("")
@@ -97,6 +105,10 @@ model Congreso {
   endDate     DateTime?
   linkUrl     String    @default("")
   coverImage  String?
+  /// Encuadre de la portada: auto (verticales enteras con fondo desenfocado) | top | center | bottom | contain
+  coverFit    String   @default("auto")
+  /// Si la portada se repite al comienzo de la página de detalle
+  coverEnCuerpo Boolean @default(true)
   featured    Boolean   @default(false)
   /// Orden manual en el listado. 0 = sin fijar: se ordena por fecha.
   order       Int       @default(0)
