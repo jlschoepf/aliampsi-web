@@ -45,6 +45,7 @@ const GROUPS: { title: string | null; links: { href: string; label: string; exac
     links: [
       { href: '/admin/menu', label: 'Menú' },
       { href: '/admin/ajustes', label: 'Ajustes' },
+      { href: '/admin/firma', label: 'Firma de correo' },
       { href: '/admin/usuarios', label: 'Usuarios' },
     ],
   },

@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.05-118 — 5/10/2026
+- `/admin/firma`: firma de correo de Johann (`lib/firma.ts`, HTML en tablas con estilos en línea), logo en `public/firma/`, copia con formato (ClipboardItem) o como código.
+
 ## v2026.10.04-117 — 4/10/2026
 - Modelo `Video`, sección `/admin/videos` (alta por enlace con título automático vía oEmbed, edición, visibilidad, orden con flechas, baja) y `PanelVideos` en la portada (reproductor principal diferido + lista), después de «¿Qué es AL·IAM·PSI?».
 
