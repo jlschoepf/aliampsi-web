@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.05-120 — 5/10/2026
+- `ImageField`: formato «Original (sin recortar)» (sube el archivo tal cual); se preselecciona cuando la imagen es vertical o cuadrada (<1.25).
+
 ## v2026.10.05-119 — 5/10/2026
 - `Portada` (client): detecta la proporción; verticales/cuadradas (<1.25) enteras sobre la misma imagen desenfocada; horizontales con `object-position` según el encuadre. Variante detalle: horizontal sin recorte, vertical en caja de alto máximo.
 - `coverFit` (auto|top|center|bottom|contain) y `coverEnCuerpo` en Noticia, Congreso y Publicacion; selector y casilla en los tres formularios.

@@ -20,7 +20,9 @@ const Cropper = dynamic(() => import('react-easy-crop'), { ssr: false }) as unkn
   objectFit?: string;
 }>;
 
+// value 0 = sin recortar: se sube la imagen entera (lo que conviene para flyers verticales).
 const ASPECTS: { label: string; value: number }[] = [
+  { label: 'Original (sin recortar)', value: 0 },
   { label: 'Horizontal', value: 16 / 9 },
   { label: 'Clásica', value: 4 / 3 },
   { label: 'Cuadrada', value: 1 },
@@ -98,6 +100,7 @@ export function ImageField({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [aspect, setAspect] = useState(16 / 9);
+  const [archivoOriginal, setArchivoOriginal] = useState<File | null>(null);
   const [areaPixels, setAreaPixels] = useState<Area | null>(null);
 
   const onCropComplete = useCallback((_a: Area, areaPx: Area) => {
@@ -130,10 +133,16 @@ export function ImageField({
       return;
     }
 
-    // Abrir el editor de encuadre con la imagen elegida.
+    // Abrir el editor de encuadre con la imagen elegida. Si es vertical o cuadrada (un flyer),
+    // arranca en «Original» para no recortarla; si es horizontal, en «Horizontal».
+    setArchivoOriginal(file);
     const reader = new FileReader();
     reader.onload = () => {
-      setImageSrc(String(reader.result));
+      const src = String(reader.result);
+      const im = new Image();
+      im.onload = () => setAspect(im.naturalWidth / im.naturalHeight < 1.25 ? 0 : 16 / 9);
+      im.src = src;
+      setImageSrc(src);
       setCrop({ x: 0, y: 0 });
       setZoom(1);
     };
@@ -141,11 +150,15 @@ export function ImageField({
   }
 
   async function confirmCrop() {
-    if (!imageSrc || !areaPixels) return;
+    if (!imageSrc) return;
+    if (aspect !== 0 && !areaPixels) return;
     setStatus('uploading');
     setError('');
     try {
-      const blob = await getCroppedBlob(imageSrc, areaPixels);
+      // «Original»: se sube el archivo tal cual (o la imagen ya cargada, si se está reeditando)
+      const blob = aspect === 0
+        ? (archivoOriginal ?? await (await fetch(imageSrc)).blob())
+        : await getCroppedBlob(imageSrc, areaPixels as Area);
       const url = await uploadBlob(blob, `imagen-${Date.now()}.jpg`);
       setValue(url);
       setStatus('idle');
@@ -250,6 +263,10 @@ export function ImageField({
                 backgroundPosition: '0 0,0 11px,11px -11px,-11px 0',
               }}
             >
+              {aspect === 0 ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={imageSrc} alt="Vista previa: se sube entera, sin recortar" className="absolute inset-0 h-full w-full object-contain" />
+              ) : (
               <Cropper
                 image={imageSrc}
                 crop={crop}
@@ -263,6 +280,7 @@ export function ImageField({
                 onZoomChange={setZoom}
                 onCropComplete={onCropComplete}
               />
+              )}
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
@@ -308,7 +326,7 @@ export function ImageField({
                 disabled={status === 'uploading'}
                 className="btn-primary disabled:opacity-60"
               >
-                {status === 'uploading' ? 'Subiendo…' : 'Recortar y subir'}
+                {status === 'uploading' ? 'Subiendo…' : (aspect === 0 ? 'Subir sin recortar' : 'Recortar y subir')}
               </button>
             </div>
           </div>
