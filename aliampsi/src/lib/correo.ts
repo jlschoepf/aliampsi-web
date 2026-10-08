@@ -41,3 +41,34 @@ export async function enviarConAdjunto(
     return { ok: false, detalle: `No se pudo conectar con Resend: ${String((e as Error).message || e).slice(0, 160)}` };
   }
 }
+
+/**
+ * Envío en lote (sin adjuntos) con la API de lotes de Resend: hasta 100 correos por llamada.
+ * Devuelve los correos que salieron bien y el error de los que no.
+ */
+export async function enviarLote(
+  cfg: ConfigEnvio,
+  mensajes: { para: string; asunto: string; texto: string; html: string }[]
+): Promise<{ enviados: string[]; error: string }> {
+  if (!cfg.listo) return { enviados: [], error: cfg.aviso };
+  const enviados: string[] = [];
+  for (let i = 0; i < mensajes.length; i += 100) {
+    const tanda = mensajes.slice(i, i + 100);
+    try {
+      const r = await fetch('https://api.resend.com/emails/batch', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${cfg.clave}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(tanda.map((m) => ({ from: cfg.remitente, to: [m.para], subject: m.asunto, text: m.texto, html: m.html, reply_to: cfg.responderA || undefined }))),
+      });
+      if (!r.ok) {
+        const t = await r.text();
+        let msg = t; try { msg = JSON.parse(t).message || t; } catch { /* texto */ }
+        return { enviados, error: `Resend respondió ${r.status}: ${String(msg).slice(0, 200)}` };
+      }
+      enviados.push(...tanda.map((m) => m.para));
+    } catch (e) {
+      return { enviados, error: `No se pudo conectar con Resend: ${String((e as Error).message || e).slice(0, 160)}` };
+    }
+  }
+  return { enviados, error: '' };
+}

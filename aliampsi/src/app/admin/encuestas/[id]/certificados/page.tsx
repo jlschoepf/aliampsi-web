@@ -46,6 +46,7 @@ export default async function Certificados({ params, searchParams }: { params: {
       <div className="mb-6 flex flex-wrap gap-2 text-sm">
         <Link href={`/admin/encuestas/${enc.id}`} className="btn-ghost text-sm">Editar encuesta</Link>
         <Link href={`/admin/encuestas/${enc.id}/resultados`} className="btn-ghost text-sm">Resultados</Link>
+        <Link href={`/admin/encuestas/${enc.id}/seguimiento`} className="btn-ghost text-sm">Inscriptos sin certificado</Link>
         {conteo.validada > 0 && <a href={`${base}/pdf?estado=validada`} className="btn-ghost text-sm">Descargar los {conteo.validada} validados (un PDF)</a>}
         {conteo.validada > 0 && (
           <form action={enviarValidados.bind(null, enc.id)}>

@@ -59,6 +59,7 @@ export default async function EditarEncuesta({ params, searchParams }: { params:
           <Link href={`/encuestas/${enc.slug}`} target="_blank" className="btn-ghost text-sm">Vista previa</Link>
           <Link href={`/admin/encuestas/${enc.id}/resultados`} className="btn-ghost text-sm">Resultados ({enc._count.respuestas})</Link>
           {enc.certificado && <Link href={`/admin/encuestas/${enc.id}/certificados`} className="btn-ghost text-sm">Certificados ({enc._count.solicitudes})</Link>}
+          {enc.certificado && <Link href={`/admin/encuestas/${enc.id}/seguimiento`} className="btn-ghost text-sm">Sin certificado</Link>}
         </div>
       </div>
 

@@ -48,6 +48,7 @@ export default async function AdminEncuestas() {
                 </form>
                 <Link href={`/admin/encuestas/${e.id}/resultados`} className="font-medium text-teal-700 hover:underline">Resultados</Link>
                 {e.certificado && <Link href={`/admin/encuestas/${e.id}/certificados`} className="font-medium text-teal-700 hover:underline">Certificados ({e._count.solicitudes})</Link>}
+                {e.certificado && <Link href={`/admin/encuestas/${e.id}/seguimiento`} className="font-medium text-teal-700 hover:underline">Sin certificado</Link>}
                 <Link href={`/admin/encuestas/${e.id}`} className="font-medium text-ink-muted hover:text-ink">Editar</Link>
                 <Link href={`/encuestas/${e.slug}`} target="_blank" className="font-medium text-ink-muted hover:text-ink">Ver</Link>
                 <DeleteButton action={eliminarEncuesta} id={e.id} confirmText={`¿Eliminar «${e.titulo}» y sus ${e._count.respuestas} respuestas? No se puede deshacer.`} />

@@ -325,6 +325,8 @@ model Encuesta {
   updatedAt   DateTime            @updatedAt
   respuestas  RespuestaEncuesta[]
   solicitudes SolicitudCertificado[]
+  /// Recordatorios enviados a inscriptos sin certificado: { correo: fecha ISO del último envío }
+  recordatorios Json             @default("{}")
 }
 
 model RespuestaEncuesta {
