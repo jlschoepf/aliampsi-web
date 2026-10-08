@@ -5,19 +5,11 @@ import { redirect } from 'next/navigation';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { configEnvio, enviarLote } from '@/lib/correo';
-import { FIRMA_JOHANN, firmaHtml } from '@/lib/firma';
+import { configEnvio, enviarLote, esCupo } from '@/lib/correo';
 import { normalizarInscriptos } from '@/lib/inscriptos';
-import { personalizar, textoAHtml } from '@/lib/seguimiento';
+import { armarRecordatorio as armar, leerCola } from '@/lib/cola-correos';
 
 const ruta = (id: string) => `/admin/encuestas/${id}/seguimiento`;
-const firmaTexto = `\n\n${FIRMA_JOHANN.nombre}\n${FIRMA_JOHANN.cargo}\naliampsi.com · linkedin.com/company/aliampsi`;
-
-function armar(asunto: string, cuerpo: string, nombre: string, enlace: string, para: string) {
-  const t = personalizar(cuerpo, nombre, enlace);
-  return { para, asunto: personalizar(asunto, nombre, enlace), texto: t + firmaTexto, html: textoAHtml(t, firmaHtml(FIRMA_JOHANN)) };
-}
-
 export async function enviarRecordatorios(id: string, formData: FormData) {
   const yo = await requireAdmin();
   const enc = await prisma.encuesta.findUnique({ where: { id } });
@@ -41,9 +33,22 @@ export async function enviarRecordatorios(id: string, formData: FormData) {
   const hoy = new Date().toISOString();
   const reg = { ...((enc.recordatorios as Record<string, string>) || {}) };
   for (const c of r.enviados) reg[c] = hoy;
-  await prisma.encuesta.update({ where: { id }, data: { recordatorios: reg as Prisma.InputJsonValue } });
+  // Si se agotó el cupo del día, los que faltan quedan en cola y salen solos apenas se libere.
+  const faltan = r.error && esCupo(r.error) ? destinatarios.map((i) => i.correo).filter((c) => !r.enviados.includes(c)) : [];
+  const previa = leerCola(enc.colaRecordatorio);
+  const cola = faltan.length ? { asunto, cuerpo, enlace, correos: [...new Set([...(previa?.correos || []), ...faltan])] } : previa;
+  await prisma.encuesta.update({ where: { id }, data: { recordatorios: reg as Prisma.InputJsonValue, colaRecordatorio: (cola ?? {}) as Prisma.InputJsonValue } });
   revalidatePath(ruta(id));
   const q = new URLSearchParams({ enviados: String(r.enviados.length), total: String(destinatarios.length) });
-  if (r.error) q.set('error', r.error);
+  if (faltan.length) q.set('encolados', String(faltan.length));
+  else if (r.error) q.set('error', r.error);
   redirect(`${ruta(id)}?${q}`);
+}
+
+/** Vacía la cola de recordatorios pendientes de esta encuesta (no se mandan). */
+export async function cancelarColaRecordatorio(id: string) {
+  await requireAdmin();
+  await prisma.encuesta.update({ where: { id }, data: { colaRecordatorio: {} } });
+  revalidatePath(ruta(id));
+  redirect(ruta(id));
 }

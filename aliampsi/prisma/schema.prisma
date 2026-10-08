@@ -325,6 +325,8 @@ model Encuesta {
   updatedAt   DateTime            @updatedAt
   respuestas  RespuestaEncuesta[]
   solicitudes SolicitudCertificado[]
+  /// Recordatorios que no salieron por falta de cupo: { asunto, cuerpo, enlace, correos[] }; los manda /api/cron/correos.
+  colaRecordatorio Json @default("{}")
   /// Recordatorios enviados a inscriptos sin certificado: { correo: fecha ISO del último envío }
   recordatorios Json             @default("{}")
 }

@@ -1,12 +1,20 @@
 // Fuente única de la versión de la app.
 // Subir este valor en cada cambio de código dispara el aviso de "versión nueva".
-export const APP_VERSION = 'v2026.10.08-123';
+export const APP_VERSION = 'v2026.10.08-124';
 
 export type EntradaHistorial = { version: string; fecha: string; cambios: string[] };
 
 // Lo que cambió, escrito para quien administra el sitio. La más nueva, arriba.
 // El detalle técnico de cada versión está en CHANGELOG.md.
 export const HISTORIAL: EntradaHistorial[] = [
+  {
+    version: 'v2026.10.08-124',
+    fecha: '8/10/2026',
+    cambios: [
+      'Cola de correos: si se agota el cupo diario de envíos, los certificados y recordatorios que faltan quedan «En cola» y se mandan solos cada hora, apenas se libera el cupo.',
+      'En Certificados se ve cuántos esperan en la cola y hay un botón «Probar ahora»; en Inscriptos sin certificado, los recordatorios en cola no se vuelven a marcar.',
+    ],
+  },
   {
     version: 'v2026.10.08-123',
     fecha: '8/10/2026',

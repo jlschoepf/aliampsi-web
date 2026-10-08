@@ -6,6 +6,8 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { ESTADOS_CERT } from '@/lib/encuestas';
 import { enviarSolicitud } from '@/lib/certificados-envio';
+import { EN_COLA, esCupo } from '@/lib/correo';
+import { procesarCola } from '@/lib/cola-correos';
 
 const ruta = (encuestaId: string) => `/admin/encuestas/${encuestaId}/certificados`;
 
@@ -60,7 +62,26 @@ export async function enviarValidados(encuestaId: string) {
   await requireAdmin();
   const lote = await prisma.solicitudCertificado.findMany({ where: { encuestaId, estado: 'validada' }, select: { id: true }, take: 15 });
   let ok = 0;
-  for (const s of lote) if ((await enviarSolicitud(s.id)).ok) ok++;
+  let intentados = 0;
+  for (const s of lote) {
+    intentados++;
+    const r = await enviarSolicitud(s.id);
+    if (r.ok) { ok++; continue; }
+    if (esCupo(r.detalle)) {
+      // Se agotó el cupo del día: todos los validados que faltan quedan en cola y salen solos después.
+      const q = await prisma.solicitudCertificado.updateMany({ where: { encuestaId, estado: 'validada' }, data: { detalle: EN_COLA } });
+      revalidatePath(ruta(encuestaId));
+      redirect(`${ruta(encuestaId)}?enviados=${ok}&intentados=${intentados}&encolados=${q.count}`);
+    }
+  }
   revalidatePath(ruta(encuestaId));
-  redirect(`${ruta(encuestaId)}?enviados=${ok}&intentados=${lote.length}`);
+  redirect(`${ruta(encuestaId)}?enviados=${ok}&intentados=${intentados}`);
+}
+
+/** Intenta ahora mismo mandar lo que está en cola (lo mismo que hace solo cada hora). */
+export async function reintentarCola(encuestaId: string) {
+  await requireAdmin();
+  const r = await procesarCola(45);
+  revalidatePath(ruta(encuestaId));
+  redirect(`${ruta(encuestaId)}?cola=${r.certificados + r.recordatorios}&quedan=${r.quedan}`);
 }

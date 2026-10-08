@@ -72,3 +72,9 @@ export async function enviarLote(
   }
   return { enviados, error: '' };
 }
+
+/** Texto que queda en un certificado que no salió por falta de cupo; la cola lo reenvía sola. */
+export const EN_COLA = 'En cola: se agotó el cupo diario de correos. Se envía solo apenas se libere.';
+
+/** ¿El error es por cupo agotado o límite de envíos (y no por un correo mal escrito)? */
+export const esCupo = (detalle: string) => /\b429\b|quota|rate limit|too many requests/i.test(detalle);

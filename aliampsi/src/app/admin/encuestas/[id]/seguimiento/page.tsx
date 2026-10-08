@@ -7,13 +7,14 @@ import { normalizarInscriptos } from '@/lib/inscriptos';
 import { configEnvio } from '@/lib/correo';
 import { SITE_URL } from '@/lib/site';
 import { ASUNTO_RECORDATORIO, TEXTO_RECORDATORIO, cruzar } from '@/lib/seguimiento';
-import { enviarRecordatorios } from '../../seguimiento-actions';
+import { cancelarColaRecordatorio, enviarRecordatorios } from '../../seguimiento-actions';
+import { leerCola } from '@/lib/cola-correos';
 import { ListaDestinatarios } from './ListaDestinatarios';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-export default async function Seguimiento({ params, searchParams }: { params: { id: string }; searchParams: { enviados?: string; total?: string; prueba?: string; error?: string; ver?: string } }) {
+export default async function Seguimiento({ params, searchParams }: { params: { id: string }; searchParams: { enviados?: string; total?: string; prueba?: string; error?: string; ver?: string; encolados?: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { solicitudes: { select: { nombre: true, correo: true, estado: true } } } });
   if (!enc) notFound();
   const inscriptos = normalizarInscriptos(enc.inscriptos);
@@ -27,6 +28,7 @@ export default async function Seguimiento({ params, searchParams }: { params: { 
   const enlace = noticia ? `${SITE_URL}/noticias/${noticia.slug}` : `${SITE_URL}/encuestas/${enc.slug}`;
   const correo = await configEnvio();
   const base = `/admin/encuestas/${enc.id}/seguimiento`;
+  const cola = leerCola(enc.colaRecordatorio);
   const pct = inscriptos.length ? Math.round((con.length / inscriptos.length) * 100) : 0;
 
   return (
@@ -39,6 +41,13 @@ export default async function Seguimiento({ params, searchParams }: { params: { 
 
       {searchParams.enviados && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Recordatorio enviado a {searchParams.enviados} de {searchParams.total} personas.</p>}
       {searchParams.prueba && <p className="mb-4 rounded-lg bg-teal-600/10 px-4 py-3 text-sm font-medium text-teal-700">Prueba enviada a {searchParams.prueba}. Revisá cómo llega antes de mandarlo a todos.</p>}
+      {searchParams.encolados && <p className="mb-4 rounded-lg bg-sand/60 px-4 py-3 text-sm font-medium text-ink">Se agotó el cupo diario de correos: {searchParams.encolados} recordatorios quedaron en cola y salen solos apenas se libere.</p>}
+      {cola && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-sand/40 px-4 py-3 text-sm text-ink">
+          <p><strong>{cola.correos.length} recordatorios en cola.</strong> Se mandan solos cada hora, apenas Resend libera el cupo diario (100 correos por día en el plan gratuito).</p>
+          <form action={cancelarColaRecordatorio.bind(null, enc.id)}><button type="submit" className="text-xs font-medium text-coral-dark hover:underline">Cancelar los que están en cola</button></form>
+        </div>
+      )}
       {searchParams.error && <p className="mb-4 rounded-lg border border-coral/40 bg-coral/10 px-4 py-3 text-sm font-medium text-coral-dark">{searchParams.error}</p>}
 
       {inscriptos.length === 0 ? (
@@ -61,7 +70,7 @@ export default async function Seguimiento({ params, searchParams }: { params: { 
                   <Link href={`${base}?ver=todos`} className={ver === 'todos' ? 'font-semibold text-ink' : 'text-teal-700 hover:underline'}>Todos los que no lo tienen ({sin.length + pendientes.length})</Link>
                 </div>
               </div>
-              {lista.length === 0 ? <p className="py-8 text-center text-ink-muted">¡Nadie en esta lista! 🎉</p> : <ListaDestinatarios key={ver} filas={lista} />}
+              {lista.length === 0 ? <p className="py-8 text-center text-ink-muted">¡Nadie en esta lista! 🎉</p> : <ListaDestinatarios key={ver} filas={lista} enCola={cola?.correos ?? []} />}
             </div>
 
             <div className="card space-y-4 p-5">

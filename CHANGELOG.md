@@ -3,6 +3,11 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.08-124 — 8/10/2026
+- Cola de correos por cupo agotado (Resend 429): `lib/cola-correos.ts` (`procesarCola`, reserva por `updateMany` para no duplicar), `esCupo`/`EN_COLA` en `lib/correo.ts`; `enviarSolicitud` deja `EN_COLA` en vez del error; `enviarValidados` encola el resto al primer 429; recordatorios pendientes en `Encuesta.colaRecordatorio` (tandas de 10).
+- `GET /api/cron/correos` (maxDuration 60), llamado cada hora por `.github/workflows/cola-correos.yml` y una vez por día por el cron de Vercel (`aliampsi/vercel.json`).
+- Panel: aviso de cola con «Probar ahora» (`reintentarCola`) en Certificados y con «Cancelar» (`cancelarColaRecordatorio`) en Seguimiento; etiqueta «En cola» en la lista de destinatarios.
+
 ## v2026.10.08-123 — 8/10/2026
 - `analizarConClaude`: modelo por defecto `claude-sonnet-5-5` (sobrescribible con `ANTHROPIC_MODEL`); `maxDuration = 60` en `/admin/encuestas/[id]/resultados`; aviso de sin clave menciona volver a publicar.
 

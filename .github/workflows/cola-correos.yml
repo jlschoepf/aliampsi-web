@@ -1,0 +1,16 @@
+# Cada hora le pide al sitio que mande los correos que quedaron en cola porque se agotó
+# el cupo diario de Resend. Si no hay nada en cola, no hace nada.
+name: Cola de correos
+
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Enviar lo que esté en cola
+        run: curl -fsS --max-time 90 https://aliampsi.com/api/cron/correos
