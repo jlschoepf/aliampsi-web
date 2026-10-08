@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.08-123 — 8/10/2026
+- `analizarConClaude`: modelo por defecto `claude-sonnet-5-5` (sobrescribible con `ANTHROPIC_MODEL`); `maxDuration = 60` en `/admin/encuestas/[id]/resultados`; aviso de sin clave menciona volver a publicar.
+
 ## v2026.10.07-122 — 7/10/2026
 - Seguimiento de certificados (`/admin/encuestas/[id]/seguimiento`): cruce inscriptos × solicitudes (`lib/seguimiento.ts`, por correo o nombre), contadores, lista con casillas, recordatorio editable con `{nombre}`/`{enlace}`, prueba, envío por lote con Resend (`enviarLote`, `/emails/batch`) y registro en `Encuesta.recordatorios`.
 

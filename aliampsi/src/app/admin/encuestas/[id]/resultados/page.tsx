@@ -9,6 +9,8 @@ import { formatDate } from '@/lib/utils';
 import { analizarConClaude, cambiarEstado } from '../../actions';
 
 export const dynamic = 'force-dynamic';
+// El análisis con Claude puede tardar más que el límite por defecto.
+export const maxDuration = 60;
 
 const pct = (n: number, total: number) => (total ? Math.round((n / total) * 100) : 0);
 
@@ -107,7 +109,7 @@ export default async function Resultados({ params, searchParams }: { params: { i
         {!hayClave ? (
           <div className="mt-4 rounded-lg border border-line bg-sand/40 p-4 text-sm text-ink">
             <p className="font-semibold">Falta conectar Claude al sitio.</p>
-            <p className="mt-1 text-ink-muted">Hay que crear una clave en console.anthropic.com y cargarla en Vercel como variable de entorno <code>ANTHROPIC_API_KEY</code>. Mientras tanto, podés copiar los resultados de abajo y pegarlos en Claude.</p>
+            <p className="mt-1 text-ink-muted">Hay que crear una clave en console.anthropic.com, cargarla en Vercel como variable de entorno <code>ANTHROPIC_API_KEY</code> y volver a publicar el sitio. Mientras tanto, podés copiar los resultados de abajo y pegarlos en Claude.</p>
           </div>
         ) : (
           <form action={analizarConClaude} className="mt-4 space-y-3">
