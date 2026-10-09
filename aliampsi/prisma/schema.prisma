@@ -307,6 +307,8 @@ model Encuesta {
   preguntas   Json                @default("[]")
   analisis    String              @default("")
   analisisEn  DateTime?
+  /// Textos breves para las placas de resultados (los redacta Claude a partir del análisis): ver lib/placa.ts.
+  analisisPlaca Json @default("{}")
   portada     String              @default("")
   /// Certificado de asistencia: si está activo, la encuesta ofrece pedirlo al final.
   certificado   Boolean           @default(false)

@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.09-126 — 9/10/2026
+- Placas de resultados (PNG 1080×1350): `GET /admin/encuestas/[id]/placa/[1|2]` (`?descargar=1`), dibujadas con `next/og` en `lib/placa-imagen.tsx`; datos en `lib/placa.ts` (números de las respuestas; textos breves de Claude en `Encuesta.analisisPlaca`, acción `prepararPlacas`). Logos en `certificados-assets/placa-logo*.png`.
+
 ## v2026.10.09-125 — 9/10/2026
 - `analizarConClaude`: `max_tokens` 6000 y `thinking: between_tools` (el modelo no acepta `disabled`) (la respuesta volvía sin bloques de texto y se guardaba un análisis vacío con `?ia=ok`); si no hay texto, error con `stop_reason`.
 

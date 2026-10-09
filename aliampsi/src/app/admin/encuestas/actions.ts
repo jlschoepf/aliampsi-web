@@ -6,6 +6,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { mandarCertificado } from '@/lib/certificados-envio';
+import { pedirTextosPlaca } from '@/lib/placa';
 import { slugify } from '@/lib/utils';
 import { ESTADOS, MODOS_CERT, PLANTILLAS, codigoInsercion, modoCert, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
 import { leerInscriptos } from '@/lib/inscriptos';
@@ -142,6 +143,25 @@ ${datos}`;
   await prisma.encuesta.update({ where: { id }, data: { analisis: texto, analisisEn: new Date() } });
   revalidatePath(`/admin/encuestas/${id}/resultados`);
   redirect(`/admin/encuestas/${id}/resultados?ia=ok#analisis`);
+}
+
+/** Prepara con Claude los textos breves de las placas de resultados (a partir del análisis ya hecho). */
+export async function prepararPlacas(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const enc = await prisma.encuesta.findUnique({ where: { id } });
+  if (!enc) redirect('/admin/encuestas');
+  const clave = process.env.ANTHROPIC_API_KEY;
+  if (!clave) redirect(`/admin/encuestas/${id}/resultados?ia=sin-clave#placas`);
+  if (!enc.analisis) redirect(`/admin/encuestas/${id}/resultados?placas=sin-analisis#placas`);
+  try {
+    const textos = await pedirTextosPlaca(clave, enc, enc.analisis);
+    await prisma.encuesta.update({ where: { id }, data: { analisisPlaca: textos as unknown as Prisma.InputJsonValue } });
+  } catch (e) {
+    redirect(`/admin/encuestas/${id}/resultados?placas=error&detalle=${encodeURIComponent(String((e as Error).message || e).slice(0, 200))}#placas`);
+  }
+  revalidatePath(`/admin/encuestas/${id}/resultados`);
+  redirect(`/admin/encuestas/${id}/resultados?placas=ok#placas`);
 }
 
 /** Reemplaza las preguntas de una encuesta por las de una plantilla (los demás datos no cambian). */

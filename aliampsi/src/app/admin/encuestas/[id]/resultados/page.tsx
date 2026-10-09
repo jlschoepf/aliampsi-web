@@ -6,7 +6,8 @@ import { prisma } from '@/lib/db';
 import { AdminHeader } from '@/components/admin-ui';
 import { ESTADOS, normalizarPreguntas, resultadosEnTexto, resumir, type Datos, type Resumen } from '@/lib/encuestas';
 import { formatDate } from '@/lib/utils';
-import { analizarConClaude, cambiarEstado } from '../../actions';
+import { analizarConClaude, cambiarEstado, prepararPlacas } from '../../actions';
+import { hayTextos, leerTextos } from '@/lib/placa';
 
 export const dynamic = 'force-dynamic';
 // El análisis con Claude puede tardar más que el límite por defecto.
@@ -65,7 +66,7 @@ function Tarjeta({ r, i }: { r: Resumen; i: number }) {
   );
 }
 
-export default async function Resultados({ params, searchParams }: { params: { id: string }; searchParams: { ia?: string; detalle?: string } }) {
+export default async function Resultados({ params, searchParams }: { params: { id: string }; searchParams: { ia?: string; detalle?: string; placas?: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { respuestas: { select: { datos: true, createdAt: true }, orderBy: { createdAt: 'asc' } } } });
   if (!enc) notFound();
   const preguntas = normalizarPreguntas(enc.preguntas);
@@ -76,6 +77,7 @@ export default async function Resultados({ params, searchParams }: { params: { i
   // «Satisfacción general»: la escala más amplia (por ejemplo, la del 1 al 10); si no hay, la primera.
   const general = [...escalas].sort((a, b) => b.maximo - a.maximo)[0];
   const hayClave = !!process.env.ANTHROPIC_API_KEY;
+  const textosPlaca = leerTextos(enc.analisisPlaca);
   const texto = resultadosEnTexto(enc.titulo, total, resumen);
 
   return (
@@ -149,6 +151,35 @@ export default async function Resultados({ params, searchParams }: { params: { i
           <summary className="cursor-pointer font-medium text-teal-700">Ver los resultados en texto, para copiar y pegar en Claude</summary>
           <textarea readOnly value={texto} rows={12} className="field mt-3 font-mono text-xs" aria-label="Resultados en texto" />
         </details>
+      </section>
+
+      <section id="placas" className="card mb-8 p-6">
+        <h2 className="font-display text-xl font-bold">Placas para WhatsApp</h2>
+        <p className="mt-1 text-sm text-ink-muted">Dos imágenes con los resultados, en la estética de AL·IAM·PSI (1080 × 1350, formato 4:5). Los números salen siempre de las respuestas; los textos breves (lo más valorado, lo que piden y la cita) los prepara Claude a partir del análisis.</p>
+        {searchParams.placas === 'ok' && <p className="mt-3 text-sm font-medium text-teal-700">Listo: las placas ya tienen los textos del análisis.</p>}
+        {searchParams.placas === 'sin-analisis' && <p className="mt-3 text-sm font-medium text-coral-dark">Primero hacé el análisis con Claude: las placas toman sus textos de ahí.</p>}
+        {searchParams.placas === 'error' && <p className="mt-3 text-sm font-medium text-coral-dark">No se pudieron preparar los textos: {searchParams.detalle}</p>}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {hayClave && enc.analisis && (
+            <form action={prepararPlacas}>
+              <input type="hidden" name="id" value={enc.id} />
+              <button type="submit" className={hayTextos(textosPlaca) ? 'btn-ghost text-sm' : 'btn-coral text-sm'}>{hayTextos(textosPlaca) ? 'Actualizar textos con Claude' : 'Preparar textos con Claude'}</button>
+            </form>
+          )}
+          {textosPlaca.en && <span className="text-xs text-ink-muted">Textos preparados el {formatDate(new Date(textosPlaca.en))}{enc.analisisEn && new Date(textosPlaca.en) < enc.analisisEn ? ' · el análisis es más nuevo: conviene actualizarlos' : ''}</span>}
+        </div>
+        {total > 0 && (
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            {[1, 2].map((n) => (
+              <div key={n} className="space-y-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/admin/encuestas/${enc.id}/placa/${n}?v=${textosPlaca.en || ''}${total}`} alt={`Placa ${n} de resultados`} className="w-full rounded-lg border border-line" loading="lazy" />
+                <a href={`/admin/encuestas/${enc.id}/placa/${n}?descargar=1`} className="btn-primary inline-flex text-sm">Descargar placa {n} (PNG)</a>
+              </div>
+            ))}
+          </div>
+        )}
+        {!hayTextos(textosPlaca) && total > 0 && <p className="mt-3 text-xs text-ink-muted">La placa 2 muestra «lo más valorado» y «lo que piden» cuando los textos están preparados.</p>}
       </section>
 
       {total === 0 ? (
