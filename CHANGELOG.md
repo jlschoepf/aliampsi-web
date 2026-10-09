@@ -4,7 +4,7 @@ Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
 ## v2026.10.09-125 — 9/10/2026
-- `analizarConClaude`: `max_tokens` 6000 y `thinking: disabled` (la respuesta volvía sin bloques de texto y se guardaba un análisis vacío con `?ia=ok`); si no hay texto, error con `stop_reason`.
+- `analizarConClaude`: `max_tokens` 6000 y `thinking: between_tools` (el modelo no acepta `disabled`) (la respuesta volvía sin bloques de texto y se guardaba un análisis vacío con `?ia=ok`); si no hay texto, error con `stop_reason`.
 
 ## v2026.10.08-124 — 8/10/2026
 - Cola de correos por cupo agotado (Resend 429): `lib/cola-correos.ts` (`procesarCola`, reserva por `updateMany` para no duplicar), `esCupo`/`EN_COLA` en `lib/correo.ts`; `enviarSolicitud` deja `EN_COLA` en vez del error; `enviarValidados` encola el resto al primer 429; recordatorios pendientes en `Encuesta.colaRecordatorio` (tandas de 10).
