@@ -3,6 +3,10 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.09-127 — 9/10/2026
+- Resultados: sección `#claude` con solapas (`?vista=texto|graficas`); componente `resultados/Graficas.tsx` y `BotonEnviar` (useFormStatus).
+- Placa 3 (temas que quieren tratar: `TextosPlaca.temas`, a partir de las respuestas abiertas) y gráficas adicionales `TextosPlaca.extras` (tipos barras, reparto, distribucion, lista) en `/placa/x-<id>`; acciones `crearGraficaPregunta`, `crearGraficaClaude`, `borrarGrafica`. `prepararPlacas` conserva las extras.
+
 ## v2026.10.09-126 — 9/10/2026
 - Placas de resultados (PNG 1080×1350): `GET /admin/encuestas/[id]/placa/[1|2]` (`?descargar=1`), dibujadas con `next/og` en `lib/placa-imagen.tsx`; datos en `lib/placa.ts` (números de las respuestas; textos breves de Claude en `Encuesta.analisisPlaca`, acción `prepararPlacas`). Logos en `certificados-assets/placa-logo*.png`.
 

@@ -6,8 +6,9 @@ import { prisma } from '@/lib/db';
 import { AdminHeader } from '@/components/admin-ui';
 import { ESTADOS, normalizarPreguntas, resultadosEnTexto, resumir, type Datos, type Resumen } from '@/lib/encuestas';
 import { formatDate } from '@/lib/utils';
-import { analizarConClaude, cambiarEstado, prepararPlacas } from '../../actions';
-import { hayTextos, leerTextos } from '@/lib/placa';
+import { analizarConClaude, cambiarEstado } from '../../actions';
+import { hayTemas, leerExtras, leerTextos } from '@/lib/placa';
+import { Graficas } from './Graficas';
 
 export const dynamic = 'force-dynamic';
 // El análisis con Claude puede tardar más que el límite por defecto.
@@ -66,7 +67,7 @@ function Tarjeta({ r, i }: { r: Resumen; i: number }) {
   );
 }
 
-export default async function Resultados({ params, searchParams }: { params: { id: string }; searchParams: { ia?: string; detalle?: string; placas?: string } }) {
+export default async function Resultados({ params, searchParams }: { params: { id: string }; searchParams: { ia?: string; detalle?: string; placas?: string; vista?: string; grafica?: string } }) {
   const enc = await prisma.encuesta.findUnique({ where: { id: params.id }, include: { respuestas: { select: { datos: true, createdAt: true }, orderBy: { createdAt: 'asc' } } } });
   if (!enc) notFound();
   const preguntas = normalizarPreguntas(enc.preguntas);
@@ -78,6 +79,8 @@ export default async function Resultados({ params, searchParams }: { params: { i
   const general = [...escalas].sort((a, b) => b.maximo - a.maximo)[0];
   const hayClave = !!process.env.ANTHROPIC_API_KEY;
   const textosPlaca = leerTextos(enc.analisisPlaca);
+  const extras = leerExtras(textosPlaca);
+  const vista = searchParams.vista === 'graficas' || searchParams.placas || searchParams.grafica ? 'graficas' : 'texto';
   const texto = resultadosEnTexto(enc.titulo, total, resumen);
 
   return (
@@ -103,83 +106,80 @@ export default async function Resultados({ params, searchParams }: { params: { i
         <div className="card p-5"><p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">Período</p><p className="mt-2 text-sm text-ink">{total ? `${formatDate(enc.respuestas[0].createdAt)} – ${formatDate(enc.respuestas[total - 1].createdAt)}` : 'Sin respuestas todavía'}</p></div>
       </div>
 
-      <section id="placas" className="card mb-8 p-6">
-        <h2 className="font-display text-xl font-bold">Placas para WhatsApp</h2>
-        <p className="mt-1 text-sm text-ink-muted">Dos imágenes con los resultados, en la estética de AL·IAM·PSI (1080 × 1350, formato 4:5). Los números salen siempre de las respuestas; los textos breves (lo más valorado, lo que piden y la cita) los prepara Claude a partir del análisis.</p>
-        {searchParams.placas === 'ok' && <p className="mt-3 text-sm font-medium text-teal-700">Listo: las placas ya tienen los textos del análisis.</p>}
-        {searchParams.placas === 'sin-analisis' && <p className="mt-3 text-sm font-medium text-coral-dark">Primero hacé el análisis con Claude: las placas toman sus textos de ahí.</p>}
-        {searchParams.placas === 'error' && <p className="mt-3 text-sm font-medium text-coral-dark">No se pudieron preparar los textos: {searchParams.detalle}</p>}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          {hayClave && enc.analisis && (
-            <form action={prepararPlacas}>
-              <input type="hidden" name="id" value={enc.id} />
-              <button type="submit" className={hayTextos(textosPlaca) ? 'btn-ghost text-sm' : 'btn-coral text-sm'}>{hayTextos(textosPlaca) ? 'Actualizar textos con Claude' : 'Preparar textos con Claude'}</button>
-            </form>
-          )}
-          {textosPlaca.en && <span className="text-xs text-ink-muted">Textos preparados el {formatDate(new Date(textosPlaca.en))}{enc.analisisEn && new Date(textosPlaca.en) < enc.analisisEn ? ' · el análisis es más nuevo: conviene actualizarlos' : ''}</span>}
-        </div>
-        {total > 0 && (
-          <div className="mt-5 grid gap-5 sm:grid-cols-2">
-            {[1, 2].map((n) => (
-              <div key={n} className="space-y-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/admin/encuestas/${enc.id}/placa/${n}?v=${textosPlaca.en || ''}${total}`} alt={`Placa ${n} de resultados`} className="w-full rounded-lg border border-line" loading="lazy" />
-                <a href={`/admin/encuestas/${enc.id}/placa/${n}?descargar=1`} className="btn-primary inline-flex text-sm">Descargar placa {n} (PNG)</a>
-              </div>
-            ))}
-          </div>
-        )}
-        {!hayTextos(textosPlaca) && total > 0 && <p className="mt-3 text-xs text-ink-muted">La placa 2 muestra «lo más valorado» y «lo que piden» cuando los textos están preparados.</p>}
-      </section>
-
-      <section id="analisis" className="card mb-8 p-6">
-        <h2 className="font-display text-xl font-bold">Análisis con Claude</h2>
-        <p className="mt-1 text-sm text-ink-muted">Claude lee los números y las respuestas abiertas —sin datos de quién respondió— y redacta un informe para la Comisión Directiva.</p>
-        {searchParams.ia === 'sin-respuestas' && <p className="mt-3 text-sm font-medium text-coral-dark">Todavía no hay respuestas para analizar.</p>}
-        {searchParams.ia === 'error' && <p className="mt-3 text-sm font-medium text-coral-dark">No se pudo completar el análisis: {searchParams.detalle}</p>}
-        {!hayClave ? (
-          <div className="mt-4 rounded-lg border border-line bg-sand/40 p-4 text-sm text-ink">
-            <p className="font-semibold">Falta conectar Claude al sitio.</p>
-            <p className="mt-1 text-ink-muted">Hay que crear una clave en console.anthropic.com, cargarla en Vercel como variable de entorno <code>ANTHROPIC_API_KEY</code> y volver a publicar el sitio. Mientras tanto, podés copiar los resultados de abajo y pegarlos en Claude.</p>
-          </div>
-        ) : (
-          <form action={analizarConClaude} className="mt-4 space-y-3">
-            <input type="hidden" name="id" value={enc.id} />
-            <label className="field-label" htmlFor="enfoque">¿Algo en particular que quieras que mire? (opcional)</label>
-            <textarea id="enfoque" name="enfoque" rows={2} className="field text-sm" placeholder="Por ejemplo: comparar la valoración de las dos exposiciones, o qué temas piden para el próximo webinar." />
-            <button type="submit" disabled={total === 0} className="btn-coral disabled:opacity-50">{enc.analisis ? 'Volver a analizar' : 'Analizar resultados'}</button>
-            <p className="text-xs text-ink-muted">Tarda unos segundos. El informe queda guardado acá.</p>
-          </form>
-        )}
-        {enc.analisis && (
-          <div className="mt-6 border-t border-line pt-6">
-            <p className="mb-3 text-xs text-ink-muted">Último análisis: {enc.analisisEn ? formatDate(enc.analisisEn) : ''} · con {total} respuestas{searchParams.ia === 'ok' ? ' · recién actualizado' : ''}</p>
-            <div className="space-y-3 text-sm text-ink/90">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  h1: ({ children }) => <h3 className="mt-6 font-display text-lg font-bold text-ink">{children}</h3>,
-                  h2: ({ children }) => <h3 className="mt-6 font-display text-lg font-bold text-ink">{children}</h3>,
-                  h3: ({ children }) => <h4 className="mt-4 font-semibold text-ink">{children}</h4>,
-                  p: ({ children }) => <p className="leading-relaxed">{children}</p>,
-                  ul: ({ children }) => <ul className="list-disc space-y-1 pl-5">{children}</ul>,
-                  ol: ({ children }) => <ol className="list-decimal space-y-1 pl-5">{children}</ol>,
-                  strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
-                  blockquote: ({ children }) => <blockquote className="border-l-4 border-coral/50 pl-4 italic text-ink-muted">{children}</blockquote>,
-                  table: ({ children }) => <div className="overflow-x-auto"><table className="w-full text-left text-sm">{children}</table></div>,
-                  th: ({ children }) => <th className="border-b border-line px-2 py-1 font-semibold">{children}</th>,
-                  td: ({ children }) => <td className="border-b border-line px-2 py-1">{children}</td>,
-                }}
-              >
-                {enc.analisis}
-              </ReactMarkdown>
+      <section id="claude" className="card mb-8 overflow-hidden p-0">
+        <div className="border-b border-line bg-sand/30 px-6 pt-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-teal-700">Análisis con Claude</p>
+              <h2 className="mt-1 font-display text-2xl font-bold">Informe y gráficas de la encuesta</h2>
+              <p className="mt-1 max-w-2xl text-sm text-ink-muted">Claude lee los números y las respuestas abiertas, sin datos de quién respondió. Los números de las gráficas salen siempre de las respuestas guardadas.</p>
             </div>
+            {!hayClave && <span className="rounded-full bg-coral/10 px-3 py-1 text-xs font-semibold text-coral-dark">Claude sin conectar</span>}
           </div>
-        )}
-        <details className="mt-6 text-sm">
-          <summary className="cursor-pointer font-medium text-teal-700">Ver los resultados en texto, para copiar y pegar en Claude</summary>
-          <textarea readOnly value={texto} rows={12} className="field mt-3 font-mono text-xs" aria-label="Resultados en texto" />
-        </details>
+          <nav className="mt-5 flex gap-1" aria-label="Secciones del análisis">
+            {([['texto', 'Análisis de texto', enc.analisis ? 'Informe listo' : 'Sin informe'], ['graficas', 'Gráficas resumen para compartir', `${(hayTemas(textosPlaca) ? 3 : 2) + extras.length} gráficas`]] as const).map(([v, nombre, nota]) => (
+              <Link key={v} href={`?vista=${v}#claude`} scroll={false} aria-current={vista === v ? 'page' : undefined}
+                className={`-mb-px rounded-t-lg border px-4 py-2.5 text-sm font-semibold transition ${vista === v ? 'border-line border-b-white bg-white text-ink' : 'border-transparent text-ink-muted hover:text-ink'}`}>
+                {nombre}<span className="ml-2 hidden rounded-full bg-ink/5 px-2 py-0.5 text-[11px] font-medium text-ink-muted sm:inline">{nota}</span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className="bg-white p-6">
+          {vista === 'texto' ? (
+            <div>
+            {searchParams.ia === 'sin-respuestas' && <p className="mt-3 text-sm font-medium text-coral-dark">Todavía no hay respuestas para analizar.</p>}
+            {searchParams.ia === 'error' && <p className="mt-3 text-sm font-medium text-coral-dark">No se pudo completar el análisis: {searchParams.detalle}</p>}
+            {!hayClave ? (
+              <div className="mt-4 rounded-lg border border-line bg-sand/40 p-4 text-sm text-ink">
+                <p className="font-semibold">Falta conectar Claude al sitio.</p>
+                <p className="mt-1 text-ink-muted">Hay que crear una clave en console.anthropic.com, cargarla en Vercel como variable de entorno <code>ANTHROPIC_API_KEY</code> y volver a publicar el sitio. Mientras tanto, podés copiar los resultados de abajo y pegarlos en Claude.</p>
+              </div>
+            ) : (
+              <form action={analizarConClaude} className="mt-4 space-y-3">
+                <input type="hidden" name="id" value={enc.id} />
+                <label className="field-label" htmlFor="enfoque">¿Algo en particular que quieras que mire? (opcional)</label>
+                <textarea id="enfoque" name="enfoque" rows={2} className="field text-sm" placeholder="Por ejemplo: comparar la valoración de las dos exposiciones, o qué temas piden para el próximo webinar." />
+                <button type="submit" disabled={total === 0} className="btn-coral disabled:opacity-50">{enc.analisis ? 'Volver a analizar' : 'Analizar resultados'}</button>
+                <p className="text-xs text-ink-muted">Tarda unos segundos. El informe queda guardado acá.</p>
+              </form>
+            )}
+            {enc.analisis && (
+              <div className="mt-6 border-t border-line pt-6">
+                <p className="mb-3 text-xs text-ink-muted">Último análisis: {enc.analisisEn ? formatDate(enc.analisisEn) : ''} · con {total} respuestas{searchParams.ia === 'ok' ? ' · recién actualizado' : ''}</p>
+                <div className="space-y-3 text-sm text-ink/90">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h1: ({ children }) => <h3 className="mt-6 font-display text-lg font-bold text-ink">{children}</h3>,
+                      h2: ({ children }) => <h3 className="mt-6 font-display text-lg font-bold text-ink">{children}</h3>,
+                      h3: ({ children }) => <h4 className="mt-4 font-semibold text-ink">{children}</h4>,
+                      p: ({ children }) => <p className="leading-relaxed">{children}</p>,
+                      ul: ({ children }) => <ul className="list-disc space-y-1 pl-5">{children}</ul>,
+                      ol: ({ children }) => <ol className="list-decimal space-y-1 pl-5">{children}</ol>,
+                      strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
+                      blockquote: ({ children }) => <blockquote className="border-l-4 border-coral/50 pl-4 italic text-ink-muted">{children}</blockquote>,
+                      table: ({ children }) => <div className="overflow-x-auto"><table className="w-full text-left text-sm">{children}</table></div>,
+                      th: ({ children }) => <th className="border-b border-line px-2 py-1 font-semibold">{children}</th>,
+                      td: ({ children }) => <td className="border-b border-line px-2 py-1">{children}</td>,
+                    }}
+                  >
+                    {enc.analisis}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            )}
+            <details className="mt-6 text-sm">
+              <summary className="cursor-pointer font-medium text-teal-700">Ver los resultados en texto, para copiar y pegar en Claude</summary>
+              <textarea readOnly value={texto} rows={12} className="field mt-3 font-mono text-xs" aria-label="Resultados en texto" />
+            </details>
+    
+            </div>
+          ) : (
+            <Graficas enc={enc} total={total} hayClave={hayClave} textos={textosPlaca} extras={extras} preguntas={preguntas} sp={searchParams} />
+          )}
+        </div>
       </section>
 
 

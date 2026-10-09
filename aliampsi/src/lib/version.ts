@@ -1,12 +1,21 @@
 // Fuente única de la versión de la app.
 // Subir este valor en cada cambio de código dispara el aviso de "versión nueva".
-export const APP_VERSION = 'v2026.10.09-126';
+export const APP_VERSION = 'v2026.10.09-127';
 
 export type EntradaHistorial = { version: string; fecha: string; cambios: string[] };
 
 // Lo que cambió, escrito para quien administra el sitio. La más nueva, arriba.
 // El detalle técnico de cada versión está en CHANGELOG.md.
 export const HISTORIAL: EntradaHistorial[] = [
+  {
+    version: 'v2026.10.09-127',
+    fecha: '9/10/2026',
+    cambios: [
+      'Resultados: el módulo de Claude se ordena en dos solapas, «Análisis de texto» y «Gráficas resumen para compartir».',
+      'Nueva placa «Los temas que quieren tratar», con las áreas temáticas que surgen de las respuestas abiertas.',
+      'Se pueden generar más gráficas ahí mismo: de una pregunta elegida o pidiéndoselas a Claude en palabras. Todas se descargan en PNG.',
+    ],
+  },
   {
     version: 'v2026.10.09-126',
     fecha: '9/10/2026',

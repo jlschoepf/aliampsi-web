@@ -6,7 +6,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { mandarCertificado } from '@/lib/certificados-envio';
-import { pedirTextosPlaca } from '@/lib/placa';
+import { extraDePregunta, leerExtras, leerTextos, pedirExtraClaude, pedirTextosPlaca, type Extra } from '@/lib/placa';
 import { slugify } from '@/lib/utils';
 import { ESTADOS, MODOS_CERT, PLANTILLAS, codigoInsercion, modoCert, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
 import { leerInscriptos } from '@/lib/inscriptos';
@@ -142,26 +142,82 @@ ${datos}`;
   }
   await prisma.encuesta.update({ where: { id }, data: { analisis: texto, analisisEn: new Date() } });
   revalidatePath(`/admin/encuestas/${id}/resultados`);
-  redirect(`/admin/encuestas/${id}/resultados?ia=ok#analisis`);
+  redirect(`/admin/encuestas/${id}/resultados?ia=ok#claude`);
 }
 
 /** Prepara con Claude los textos breves de las placas de resultados (a partir del análisis ya hecho). */
 export async function prepararPlacas(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get('id'));
-  const enc = await prisma.encuesta.findUnique({ where: { id } });
+  const enc = await prisma.encuesta.findUnique({ where: { id }, include: { respuestas: { select: { datos: true } } } });
   if (!enc) redirect('/admin/encuestas');
   const clave = process.env.ANTHROPIC_API_KEY;
-  if (!clave) redirect(`/admin/encuestas/${id}/resultados?ia=sin-clave#placas`);
-  if (!enc.analisis) redirect(`/admin/encuestas/${id}/resultados?placas=sin-analisis#placas`);
+  if (!clave) redirect(`/admin/encuestas/${id}/resultados?vista=graficas&ia=sin-clave#claude`);
+  if (!enc.analisis) redirect(`/admin/encuestas/${id}/resultados?vista=graficas&placas=sin-analisis#claude`);
   try {
     const textos = await pedirTextosPlaca(clave, enc, enc.analisis);
-    await prisma.encuesta.update({ where: { id }, data: { analisisPlaca: textos as unknown as Prisma.InputJsonValue } });
+    // Las gráficas adicionales ya creadas se conservan.
+    const previas = leerExtras(leerTextos(enc.analisisPlaca));
+    await prisma.encuesta.update({ where: { id }, data: { analisisPlaca: { ...textos, extras: previas } as unknown as Prisma.InputJsonValue } });
   } catch (e) {
-    redirect(`/admin/encuestas/${id}/resultados?placas=error&detalle=${encodeURIComponent(String((e as Error).message || e).slice(0, 200))}#placas`);
+    redirect(`/admin/encuestas/${id}/resultados?vista=graficas&placas=error&detalle=${encodeURIComponent(String((e as Error).message || e).slice(0, 200))}#claude`);
   }
   revalidatePath(`/admin/encuestas/${id}/resultados`);
-  redirect(`/admin/encuestas/${id}/resultados?placas=ok#placas`);
+  redirect(`/admin/encuestas/${id}/resultados?vista=graficas&placas=ok#claude`);
+}
+
+const rutaGraficas = (id: string, q = '') => `/admin/encuestas/${id}/resultados?vista=graficas${q}#claude`;
+
+async function guardarExtra(id: string, extra: Extra) {
+  const enc = await prisma.encuesta.findUnique({ where: { id }, select: { analisisPlaca: true } });
+  const textos = leerTextos(enc?.analisisPlaca);
+  await prisma.encuesta.update({ where: { id }, data: { analisisPlaca: { ...textos, extras: [extra, ...leerExtras(textos)].slice(0, 24) } as unknown as Prisma.InputJsonValue } });
+  revalidatePath(`/admin/encuestas/${id}/resultados`);
+}
+
+/** Gráfica nueva de una pregunta elegida en el panel (no usa Claude). */
+export async function crearGraficaPregunta(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const enc = await prisma.encuesta.findUnique({ where: { id } });
+  if (!enc) redirect('/admin/encuestas');
+  const p = normalizarPreguntas(enc.preguntas).find((x) => x.id === String(formData.get('pregunta')));
+  const extra = p && extraDePregunta(p, leerTextos(enc.analisisPlaca));
+  if (!extra) redirect(rutaGraficas(id, '&grafica=sin-pregunta'));
+  await guardarExtra(id, extra);
+  redirect(rutaGraficas(id, `&grafica=${extra.id}`));
+}
+
+/** Gráfica nueva pedida a Claude en palabras («compará las dos ponencias», «qué temas piden»…). */
+export async function crearGraficaClaude(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const pedido = String(formData.get('pedido') || '').trim().slice(0, 300);
+  const enc = await prisma.encuesta.findUnique({ where: { id }, include: { respuestas: { select: { datos: true } } } });
+  if (!enc) redirect('/admin/encuestas');
+  const clave = process.env.ANTHROPIC_API_KEY;
+  if (!clave) redirect(rutaGraficas(id, '&ia=sin-clave'));
+  if (!pedido) redirect(rutaGraficas(id, `&placas=error&detalle=${encodeURIComponent('Escribí qué gráfica querés.')}`));
+  let extra: Extra;
+  try {
+    extra = await pedirExtraClaude(clave, enc, pedido);
+  } catch (e) {
+    redirect(rutaGraficas(id, `&placas=error&detalle=${encodeURIComponent(String((e as Error).message || e).slice(0, 200))}`));
+  }
+  await guardarExtra(id, extra);
+  redirect(rutaGraficas(id, `&grafica=${extra.id}`));
+}
+
+/** Quita una gráfica adicional. */
+export async function borrarGrafica(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const gid = String(formData.get('grafica'));
+  const enc = await prisma.encuesta.findUnique({ where: { id }, select: { analisisPlaca: true } });
+  const textos = leerTextos(enc?.analisisPlaca);
+  await prisma.encuesta.update({ where: { id }, data: { analisisPlaca: { ...textos, extras: leerExtras(textos).filter((e) => e.id !== gid) } as unknown as Prisma.InputJsonValue } });
+  revalidatePath(`/admin/encuestas/${id}/resultados`);
+  redirect(rutaGraficas(id));
 }
 
 /** Reemplaza las preguntas de una encuesta por las de una plantilla (los demás datos no cambian). */
