@@ -66,7 +66,9 @@ export function datosPlaca(enc: Encuesta & { respuestas: { datos: unknown }[] })
   const elegidas = (textos.graficos || []).map((id) => todasUnicas.find((u) => u.id === id)).filter(Boolean) as Opciones[];
   const unicas = [...elegidas, ...todasUnicas.filter((u) => !elegidas.includes(u))].slice(0, 2);
   const tortas = unicas.map((u) => {
-    const orden = [...u.conteos].sort((a, b) => b.n - a.n);
+    // «Otro» (la opción con texto libre) nunca va como categoría propia: se suma a «Otros».
+    const esOtro = (o: string) => /^otr[oa]s?\b/i.test(o.trim());
+    const orden = [...u.conteos].filter((c) => !esOtro(c.opcion)).sort((a, b) => b.n - a.n);
     const principales = orden.slice(0, 3).filter((c) => c.n > 0);
     const resto = u.respondieron - principales.reduce((s, c) => s + c.n, 0);
     const nombre = (o: string) => textos.opciones?.[u.id]?.[o] || acortar(o, 26);
