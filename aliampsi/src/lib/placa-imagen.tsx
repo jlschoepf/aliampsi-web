@@ -171,7 +171,9 @@ export function Placa3({ d, logo }: { d: DatosPlaca; logo: string }) {
   const temas = d.textos.temas || [];
   const [primero, ...resto] = temas;
   const filas: { t: string; d?: string }[][] = [];
-  for (let i = 0; i < resto.length; i += 2) filas.push(resto.slice(i, i + 2));
+  // Con pocos temas, uno por fila (más grandes); con muchos, de a dos.
+  const porFila = resto.length <= 3 ? 1 : 2;
+  for (let i = 0; i < resto.length; i += porFila) filas.push(resto.slice(i, i + porFila));
   return (
     <div style={{ width: 1080, height: 1350, display: 'flex', flexDirection: 'column', background: C.paper, color: C.ink, padding: '72px 76px', position: 'relative', fontFamily: 'Inter' }}>
       <div style={{ position: 'absolute', left: -260, bottom: -260, width: 700, height: 700, borderRadius: 350, background: 'radial-gradient(circle, rgba(236,106,82,0.16), rgba(236,106,82,0) 70%)', display: 'flex' }} />
@@ -199,13 +201,13 @@ export function Placa3({ d, logo }: { d: DatosPlaca; logo: string }) {
       {filas.map((fila, i) => (
         <div key={i} style={{ display: 'flex', gap: 20, marginTop: 20 }}>
           {fila.map((tm, j) => (
-            <div key={j} style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', border: `1px solid ${C.line}`, borderRadius: 28, padding: '26px 30px' }}>
-              <span style={{ fontFamily: 'Bric', fontWeight: 800, fontSize: 40, lineHeight: 1, color: C.teal }}>{String(i * 2 + j + 2).padStart(2, '0')}</span>
+            <div key={j} style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', border: `1px solid ${C.line}`, borderRadius: 28, padding: porFila === 1 ? '32px 36px' : '26px 30px' }}>
+              <span style={{ fontFamily: 'Bric', fontWeight: 800, fontSize: 40, lineHeight: 1, color: C.teal }}>{String(i * porFila + j + 2).padStart(2, '0')}</span>
               <span style={{ fontWeight: 700, fontSize: 25, lineHeight: 1.25, marginTop: 12 }}>{tm.t}</span>
               {tm.d && <span style={{ fontSize: 18, lineHeight: 1.4, color: C.muted, marginTop: 6 }}>{tm.d}</span>}
             </div>
           ))}
-          {fila.length === 1 && <div style={{ flex: 1, display: 'flex' }} />}
+          {porFila === 2 && fila.length === 1 && <div style={{ flex: 1, display: 'flex' }} />}
         </div>
       ))}
 
