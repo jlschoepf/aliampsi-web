@@ -128,11 +128,13 @@ ${datos}`;
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'content-type': 'application/json', 'x-api-key': clave, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 2500, messages: [{ role: 'user', content: pedido }] }),
+      body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-5-5', max_tokens: 6000, thinking: { type: 'disabled' }, messages: [{ role: 'user', content: pedido }] }),
     });
     const j = await r.json();
     if (!r.ok) throw new Error(j?.error?.message || `HTTP ${r.status}`);
     texto = (j.content || []).filter((c: { type: string }) => c.type === 'text').map((c: { text: string }) => c.text).join('\n').trim();
+    // Si la respuesta vino sin texto (por ejemplo, cortada antes de escribir), se informa en vez de guardar un informe vacío.
+    if (!texto) throw new Error(`Claude respondió sin texto (motivo: ${j.stop_reason || 'desconocido'}; bloques: ${(j.content || []).map((c: { type: string }) => c.type).join(', ') || 'ninguno'}). Probá de nuevo.`);
   } catch (e) {
     const msg = encodeURIComponent(String((e as Error).message || e).slice(0, 200));
     redirect(`/admin/encuestas/${id}/resultados?ia=error&detalle=${msg}`);
