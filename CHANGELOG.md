@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.14-128 — 14/10/2026
+- `lib/noticia-resultados.ts`: noticia borrador con las placas subidas a Vercel Blob (`put`) y texto HTML con los datos reales; acción `crearNoticiaResultados` y botón en la solapa de gráficas.
+
 ## v2026.10.09-127 — 9/10/2026
 - Resultados: sección `#claude` con solapas (`?vista=texto|graficas`); componente `resultados/Graficas.tsx` y `BotonEnviar` (useFormStatus).
 - Placa 3 (temas que quieren tratar: `TextosPlaca.temas`, a partir de las respuestas abiertas) y gráficas adicionales `TextosPlaca.extras` (tipos barras, reparto, distribucion, lista) en `/placa/x-<id>`; acciones `crearGraficaPregunta`, `crearGraficaClaude`, `borrarGrafica`. `prepararPlacas` conserva las extras.

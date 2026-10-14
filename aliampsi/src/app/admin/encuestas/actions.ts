@@ -6,6 +6,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { mandarCertificado } from '@/lib/certificados-envio';
+import { crearNoticiaDeResultados } from '@/lib/noticia-resultados';
 import { extraDePregunta, leerExtras, leerTextos, pedirExtraClaude, pedirTextosPlaca, type Extra } from '@/lib/placa';
 import { slugify } from '@/lib/utils';
 import { ESTADOS, MODOS_CERT, PLANTILLAS, codigoInsercion, modoCert, normalizarPreguntas, resultadosEnTexto, resumir, type Datos } from '@/lib/encuestas';
@@ -206,6 +207,22 @@ export async function crearGraficaClaude(formData: FormData) {
   }
   await guardarExtra(id, extra);
   redirect(rutaGraficas(id, `&grafica=${extra.id}`));
+}
+
+/** Crea una noticia (borrador) con los resultados y las placas, y abre el editor para revisarla. */
+export async function crearNoticiaResultados(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get('id'));
+  const enc = await prisma.encuesta.findUnique({ where: { id }, include: { respuestas: { select: { datos: true } } } });
+  if (!enc) redirect('/admin/encuestas');
+  let noticiaId = '';
+  try {
+    noticiaId = (await crearNoticiaDeResultados(enc)).id;
+  } catch (e) {
+    redirect(rutaGraficas(id, `&placas=error&detalle=${encodeURIComponent(String((e as Error).message || e).slice(0, 200))}`));
+  }
+  revalidatePath('/admin/noticias');
+  redirect(`/admin/noticias/${noticiaId}`);
 }
 
 /** Quita una gráfica adicional. */

@@ -3,7 +3,7 @@ import type { Encuesta } from '@prisma/client';
 import type { Pregunta } from '@/lib/encuestas';
 import { hayTemas, hayTextos, type Extra, type TextosPlaca } from '@/lib/placa';
 import { formatDate } from '@/lib/utils';
-import { borrarGrafica, crearGraficaClaude, crearGraficaPregunta, prepararPlacas } from '../../actions';
+import { borrarGrafica, crearGraficaClaude, crearGraficaPregunta, crearNoticiaResultados, prepararPlacas } from '../../actions';
 import { BotonEnviar } from './BotonEnviar';
 
 const TIPOS: Record<string, string> = { barras: 'Comparación de promedios', reparto: 'Reparto de respuestas', distribucion: 'Distribución de puntajes', lista: 'Temas e ideas' };
@@ -75,6 +75,17 @@ export function Graficas({ enc, total, hayClave, textos, extras, preguntas, sp }
         ) : (
           <span className="text-xs text-ink-muted">{hayClave ? 'Primero hacé el análisis de texto.' : 'Claude no está conectado.'}</span>
         )}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-600/30 bg-teal-600/5 px-5 py-4">
+        <div className="text-sm">
+          <p className="font-semibold text-ink">Noticia con los resultados</p>
+          <p className="text-ink-muted">Crea un borrador de noticia con el agradecimiento, los números, los certificados entregados, los temas propuestos y las placas. Se revisa en el editor antes de publicar.</p>
+        </div>
+        <form action={crearNoticiaResultados}>
+          <input type="hidden" name="id" value={enc.id} />
+          <BotonEnviar className="btn-primary text-sm" cargando="Armando la noticia…">Crear noticia (borrador)</BotonEnviar>
+        </form>
       </div>
 
       <div>
