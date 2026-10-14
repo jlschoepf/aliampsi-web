@@ -60,7 +60,13 @@ export function datosPlaca(enc: Encuesta & { respuestas: { datos: unknown }[] })
   const rangoComun = escalas.filter((e) => e !== general).map((e) => e.maximo).sort((a, b) => escalas.filter((e) => e.maximo === b).length - escalas.filter((e) => e.maximo === a).length)[0];
   const barras = escalas
     .filter((e) => e !== general && e.maximo === rangoComun)
-    .map((e) => ({ titulo: corto(e)?.corto || acortar(e.texto.split(/en cuanto a:?/i).pop() || e.texto), detalle: corto(e)?.detalle || '', valor: e.promedio, maximo: e.maximo }))
+    .map((e) => {
+      const titulo = corto(e)?.corto || acortar(e.texto.split(/en cuanto a:?/i).pop() || e.texto);
+      const detalle = corto(e)?.detalle || '';
+      // Si la etiqueta ya nombra a la persona del detalle, no se repite debajo.
+      const apellido = detalle.split(/\s+/).filter((w) => w.length > 3).pop() || '';
+      return { titulo, detalle: apellido && titulo.includes(apellido) ? '' : detalle, valor: e.promedio, maximo: e.maximo };
+    })
     .sort((a, b) => b.valor - a.valor)
     .slice(0, 6);
 
