@@ -35,7 +35,7 @@ export async function crearNoticiaDeResultados(enc: Encuesta & { respuestas: { d
   const p: string[] = [];
   p.push(`<p>Desde AL·IAM·PSI queremos agradecer a todas las personas que nos acompañaron en el ${esc(actividad)}. La participación y el interés que mostraron confirman la importancia de seguir generando espacios de formación e intercambio sobre la salud mental de niños, niñas y adolescentes en la región.</p>`);
   p.push(`<h2>Una actividad muy bien valorada</h2>`);
-  p.push(`<p>Un agradecimiento especial a quienes se tomaron unos minutos para completar la encuesta de satisfacción: recibimos <strong>${d.total} respuestas</strong>${cifras.length ? `, con ${cifras.join(' y ')}` : ''}.${valorado.length ? ` Lo más destacado fue ${valorado.slice(0, 3).map((v) => v.t.charAt(0).toLowerCase() + v.t.slice(1)).join(', ').replace(/, ([^,]*)$/, ' y $1')}.` : ''}</p>`);
+  p.push(`<p>Un agradecimiento especial a quienes se tomaron unos minutos para completar la encuesta de satisfacción: recibimos <strong>${d.total} respuestas</strong>${cifras.length ? `, con ${cifras.join(' y ')}` : ''}.${valorado.length ? ` Lo más valorado por quienes respondieron: ${valorado.slice(0, 3).map((v) => v.t.charAt(0).toLowerCase() + v.t.slice(1)).join(', ').replace(/, ([^,]*)$/, ' y $1')}.` : ''}</p>`);
   if (certificados > 0) p.push(`<p>Además, entregamos <strong>${certificados} certificados digitales de asistencia</strong> a quienes respondieron la encuesta. Les recordamos que pueden compartirlos en sus redes y mencionar a AL·IAM·PSI en LinkedIn.</p>`);
   if (urls[0]) p.push(`<p><img src="${urls[0]}" alt="Resultados de la encuesta: los números" /></p>`);
   p.push(`<h2>Sus respuestas, insumo para lo que viene</h2>`);
