@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db';
 import { cachear } from '@/lib/cache';
+import { codigoBandera } from '@/lib/paises';
 
 export const metadata = {
   title: 'Comisión Directiva',
@@ -43,7 +44,15 @@ export default async function ComisionDirectivaPage() {
                 <div className="min-w-0">
                   <h3 className="font-semibold leading-tight">{a.name}</h3>
                   {a.role && <p className="text-sm font-medium text-coral">{a.role}</p>}
-                  {a.country && <p className="text-xs text-ink-muted">{a.country}</p>}
+                  {a.country && (
+                    <p className="mt-0.5 flex items-center gap-1.5 text-xs text-ink-muted">
+                      {codigoBandera(a.country) && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={`/banderas/${codigoBandera(a.country)}.svg`} alt="" width={18} height={14} className="h-3.5 w-[18px] shrink-0 rounded-[2px] object-cover shadow-[0_0_0_1px_rgba(0,0,0,0.08)]" />
+                      )}
+                      {a.country}
+                    </p>
+                  )}
                 </div>
               </div>
               {a.bio && <p className="mt-4 text-sm leading-relaxed text-ink-muted">{a.bio}</p>}

@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.15-129 — 15/10/2026
+- Banderas en `/comision-directiva`: `lib/paises.ts` (nombre → ISO) y SVG de flag-icons (MIT) en `public/banderas/`.
+
 ## v2026.10.14-128 — 14/10/2026
 - `lib/noticia-resultados.ts`: noticia borrador con las placas subidas a Vercel Blob (`put`) y texto HTML con los datos reales; acción `crearNoticiaResultados` y botón en la solapa de gráficas.
 
