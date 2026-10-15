@@ -12,8 +12,6 @@ export default async function ContactoPage() {
   const s = await getSettings();
   const wa = waLink(s.whatsapp);
   const socials = [
-    { href: s.instagram, label: 'Instagram' },
-    { href: s.facebook, label: 'Facebook' },
     { href: s.youtube, label: 'YouTube' },
     { href: s.linkedin, label: 'LinkedIn' },
   ].filter((x) => x.href);

@@ -8,7 +8,7 @@ export const DEFAULT_SETTINGS = {
   instagram: 'https://www.instagram.com/aliampsi',
   facebook: 'https://facebook.com/aliampsi',
   youtube: 'https://www.youtube.com/channel/UCjGLu6VjxUikSSVq2lUmreQ',
-  linkedin: 'https://linkedin.com/company/aliampsi',
+  linkedin: 'https://www.linkedin.com/company/aliampsi',
   contactTitle: 'Sumate a la Alianza',
   contactText:
     'Si representás una asociación de psiquiatría infantojuvenil y querés formar parte de AL·IAM·PSI, escribinos. También podés contactarnos por cualquier consulta.',
@@ -58,7 +58,7 @@ export async function getSettings(): Promise<SiteSettings> {
       instagram: s.instagram,
       facebook: s.facebook,
       youtube: s.youtube,
-      linkedin: s.linkedin,
+      linkedin: pick(s.linkedin, DEFAULT_SETTINGS.linkedin),
       contactTitle: pick(s.contactTitle, DEFAULT_SETTINGS.contactTitle),
       contactText: pick(s.contactText, DEFAULT_SETTINGS.contactText),
       footerText: pick(s.footerText, DEFAULT_SETTINGS.footerText),

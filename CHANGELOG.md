@@ -3,6 +3,9 @@
 Numeración: `vAAAA.MM.DD-N` (fecha del despliegue y número correlativo).
 La versión vigente vive en `aliampsi/src/lib/version.ts`, junto al historial que se muestra en el panel.
 
+## v2026.10.15-130 — 15/10/2026
+- LinkedIn destacado: botón en `SiteHeader` (escritorio y menú móvil) y bloque en `SiteFooter`; `LinkedInIcon`; `settings.linkedin` cae al valor por defecto si está vacío. Sin Instagram ni Facebook en pie y contacto.
+
 ## v2026.10.15-129 — 15/10/2026
 - Banderas en `/comision-directiva`: `lib/paises.ts` (nombre → ISO) y SVG de flag-icons (MIT) en `public/banderas/`.
 

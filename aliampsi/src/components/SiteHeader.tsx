@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Wordmark } from './Wordmark';
 import { HeaderSearch } from './HeaderSearch';
 import { cn } from '@/lib/utils';
+import { LinkedInIcon } from './LinkedInIcon';
 
 export type NavItem = {
   id: string;
@@ -34,7 +35,7 @@ function buildTree(items: NavItem[]): NavNode[] {
 
 const esExterno = (item: NavItem) => item.newTab || /^https?:\/\//i.test(item.href);
 
-export function SiteHeader({ items }: { items: NavItem[] }) {
+export function SiteHeader({ items, linkedin }: { items: NavItem[]; linkedin?: string }) {
   const [open, setOpen] = useState(false);
   const [abierto, setAbierto] = useState<string | null>(null);
   const pathname = usePathname();
@@ -143,6 +144,13 @@ export function SiteHeader({ items }: { items: NavItem[] }) {
 
         <div className="hidden items-center gap-2 lg:flex">
           <HeaderSearch />
+          {linkedin && (
+            <a href={linkedin} target="_blank" rel="noreferrer" title="Seguinos en LinkedIn" aria-label="AL·IAM·PSI en LinkedIn (se abre en otra pestaña)"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#0A66C2] px-3.5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#004182]">
+              <LinkedInIcon className="h-4 w-4" />
+              <span className="hidden xl:inline">LinkedIn</span>
+            </a>
+          )}
           {ctas.map((item) => renderLink(item, 'btn-coral'))}
         </div>
 
@@ -189,6 +197,12 @@ export function SiteHeader({ items }: { items: NavItem[] }) {
                 )}
               </div>
             ))}
+            {linkedin && (
+              <a href={linkedin} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}
+                className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-[#0A66C2] px-4 py-3 text-sm font-semibold text-white hover:bg-[#004182]">
+                <LinkedInIcon className="h-4 w-4" /> Seguinos en LinkedIn
+              </a>
+            )}
             {ctas.map((item) => renderLink(item, 'btn-coral mt-2', () => setOpen(false)))}
           </nav>
         </div>

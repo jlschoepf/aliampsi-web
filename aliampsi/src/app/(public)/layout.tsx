@@ -53,7 +53,7 @@ gtag('config', '${gaId}');`}
           </Script>
         </>
       )}
-      <SiteHeader items={items} />
+      <SiteHeader items={items} linkedin={settings.linkedin} />
       <main className="flex-1">{children}</main>
       <SiteFooter />
     </div>

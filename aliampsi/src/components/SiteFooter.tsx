@@ -1,12 +1,11 @@
 import Link from 'next/link';
 import { Wordmark } from './Wordmark';
+import { LinkedInIcon } from './LinkedInIcon';
 import { getSettings, waLink } from '@/lib/settings';
 
 export async function SiteFooter() {
   const s = await getSettings();
   const SOCIAL = [
-    { href: s.instagram, label: 'Instagram' },
-    { href: s.facebook, label: 'Facebook' },
     { href: s.youtube, label: 'YouTube' },
     { href: s.linkedin, label: 'LinkedIn' },
     { href: waLink(s.whatsapp), label: 'WhatsApp' },
@@ -20,6 +19,16 @@ export async function SiteFooter() {
           <a href={`mailto:${s.contactEmail}`} className="mt-4 inline-block font-display text-lg text-paper hover:text-coral">
             {s.contactEmail}
           </a>
+          {s.linkedin && (
+            <a href={s.linkedin} target="_blank" rel="noreferrer"
+              className="mt-6 flex max-w-sm items-center gap-3 rounded-2xl bg-[#0A66C2] px-4 py-3 text-white transition-colors hover:bg-[#004182]">
+              <LinkedInIcon className="h-7 w-7 shrink-0" />
+              <span className="leading-tight">
+                <span className="block text-sm font-semibold">Seguinos en LinkedIn</span>
+                <span className="block text-xs text-white/80">Novedades, webinars y actividades de la Alianza</span>
+              </span>
+            </a>
+          )}
         </div>
 
         <div>
